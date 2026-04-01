@@ -2,7 +2,7 @@ let Algebra = ./Algebra/package.dhall
 
 let Deps = ../Deps/package.dhall
 
-let Params = { packageName : Text, migrationEntries : Text }
+let Params = { packageName : Text, migrations : List Text }
 
 in  Algebra.module
       Params
@@ -37,7 +37,20 @@ in  Algebra.module
           public abstract class AbstractDatabaseIT {
 
               private static final String[] MIGRATIONS = {
-          ${params.migrationEntries}
+                  ${Deps.Lude.Extensions.Text.indent
+                      8
+                      ( Deps.Prelude.Text.concatMapSep
+                          ''
+                          ,
+                          ''
+                          Text
+                          ( \(migration : Text) ->
+                              ''
+                              """
+                              ${migration}"""''
+                          )
+                          params.migrations
+                      )}
               };
 
               /** Single container shared across all test classes in the suite. */

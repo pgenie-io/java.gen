@@ -126,7 +126,7 @@ public abstract class AbstractDatabaseIT {
         """,
         """
         CREATE INDEX ON album (recording);
-        """,
+        """
     };
 
     /** Single container shared across all test classes in the suite. */

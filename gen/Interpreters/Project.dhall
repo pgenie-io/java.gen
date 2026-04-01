@@ -99,30 +99,18 @@ let combineOutputs =
 
         let packageName2 = Deps.CodegenKit.Name.toTextInKebab input.name
 
-        let migrationEntries =
-              Deps.Prelude.Text.concatMapSep
-                "\n"
+        let migrations =
+              Deps.Prelude.List.map
                 { name : Text, sql : Text }
-                ( \(migration : { name : Text, sql : Text }) ->
-                    let indented =
-                          Deps.Lude.Extensions.Text.prefixEachLine
-                            "        "
-                            migration.sql
-
-                    in      ''
-                            ${"        "}"""
-                            ${"        "}''
-                        ++  indented
-                        ++  "\"\"\","
-                )
+                Text
+                (\(migration : { name : Text, sql : Text }) -> migration.sql)
                 input.migrations
 
         let abstractDatabaseIT
             : Sdk.File.Type
             = { path = testPrefix ++ "AbstractDatabaseIT.java"
               , content =
-                  Templates.AbstractDatabaseIT.run
-                    { packageName, migrationEntries }
+                  Templates.AbstractDatabaseIT.run { packageName, migrations }
               }
 
         let statementNamesSection =
