@@ -33,19 +33,12 @@ in  Algebra.module
                   <maven.compiler.release>21</maven.compiler.release>
               </properties>
 
-              <repositories>
-                  <repository>
-                      <id>github</id>
-                      <url>https://maven.pkg.github.com/codemine-io/postgresql-codecs.java</url>
-                  </repository>
-              </repositories>
-
               <dependencies>
                   <!-- PostgreSQL codecs library -->
                   <dependency>
                       <groupId>io.codemine.java.postgresql</groupId>
                       <artifactId>codecs</artifactId>
-                      <version>0.1.0</version>
+                      <version>0.1.1</version>
                   </dependency>
 
                   <!-- PostgreSQL JDBC driver -->
@@ -55,14 +48,14 @@ in  Algebra.module
                       <version>42.7.10</version>
                   </dependency>
 
-                  <!-- Connection pooling -->
+                  <!-- Test dependencies -->
                   <dependency>
                       <groupId>com.zaxxer</groupId>
                       <artifactId>HikariCP</artifactId>
                       <version>7.0.2</version>
+                      <scope>test</scope>
                   </dependency>
 
-                  <!-- Test dependencies -->
                   <dependency>
                       <groupId>org.junit.jupiter</groupId>
                       <artifactId>junit-jupiter</artifactId>
