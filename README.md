@@ -6,14 +6,12 @@ types including arrays, composites and multiranges.
 
 ## What it generates
 
-For each pGenie project the plugin produces a self-contained Maven library containing:
+The plugin produces a self-contained Maven library containing:
 
 - **`pom.xml`** – a ready-to-build library declaring all required runtime dependencies.
 - **`src/main/java/<namespace>/Statement.java`** – a shared interface implemented by every
   generated statement class. Provides a uniform `execute(Connection)` method that
   handles preparing, binding, executing, and decoding.
-- **`src/main/java/<namespace>/codecs/Jdbc.java`** – a thin bridge utility that encodes
-  values via `postgresql-codecs` `Codec<A>` instances into `PGobject` for pgjdbc.
 - **`src/main/java/<namespace>/statements/*.java`** – one record class per SQL query.
   Each class contains:
   - A constructor parameter per query parameter (javadoc-annotated with the SQL
@@ -39,7 +37,7 @@ name: music_catalogue
 version: 1.0.0
 artifacts:
   java:
-    https://raw.githubusercontent.com/pgenie-io/java.gen/master/gen/Gen.dhall
+    https://raw.githubusercontent.com/pgenie-io/java.gen/v0.1.0/gen/Gen.dhall
 ```
 
 Run the code generator:
@@ -178,16 +176,3 @@ void example(Connection conn) throws SQLException {
     }
 }
 ```
-
-## Building
-
-The generator is written in [Dhall](https://dhall-lang.org/).
-Install Dhall by following the instructions at
-https://docs.dhall-lang.org/tutorials/Getting-started_Generate-JSON-or-YAML.html.
-
-To check the generator against the demo fixture:
-
-```bash
-dhall --file gen/demo.dhall
-```
-
