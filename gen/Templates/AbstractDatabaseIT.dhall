@@ -42,7 +42,7 @@ in  Algebra.module
 
               /** Single container shared across all test classes in the suite. */
               protected static final PostgreSQLContainer<?> PG =
-                  new PostgreSQLContainer<>("postgres:17");
+                  new PostgreSQLContainer<>("postgres:18");
 
               static {
                   PG.start();
