@@ -27,9 +27,9 @@ dependency:
 
 ```xml
 <dependency>
-    <groupId>io.codemine.java.postgresql</groupId>
-    <artifactId>codecs</artifactId>
-    <version>0.1.0</version>
+    <groupId>io.pgenie.artifacts.myspace</groupId>
+    <artifactId>music-catalogue</artifactId>
+    <version>1.0.0</version>
 </dependency>
 ```
 

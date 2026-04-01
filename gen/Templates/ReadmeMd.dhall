@@ -5,6 +5,7 @@ let Algebra = ./Algebra/package.dhall
 let Params =
       { projectName : Text
       , groupId : Text
+      , artifactId : Text
       , packageName : Text
       , version : Text
       , statementNames : Text
@@ -55,9 +56,9 @@ in  Algebra.module
 
                   ```xml
                   <dependency>
-                      <groupId>io.codemine.java.postgresql</groupId>
-                      <artifactId>codecs</artifactId>
-                      <version>0.1.0</version>
+                      <groupId>${params.groupId}</groupId>
+                      <artifactId>${params.artifactId}</artifactId>
+                      <version>${params.version}</version>
                   </dependency>
                   ```
                   ''

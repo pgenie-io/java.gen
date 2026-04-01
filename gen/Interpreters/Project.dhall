@@ -163,6 +163,7 @@ let combineOutputs =
                   Templates.ReadmeMd.run
                     { projectName
                     , groupId = "io.pgenie.artifacts.${spacePkg}"
+                    , artifactId = packageName2
                     , packageName
                     , version =
                             Natural/show input.version.major
