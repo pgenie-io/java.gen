@@ -37,7 +37,7 @@ Obtain a JDBC `Connection` and execute a statement:
 
 ```java
 try (Connection conn = dataSource.getConnection()) {
-    var result = new io.pgenie.artifacts.myspace.musiccatalogue.Statement(...).execute(conn);
+    var result = new io.pgenie.artifacts.myspace.musiccatalogue.statements.InsertAlbum(...).execute(conn);
 }
 ```
 

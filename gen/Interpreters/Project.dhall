@@ -303,6 +303,15 @@ let combineOutputs =
                 )
                 customTypes
 
+        let firstStatementName
+            : Optional Text
+            = Deps.Prelude.Optional.fold
+                QueryGen.Output
+                (Deps.Prelude.List.head QueryGen.Output queries)
+                (Optional Text)
+                (\(q : QueryGen.Output) -> Some q.statementModuleName)
+                (None Text)
+
         let projectName =
               Deps.CodegenKit.Name.toTextInPascal
                 (Deps.CodegenKit.Name.concat input.space [ input.name ])
@@ -323,6 +332,7 @@ let combineOutputs =
                         ++  Natural/show input.version.patch
                     , statementNames = statementNamesSection
                     , typeNames = typeNamesSection
+                    , firstStatementName
                     }
               }
 
