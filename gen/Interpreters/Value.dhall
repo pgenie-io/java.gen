@@ -21,6 +21,7 @@ let Output =
       , jdbcGetter : Text
       , sqlTypesConstant : Text
       , pgCastSuffix : Text
+      , testDefaultLiteral : Text
       }
 
 let Result = Sdk.Compiled.Type Output
@@ -68,6 +69,7 @@ let run =
                           , jdbcGetter = ""
                           , sqlTypesConstant = ""
                           , pgCastSuffix = scalar.pgCastSuffix
+                          , testDefaultLiteral = "null"
                           }
                 )
                 ( Sdk.Compiled.ok
@@ -82,6 +84,7 @@ let run =
                     , jdbcGetter = scalar.jdbcGetter
                     , sqlTypesConstant = scalar.sqlTypesConstant
                     , pgCastSuffix = scalar.pgCastSuffix
+                    , testDefaultLiteral = scalar.testDefaultLiteral
                     }
                 )
           )

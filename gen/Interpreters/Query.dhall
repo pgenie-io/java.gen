@@ -22,6 +22,8 @@ let Output =
       { statementModuleName : Text
       , statementModulePath : Text
       , statementModuleContents : Text
+      , testModulePath : Text
+      , testModuleContents : Text
       }
 
 let mkParamBindCode =
@@ -283,9 +285,30 @@ let render =
                 , hasCodecResult = hasResult
                 }
 
+        let defaultArgs =
+              Deps.Prelude.Text.concatMapSep
+                ", "
+                MemberModule.Output
+                (\(m : MemberModule.Output) -> m.testDefaultLiteral)
+                params
+
+        let defaultConstruction = "${statementModuleName}(${defaultArgs})"
+
+        let testModulePath =
+              Deps.CodegenKit.Name.toTextInPascal input.name ++ "IT.java"
+
+        let testModuleContents =
+              Templates.StatementTestModule.run
+                { typeName = statementModuleName
+                , defaultConstruction
+                , hasResult
+                }
+
         in  { statementModuleName
             , statementModulePath
             , statementModuleContents
+            , testModulePath
+            , testModuleContents
             }
 
 let run =

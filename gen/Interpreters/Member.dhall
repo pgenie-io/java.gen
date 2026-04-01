@@ -23,6 +23,7 @@ let Output =
       , sqlTypesConstant : Text
       , codecRef : Text
       , isNullable : Bool
+      , testDefaultLiteral : Text
       }
 
 let run =
@@ -53,6 +54,10 @@ let run =
                     , sqlTypesConstant = value.sqlTypesConstant
                     , codecRef = value.codecRef
                     , isNullable = input.isNullable
+                    , testDefaultLiteral =
+                        if    input.isNullable
+                        then  "null"
+                        else  value.testDefaultLiteral
                     }
           )
           ( Sdk.Compiled.nest

@@ -1,8 +1,8 @@
-package io.pgenie.example.myspace.musiccatalogue.statements;
+package io.pgenie.artifacts.myspace.musiccatalogue.statements;
 
-import io.pgenie.example.myspace.musiccatalogue.Statement;
-import io.pgenie.example.myspace.musiccatalogue.codecs.Jdbc;
-import io.pgenie.example.myspace.musiccatalogue.types.*;
+import io.pgenie.artifacts.myspace.musiccatalogue.Statement;
+import io.pgenie.artifacts.myspace.musiccatalogue.codecs.Jdbc;
+import io.pgenie.artifacts.myspace.musiccatalogue.types.*;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -14,40 +14,34 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Type-safe binding for the {@code update_album_recording_returning} query.
+ * Type-safe binding for the {@code select_album_with_tracks} query.
  *
  * <h2>SQL Template</h2>
  *
  * <pre>{@code
- * -- Update album recording information
- * update album
- * set recording = $recording
+ * select id, name, tracks, disc
+ * from album
  * where id = $id
- * returning *
  * }</pre>
  *
- * <h2>Source Path</h2> {@code ./queries/update_album_recording_returning.sql}
+ * <h2>Source Path</h2> {@code ./queries/select_album_with_tracks.sql}
  *
  * <p>
  * Generated from SQL queries using the
  * <a href="https://pgenie.io">pGenie</a> code generator.
  */
-public record UpdateAlbumRecordingReturning(
-        /**
-         * Maps to {@code $recording} in the template. Nullable.
-         */
-        RecordingInfo recording,
+public record SelectAlbumWithTracks(
         /**
          * Maps to {@code $id} in the template.
          */
         long id)
-        implements Statement<UpdateAlbumRecordingReturning.Output> {
+        implements Statement<SelectAlbumWithTracks.Output> {
 
     // -------------------------------------------------------------------------
     // Result type
     // -------------------------------------------------------------------------
     /**
-     * Result of the statement parameterised by {@link UpdateAlbumRecordingReturning}.
+     * Result of the statement parameterised by {@link SelectAlbumWithTracks}.
      */
     public static final class Output extends ArrayList<OutputRow> {
 
@@ -68,18 +62,6 @@ public record UpdateAlbumRecordingReturning(
              */
             String name,
             /**
-             * Maps to the {@code released} result-set column. Nullable.
-             */
-            LocalDate released,
-            /**
-             * Maps to the {@code format} result-set column. Nullable.
-             */
-            AlbumFormat format,
-            /**
-             * Maps to the {@code recording} result-set column. Nullable.
-             */
-            RecordingInfo recording,
-            /**
              * Maps to the {@code tracks} result-set column. Nullable.
              */
             List<TrackInfo> tracks,
@@ -96,18 +78,15 @@ public record UpdateAlbumRecordingReturning(
     @Override
     public String sql() {
         return """
-               -- Update album recording information
-               update album
-               set recording = ?::public.recording_info
+               select id, name, tracks, disc
+               from album
                where id = ?
-               returning *
                """;
     }
 
     @Override
     public void bindParams(PreparedStatement ps) throws SQLException {
-        Jdbc.bind(ps, 1, RecordingInfo.CODEC, this.recording());
-        ps.setLong(2, this.id());
+        ps.setLong(1, this.id());
     }
 
     @Override
@@ -122,17 +101,11 @@ public record UpdateAlbumRecordingReturning(
             try {
                 long id = rs.getLong(1);
                 String name = rs.getString(2);
-                Date releasedSql = rs.getDate(3);
-                LocalDate released = releasedSql != null ? releasedSql.toLocalDate() : null;
-                String formatStr = rs.getString(4);
-                AlbumFormat format = formatStr != null ? AlbumFormat.CODEC.decodeInTextFromString(formatStr) : null;
-                String recordingStr = rs.getString(5);
-                RecordingInfo recording = recordingStr != null ? RecordingInfo.CODEC.decodeInTextFromString(recordingStr) : null;
-                String tracksStr = rs.getString(6);
+                String tracksStr = rs.getString(3);
                 List<TrackInfo> tracks = tracksStr != null ? TrackInfo.CODEC.inDim().decodeInTextFromString(tracksStr) : null;
-                String discStr = rs.getString(7);
+                String discStr = rs.getString(4);
                 DiscInfo disc = discStr != null ? DiscInfo.CODEC.decodeInTextFromString(discStr) : null;
-                output.add(new OutputRow(id, name, released, format, recording, tracks, disc));
+                output.add(new OutputRow(id, name, tracks, disc));
             } catch (io.codemine.java.postgresql.codecs.Codec.DecodingException e) {
                 throw new IllegalStateException(e);
             }
@@ -141,7 +114,7 @@ public record UpdateAlbumRecordingReturning(
     }
 
     @Override
-    public UpdateAlbumRecordingReturning.Output decodeAffectedRows(long affectedRows) {
+    public SelectAlbumWithTracks.Output decodeAffectedRows(long affectedRows) {
         throw new UnsupportedOperationException();
     }
 }

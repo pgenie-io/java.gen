@@ -14,6 +14,7 @@ let Output =
       , jdbcSetter : Text
       , jdbcGetter : Text
       , sqlTypesConstant : Text
+      , testDefaultLiteral : Text
       }
 
 let unsupportedType =
@@ -27,6 +28,7 @@ let jdbcPrimitive =
       \(jdbcSetter : Text) ->
       \(jdbcGetter : Text) ->
       \(sqlTypesConstant : Text) ->
+      \(testDefaultLiteral : Text) ->
         Deps.Sdk.Compiled.ok
           Output
           { javaType
@@ -38,6 +40,7 @@ let jdbcPrimitive =
           , jdbcSetter
           , jdbcGetter
           , sqlTypesConstant
+          , testDefaultLiteral
           }
 
 let jdbcString =
@@ -54,6 +57,7 @@ let jdbcString =
           , jdbcSetter = "setString"
           , jdbcGetter = "getString"
           , sqlTypesConstant
+          , testDefaultLiteral = "\"\""
           }
 
 let dateType =
@@ -68,6 +72,7 @@ let dateType =
         , jdbcSetter = ""
         , jdbcGetter = ""
         , sqlTypesConstant = "DATE"
+        , testDefaultLiteral = "LocalDate.of(2000, 1, 1)"
         }
 
 let codec =
@@ -84,6 +89,7 @@ let codec =
           , jdbcSetter = ""
           , jdbcGetter = ""
           , sqlTypesConstant = ""
+          , testDefaultLiteral = "null"
           }
 
 let run =
@@ -99,6 +105,7 @@ let run =
                 "setBoolean"
                 "getBoolean"
                 "BOOLEAN"
+                "false"
           , Box = codec "Box" "BOX"
           , Bpchar = jdbcString "BPCHAR" "CHAR"
           , Bytea = codec "Bytea" "BYTEA"
@@ -117,6 +124,7 @@ let run =
                 "setFloat"
                 "getFloat"
                 "REAL"
+                "0.0f"
           , Float8 =
               jdbcPrimitive
                 "double"
@@ -125,6 +133,7 @@ let run =
                 "setDouble"
                 "getDouble"
                 "DOUBLE"
+                "0.0"
           , Hstore = codec "Hstore" "HSTORE"
           , Inet = codec "Inet" "INET"
           , Int2 =
@@ -135,12 +144,27 @@ let run =
                 "setShort"
                 "getShort"
                 "SMALLINT"
+                "(short) 0"
           , Int4 =
-              jdbcPrimitive "int" "Integer" "INT4" "setInt" "getInt" "INTEGER"
+              jdbcPrimitive
+                "int"
+                "Integer"
+                "INT4"
+                "setInt"
+                "getInt"
+                "INTEGER"
+                "0"
           , Int4multirange = codec "Multirange<Integer>" "INT4MULTIRANGE"
           , Int4range = codec "Range<Integer>" "INT4RANGE"
           , Int8 =
-              jdbcPrimitive "long" "Long" "INT8" "setLong" "getLong" "BIGINT"
+              jdbcPrimitive
+                "long"
+                "Long"
+                "INT8"
+                "setLong"
+                "getLong"
+                "BIGINT"
+                "0L"
           , Int8multirange = codec "Multirange<Long>" "INT8MULTIRANGE"
           , Int8range = codec "Range<Long>" "INT8RANGE"
           , Interval = codec "Interval" "INTERVAL"

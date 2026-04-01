@@ -1,8 +1,8 @@
-package io.pgenie.example.myspace.musiccatalogue.statements;
+package io.pgenie.artifacts.myspace.musiccatalogue.statements;
 
-import io.pgenie.example.myspace.musiccatalogue.Statement;
-import io.pgenie.example.myspace.musiccatalogue.codecs.Jdbc;
-import io.pgenie.example.myspace.musiccatalogue.types.*;
+import io.pgenie.artifacts.myspace.musiccatalogue.Statement;
+import io.pgenie.artifacts.myspace.musiccatalogue.codecs.Jdbc;
+import io.pgenie.artifacts.myspace.musiccatalogue.types.*;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -14,34 +14,39 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Type-safe binding for the {@code select_album_with_tracks} query.
+ * Type-safe binding for the {@code select_album_by_name} query.
  *
  * <h2>SQL Template</h2>
  *
  * <pre>{@code
- * select id, name, tracks, disc
+ * select
+ *   id,
+ *   name,
+ *   released,
+ *   format,
+ *   recording
  * from album
- * where id = $id
+ * where name = $name
  * }</pre>
  *
- * <h2>Source Path</h2> {@code ./queries/select_album_with_tracks.sql}
+ * <h2>Source Path</h2> {@code ./queries/select_album_by_name.sql}
  *
  * <p>
  * Generated from SQL queries using the
  * <a href="https://pgenie.io">pGenie</a> code generator.
  */
-public record SelectAlbumWithTracks(
+public record SelectAlbumByName(
         /**
-         * Maps to {@code $id} in the template.
+         * Maps to {@code $name} in the template.
          */
-        long id)
-        implements Statement<SelectAlbumWithTracks.Output> {
+        String name)
+        implements Statement<SelectAlbumByName.Output> {
 
     // -------------------------------------------------------------------------
     // Result type
     // -------------------------------------------------------------------------
     /**
-     * Result of the statement parameterised by {@link SelectAlbumWithTracks}.
+     * Result of the statement parameterised by {@link SelectAlbumByName}.
      */
     public static final class Output extends ArrayList<OutputRow> {
 
@@ -62,13 +67,17 @@ public record SelectAlbumWithTracks(
              */
             String name,
             /**
-             * Maps to the {@code tracks} result-set column. Nullable.
+             * Maps to the {@code released} result-set column. Nullable.
              */
-            List<TrackInfo> tracks,
+            LocalDate released,
             /**
-             * Maps to the {@code disc} result-set column. Nullable.
+             * Maps to the {@code format} result-set column. Nullable.
              */
-            DiscInfo disc) {
+            AlbumFormat format,
+            /**
+             * Maps to the {@code recording} result-set column. Nullable.
+             */
+            RecordingInfo recording) {
 
     }
 
@@ -78,15 +87,20 @@ public record SelectAlbumWithTracks(
     @Override
     public String sql() {
         return """
-               select id, name, tracks, disc
+               select
+                 id,
+                 name,
+                 released,
+                 format,
+                 recording
                from album
-               where id = ?
+               where name = ?
                """;
     }
 
     @Override
     public void bindParams(PreparedStatement ps) throws SQLException {
-        ps.setLong(1, this.id());
+        ps.setString(1, this.name());
     }
 
     @Override
@@ -101,11 +115,13 @@ public record SelectAlbumWithTracks(
             try {
                 long id = rs.getLong(1);
                 String name = rs.getString(2);
-                String tracksStr = rs.getString(3);
-                List<TrackInfo> tracks = tracksStr != null ? TrackInfo.CODEC.inDim().decodeInTextFromString(tracksStr) : null;
-                String discStr = rs.getString(4);
-                DiscInfo disc = discStr != null ? DiscInfo.CODEC.decodeInTextFromString(discStr) : null;
-                output.add(new OutputRow(id, name, tracks, disc));
+                Date releasedSql = rs.getDate(3);
+                LocalDate released = releasedSql != null ? releasedSql.toLocalDate() : null;
+                String formatStr = rs.getString(4);
+                AlbumFormat format = formatStr != null ? AlbumFormat.CODEC.decodeInTextFromString(formatStr) : null;
+                String recordingStr = rs.getString(5);
+                RecordingInfo recording = recordingStr != null ? RecordingInfo.CODEC.decodeInTextFromString(recordingStr) : null;
+                output.add(new OutputRow(id, name, released, format, recording));
             } catch (io.codemine.java.postgresql.codecs.Codec.DecodingException e) {
                 throw new IllegalStateException(e);
             }
@@ -114,7 +130,7 @@ public record SelectAlbumWithTracks(
     }
 
     @Override
-    public SelectAlbumWithTracks.Output decodeAffectedRows(long affectedRows) {
+    public SelectAlbumByName.Output decodeAffectedRows(long affectedRows) {
         throw new UnsupportedOperationException();
     }
 }

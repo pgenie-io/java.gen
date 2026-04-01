@@ -21,6 +21,7 @@ let Output =
       , jdbcGetter : Text
       , sqlTypesConstant : Text
       , pgCastSuffix : Text
+      , testDefaultLiteral : Text
       }
 
 let run =
@@ -43,6 +44,7 @@ let run =
                       , jdbcGetter = p.jdbcGetter
                       , sqlTypesConstant = p.sqlTypesConstant
                       , pgCastSuffix = ""
+                      , testDefaultLiteral = p.testDefaultLiteral
                       }
                   )
                   (Primitive.run config primitive)
@@ -64,6 +66,7 @@ let run =
                       , jdbcGetter = ""
                       , sqlTypesConstant = ""
                       , pgCastSuffix = "::public.${pgName}"
+                      , testDefaultLiteral = "null"
                       }
           }
           input

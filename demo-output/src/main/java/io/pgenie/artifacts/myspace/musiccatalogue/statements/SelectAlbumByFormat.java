@@ -1,8 +1,8 @@
-package io.pgenie.example.myspace.musiccatalogue.statements;
+package io.pgenie.artifacts.myspace.musiccatalogue.statements;
 
-import io.pgenie.example.myspace.musiccatalogue.Statement;
-import io.pgenie.example.myspace.musiccatalogue.codecs.Jdbc;
-import io.pgenie.example.myspace.musiccatalogue.types.*;
+import io.pgenie.artifacts.myspace.musiccatalogue.Statement;
+import io.pgenie.artifacts.myspace.musiccatalogue.codecs.Jdbc;
+import io.pgenie.artifacts.myspace.musiccatalogue.types.*;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;

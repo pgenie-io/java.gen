@@ -1,4 +1,4 @@
-package io.pgenie.example.myspace.musiccatalogue.types;
+package io.pgenie.artifacts.myspace.musiccatalogue.types;
 
 import java.util.Map;
 

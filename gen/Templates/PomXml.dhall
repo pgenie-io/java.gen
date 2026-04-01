@@ -30,8 +30,7 @@ in  Algebra.module
 
               <properties>
                   <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-                  <maven.compiler.source>23</maven.compiler.source>
-                  <maven.compiler.target>23</maven.compiler.target>
+                  <maven.compiler.release>21</maven.compiler.release>
               </properties>
 
               <repositories>

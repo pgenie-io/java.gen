@@ -1,4 +1,4 @@
-package io.pgenie.example.myspace.musiccatalogue.codecs;
+package io.pgenie.artifacts.myspace.musiccatalogue.codecs;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;

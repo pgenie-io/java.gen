@@ -1,4 +1,4 @@
-package io.pgenie.example.myspace.musiccatalogue;
+package io.pgenie.artifacts.myspace.musiccatalogue;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

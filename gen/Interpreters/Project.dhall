@@ -32,10 +32,13 @@ let combineOutputs =
 
         let namePkg = toFlatLower input.name
 
-        let packageName = "io.pgenie.example.${spacePkg}.${namePkg}"
+        let packageName = "io.pgenie.artifacts.${spacePkg}.${namePkg}"
 
         let srcPrefix =
-              "src/main/java/io/pgenie/example/${spacePkg}/${namePkg}/"
+              "src/main/java/io/pgenie/artifacts/${spacePkg}/${namePkg}/"
+
+        let testPrefix =
+              "src/test/java/io/pgenie/artifacts/${spacePkg}/${namePkg}/"
 
         let customTypeFiles
             : List Sdk.File.Type
@@ -89,6 +92,44 @@ let combineOutputs =
                             ''
                         ++  "\n"
                         ++  query.statementModuleContents
+                        ++  "\n"
+                    }
+                )
+                queries
+
+        let testStatementFiles
+            : List Sdk.File.Type
+            = Deps.Prelude.List.map
+                QueryGen.Output
+                Sdk.File.Type
+                ( \(query : QueryGen.Output) ->
+                    { path = testPrefix ++ "statements/" ++ query.testModulePath
+                    , content =
+                            "package "
+                        ++  packageName
+                        ++  ''
+                            .statements;
+                            ''
+                        ++  "\n"
+                        ++  "import static org.junit.jupiter.api.Assertions.*;"
+                        ++  "\n\n"
+                        ++  "import "
+                        ++  packageName
+                        ++  ''
+                            .AbstractDatabaseIT;
+                            ''
+                        ++  "import "
+                        ++  packageName
+                        ++  ''
+                            .types.*;
+                            ''
+                        ++  "import java.sql.SQLException;"
+                        ++  "\n"
+                        ++  "import java.time.*;"
+                        ++  "\n"
+                        ++  "import org.junit.jupiter.api.Test;"
+                        ++  "\n\n"
+                        ++  query.testModuleContents
                         ++  "\n"
                     }
                 )
@@ -232,12 +273,74 @@ let combineOutputs =
               Deps.CodegenKit.Name.toTextInKebab
                 (Deps.CodegenKit.Name.concat input.space [ input.name ])
 
+        let migrationEntries =
+              Deps.Prelude.Text.concatMapSep
+                "\n"
+                { name : Text, sql : Text }
+                ( \(migration : { name : Text, sql : Text }) ->
+                        ''
+                                """
+                        ''
+                    ++  migration.sql
+                    ++  "\"\"\","
+                )
+                input.migrations
+
+        let abstractDatabaseIT
+            : Sdk.File.Type
+            = { path = testPrefix ++ "AbstractDatabaseIT.java"
+              , content =
+                  Templates.AbstractDatabaseIT.run
+                    { packageName, migrationEntries }
+              }
+
+        let statementNamesSection =
+              Deps.Prelude.Text.concatMapSep
+                "\n"
+                QueryGen.Output
+                ( \(query : QueryGen.Output) ->
+                    "- `" ++ query.statementModuleName ++ "`"
+                )
+                queries
+
+        let typeNamesSection =
+              Deps.Prelude.Text.concatMapSep
+                "\n"
+                CustomTypeGen.Output
+                ( \(customType : CustomTypeGen.Output) ->
+                    "- `" ++ customType.typeName ++ "`"
+                )
+                customTypes
+
+        let projectName =
+              Deps.CodegenKit.Name.toTextInPascal
+                (Deps.CodegenKit.Name.concat input.space [ input.name ])
+
+        let readmeMd
+            : Sdk.File.Type
+            = { path = "README.md"
+              , content =
+                  Templates.ReadmeMd.run
+                    { projectName
+                    , groupId = "io.pgenie.artifacts.${spacePkg}"
+                    , packageName
+                    , version =
+                            Natural/show input.version.major
+                        ++  "."
+                        ++  Natural/show input.version.minor
+                        ++  "."
+                        ++  Natural/show input.version.patch
+                    , statementNames = statementNamesSection
+                    , typeNames = typeNamesSection
+                    }
+              }
+
         let pomXml
             : Sdk.File.Type
             = { path = "pom.xml"
               , content =
                   Templates.PomXml.run
-                    { groupId = "io.pgenie.example.${spacePkg}"
+                    { groupId = "io.pgenie.artifacts.${spacePkg}"
                     , artifactId = packageName2
                     , version =
                             Natural/show input.version.major
@@ -245,20 +348,21 @@ let combineOutputs =
                         ++  Natural/show input.version.minor
                         ++  "."
                         ++  Natural/show input.version.patch
-                    , projectName =
-                        Deps.CodegenKit.Name.toTextInPascal
-                          ( Deps.CodegenKit.Name.concat
-                              input.space
-                              [ input.name ]
-                          )
+                    , projectName
                     , dbName = Deps.CodegenKit.Name.toTextInSnake input.name
                     }
               }
 
-        in      [ pomXml, statementJava, jdbcJava ]
+        in      [ pomXml
+                , readmeMd
+                , statementJava
+                , jdbcJava
+                , abstractDatabaseIT
+                ]
               # migrationFiles
               # customTypeFiles
               # statementFiles
+              # testStatementFiles
             : List Sdk.File.Type
 
 let run =
