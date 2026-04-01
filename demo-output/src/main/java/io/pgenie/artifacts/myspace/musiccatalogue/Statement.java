@@ -49,16 +49,16 @@ public interface Statement<R> {
     /** Execute this statement using the provided JDBC connection. */
     default R execute(Connection conn) throws SQLException {
         try (PreparedStatement ps = conn.prepareStatement(sql())) {
-        bindParams(ps);
-        if (returnsRows()) {
-            ps.execute();
-            try (ResultSet rs = ps.getResultSet()) {
-            return decodeResultSet(rs);
+            bindParams(ps);
+            if (returnsRows()) {
+                ps.execute();
+                try (ResultSet rs = ps.getResultSet()) {
+                    return decodeResultSet(rs);
+                }
+            } else {
+                long affectedRows = ps.executeUpdate();
+                return decodeAffectedRows(affectedRows);
             }
-        } else {
-            long affectedRows = ps.executeUpdate();
-            return decodeAffectedRows(affectedRows);
-        }
         }
     }
 }

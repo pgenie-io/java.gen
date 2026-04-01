@@ -114,14 +114,14 @@ let run =
 
                           in  if    ic.value.useCodec
                               then  if    ic.value.isNullable
-                                    then      "                String "
+                                    then      "            String "
                                           ++  ic.value.fieldName
                                           ++  "Str = rs.getString("
                                           ++  colIdx
                                           ++  ''
                                               );
                                               ''
-                                          ++  "                "
+                                          ++  "            "
                                           ++  ic.value.fieldType
                                           ++  " "
                                           ++  ic.value.fieldName
@@ -132,7 +132,7 @@ let run =
                                           ++  ".decodeInTextFromString("
                                           ++  ic.value.fieldName
                                           ++  "Str) : null;"
-                                    else      "                "
+                                    else      "            "
                                           ++  ic.value.fieldType
                                           ++  " "
                                           ++  ic.value.fieldName
@@ -143,28 +143,28 @@ let run =
                                           ++  "));"
                               else  if ic.value.isDateType
                               then  if    ic.value.isNullable
-                                    then      "                Date "
+                                    then      "            Date "
                                           ++  ic.value.fieldName
                                           ++  "Sql = rs.getDate("
                                           ++  colIdx
                                           ++  ''
                                               );
                                               ''
-                                          ++  "                LocalDate "
+                                          ++  "            LocalDate "
                                           ++  ic.value.fieldName
                                           ++  " = "
                                           ++  ic.value.fieldName
                                           ++  "Sql != null ? "
                                           ++  ic.value.fieldName
                                           ++  "Sql.toLocalDate() : null;"
-                                    else      "                LocalDate "
+                                    else      "            LocalDate "
                                           ++  ic.value.fieldName
                                           ++  " = rs.getDate("
                                           ++  colIdx
                                           ++  ").toLocalDate();"
                               else  if     ic.value.isNullable
                                        &&  ic.value.isJdbcPrimitive
-                              then      "                "
+                              then      "            "
                                     ++  ic.value.fieldType
                                     ++  " "
                                     ++  ic.value.fieldName
@@ -173,7 +173,7 @@ let run =
                                     ++  ") rs.getObject("
                                     ++  colIdx
                                     ++  ");"
-                              else      "                "
+                              else      "            "
                                     ++  ic.value.fieldType
                                     ++  " "
                                     ++  ic.value.fieldName
@@ -202,7 +202,8 @@ let run =
                         then      ''
                                               try {
                                   ''
-                              ++  decodeLines
+                              ++  "    "
+                              ++  Deps.Lude.Extensions.Text.indent 4 decodeLines
                               ++  "\n"
                               ++  "                output.add(new OutputRow("
                               ++  varRefs
@@ -218,7 +219,7 @@ let run =
                               ++  "            }"
                         else      decodeLines
                               ++  "\n"
-                              ++  "                output.add(new OutputRow("
+                              ++  "            output.add(new OutputRow("
                               ++  varRefs
                               ++  "));"
 

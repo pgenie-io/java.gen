@@ -13,7 +13,7 @@ class InsertAlbumIT extends AbstractDatabaseIT {
     @Test
     void executesWithDefaultValues() throws SQLException {
         var result = execute(new InsertAlbum("", LocalDate.of(2000, 1, 1), null, null));
-            assertNotNull(result);
+        assertNotNull(result);
 
     }
 }

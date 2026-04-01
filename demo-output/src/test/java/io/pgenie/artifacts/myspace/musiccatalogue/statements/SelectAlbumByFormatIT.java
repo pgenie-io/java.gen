@@ -13,7 +13,7 @@ class SelectAlbumByFormatIT extends AbstractDatabaseIT {
     @Test
     void executesWithDefaultValues() throws SQLException {
         var result = execute(new SelectAlbumByFormat(null));
-            assertNotNull(result);
+        assertNotNull(result);
 
     }
 }

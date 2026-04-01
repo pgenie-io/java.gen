@@ -13,7 +13,7 @@ class UpdateAlbumRecordingReturningIT extends AbstractDatabaseIT {
     @Test
     void executesWithDefaultValues() throws SQLException {
         var result = execute(new UpdateAlbumRecordingReturning(null, 0L));
-            assertNotNull(result);
+        assertNotNull(result);
 
     }
 }

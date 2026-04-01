@@ -203,16 +203,16 @@ let combineOutputs =
                       /** Execute this statement using the provided JDBC connection. */
                       default R execute(Connection conn) throws SQLException {
                           try (PreparedStatement ps = conn.prepareStatement(sql())) {
-                          bindParams(ps);
-                          if (returnsRows()) {
-                              ps.execute();
-                              try (ResultSet rs = ps.getResultSet()) {
-                              return decodeResultSet(rs);
+                              bindParams(ps);
+                              if (returnsRows()) {
+                                  ps.execute();
+                                  try (ResultSet rs = ps.getResultSet()) {
+                                      return decodeResultSet(rs);
+                                  }
+                              } else {
+                                  long affectedRows = ps.executeUpdate();
+                                  return decodeAffectedRows(affectedRows);
                               }
-                          } else {
-                              long affectedRows = ps.executeUpdate();
-                              return decodeAffectedRows(affectedRows);
-                          }
                           }
                       }
                   }
@@ -269,20 +269,23 @@ let combineOutputs =
                   ''
               }
 
-        let packageName2 =
-              Deps.CodegenKit.Name.toTextInKebab
-                (Deps.CodegenKit.Name.concat input.space [ input.name ])
+        let packageName2 = Deps.CodegenKit.Name.toTextInKebab input.name
 
         let migrationEntries =
               Deps.Prelude.Text.concatMapSep
                 "\n"
                 { name : Text, sql : Text }
                 ( \(migration : { name : Text, sql : Text }) ->
-                        ''
-                                """
-                        ''
-                    ++  migration.sql
-                    ++  "\"\"\","
+                    let indented =
+                          Deps.Lude.Extensions.Text.prefixEachLine
+                            "        "
+                            migration.sql
+
+                    in      ''
+                            ${"        "}"""
+                            ${"        "}''
+                        ++  indented
+                        ++  "\"\"\","
                 )
                 input.migrations
 

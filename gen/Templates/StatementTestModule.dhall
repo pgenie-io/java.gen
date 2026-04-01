@@ -8,10 +8,10 @@ in  Algebra.module
           let verifyResult =
                 if    params.hasResult
                 then  ''
-                          assertNotNull(result);
+                      assertNotNull(result);
                       ''
                 else  ''
-                          assertTrue(result >= 0L);
+                      assertTrue(result >= 0L);
                       ''
 
           in  ''

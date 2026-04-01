@@ -94,9 +94,9 @@ public record SelectGenreByArtist(
     public Output decodeResultSet(ResultSet rs) throws SQLException {
         Output output = new Output();
         while (rs.next()) {
-                int id = rs.getInt(1);
-                String name = rs.getString(2);
-                output.add(new OutputRow(id, name));
+            int id = rs.getInt(1);
+            String name = rs.getString(2);
+            output.add(new OutputRow(id, name));
         }
         return output;
     }

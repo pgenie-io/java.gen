@@ -13,7 +13,7 @@ class SelectAlbumByNameIT extends AbstractDatabaseIT {
     @Test
     void executesWithDefaultValues() throws SQLException {
         var result = execute(new SelectAlbumByName(""));
-            assertNotNull(result);
+        assertNotNull(result);
 
     }
 }
