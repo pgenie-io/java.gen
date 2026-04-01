@@ -135,18 +135,6 @@ let combineOutputs =
                 )
                 queries
 
-        let migrationFiles
-            : List Sdk.File.Type
-            = Deps.Prelude.List.map
-                { name : Text, sql : Text }
-                Sdk.File.Type
-                ( \(migration : { name : Text, sql : Text }) ->
-                    { path = "migrations/${migration.name}.sql"
-                    , content = migration.sql
-                    }
-                )
-                input.migrations
-
         let statementJava
             : Sdk.File.Type
             = { path = srcPrefix ++ "Statement.java"
@@ -362,7 +350,6 @@ let combineOutputs =
                 , jdbcJava
                 , abstractDatabaseIT
                 ]
-              # migrationFiles
               # customTypeFiles
               # statementFiles
               # testStatementFiles
