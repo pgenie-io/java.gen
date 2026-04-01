@@ -20,6 +20,11 @@ Use these projects and references when making generator changes:
 
 When the repository content conflicts with outside examples, prefer the structure and behavior established by java.gen-design.
 
+## Dhall libs
+
+- https://github.com/codemine-io/lude.dhall - utils. E.g., for indenting generated code.
+- https://github.com/nikita-volkov/typeclasses.dhall - library of Haskell-inspired typeclasses and general utilities base on them.
+- https://github.com/codemine-io/codegen-kit.dhall - utilities for code generation.
 
 ## Generator Structure
 
