@@ -69,30 +69,10 @@ let combineOutputs =
                     { path =
                         srcPrefix ++ "statements/" ++ query.statementModulePath
                     , content =
-                            "package "
-                        ++  packageName
-                        ++  ''
-                            .statements;
-                            ''
-                        ++  "\n"
-                        ++  "import "
-                        ++  packageName
-                        ++  ''
-                            .Statement;
-                            ''
-                        ++  "import "
-                        ++  packageName
-                        ++  ''
-                            .codecs.Jdbc;
-                            ''
-                        ++  "import "
-                        ++  packageName
-                        ++  ''
-                            .types.*;
-                            ''
-                        ++  "\n"
-                        ++  query.statementModuleContents
-                        ++  "\n"
+                        Templates.StatementFileWrapper.run
+                          { packageName
+                          , content = query.statementModuleContents
+                          }
                     }
                 )
                 queries
@@ -105,32 +85,8 @@ let combineOutputs =
                 ( \(query : QueryGen.Output) ->
                     { path = testPrefix ++ "statements/" ++ query.testModulePath
                     , content =
-                            "package "
-                        ++  packageName
-                        ++  ''
-                            .statements;
-                            ''
-                        ++  "\n"
-                        ++  "import static org.junit.jupiter.api.Assertions.*;"
-                        ++  "\n\n"
-                        ++  "import "
-                        ++  packageName
-                        ++  ''
-                            .AbstractDatabaseIT;
-                            ''
-                        ++  "import "
-                        ++  packageName
-                        ++  ''
-                            .types.*;
-                            ''
-                        ++  "import java.sql.SQLException;"
-                        ++  "\n"
-                        ++  "import java.time.*;"
-                        ++  "\n"
-                        ++  "import org.junit.jupiter.api.Test;"
-                        ++  "\n\n"
-                        ++  query.testModuleContents
-                        ++  "\n"
+                        Templates.StatementTestFileWrapper.run
+                          { packageName, content = query.testModuleContents }
                     }
                 )
                 queries
@@ -138,123 +94,13 @@ let combineOutputs =
         let statementJava
             : Sdk.File.Type
             = { path = srcPrefix ++ "Statement.java"
-              , content =
-                  ''
-                  package ${packageName};
-
-                  import java.sql.Connection;
-                  import java.sql.PreparedStatement;
-                  import java.sql.ResultSet;
-                  import java.sql.SQLException;
-
-                  /**
-                   * Implemented by each query's parameter+result class. Provides a uniform way to
-                   * prepare and execute statements against a JDBC {@link java.sql.Connection}.
-                   *
-                   * <p>
-                   * Generated from SQL queries using the <a href="https://pgenie.io">pGenie</a>
-                   * code generator.
-                   *
-                   * @param <R> the result type returned by {@link #decodeResultSet} or
-                   * {@link #decodeAffectedRows}
-                   */
-                  public interface Statement<R> {
-
-                      /**
-                       * The SQL text for this statement. Parameter placeholders use JDBC
-                       * {@code ?} syntax; custom PostgreSQL types are cast explicitly, e.g.
-                       * {@code ?::album_format}.
-                       */
-                      String sql();
-
-                      /**
-                       * Bind to the prepared statement's parameter slots.
-                       */
-                      void bindParams(PreparedStatement ps) throws SQLException;
-
-                      /**
-                       * Whether this statement returns rows (i.e. is a {@code SELECT} or contains
-                       * a {@code RETURNING} clause).
-                       */
-                      boolean returnsRows();
-
-                      /**
-                       * Decode a result set into the statement's result type.
-                       */
-                      R decodeResultSet(ResultSet rs) throws SQLException;
-
-                      /**
-                       * Decode an affected-row count into the statement's result type.
-                       */
-                      R decodeAffectedRows(long affectedRows) throws SQLException;
-
-                      /** Execute this statement using the provided JDBC connection. */
-                      default R execute(Connection conn) throws SQLException {
-                          try (PreparedStatement ps = conn.prepareStatement(sql())) {
-                              bindParams(ps);
-                              if (returnsRows()) {
-                                  ps.execute();
-                                  try (ResultSet rs = ps.getResultSet()) {
-                                      return decodeResultSet(rs);
-                                  }
-                              } else {
-                                  long affectedRows = ps.executeUpdate();
-                                  return decodeAffectedRows(affectedRows);
-                              }
-                          }
-                      }
-                  }
-                  ''
+              , content = Templates.StatementInterface.run { packageName }
               }
 
         let jdbcJava
             : Sdk.File.Type
             = { path = srcPrefix ++ "codecs/Jdbc.java"
-              , content =
-                  ''
-                  package ${packageName}.codecs;
-
-                  import java.sql.PreparedStatement;
-                  import java.sql.SQLException;
-
-                  import org.postgresql.util.PGobject;
-
-                  import io.codemine.java.postgresql.codecs.Codec;
-
-                  /**
-                   * JDBC binding utilities for the {@code postgresql-codecs} library.
-                   *
-                   * <p>
-                   * Provides a thin bridge between driver-agnostic {@link Codec} instances
-                   * and the PostgreSQL JDBC driver ({@code pgjdbc}). Values are encoded as
-                   * text-format {@link PGobject} instances so that the driver sends the
-                   * correct type OID.
-                   */
-                  public final class Jdbc {
-
-                      private Jdbc() {
-                      }
-
-                      /**
-                       * Binds a value to a prepared statement parameter using a codec.
-                       *
-                       * @param ps    the prepared statement
-                       * @param index the 1-based parameter index
-                       * @param codec the codec to use for encoding
-                       * @param value the value to bind (may be {@code null})
-                       * @param <A>   the value type
-                       */
-                      public static <A> void bind(PreparedStatement ps, int index, Codec<A> codec, A value) throws SQLException {
-                          PGobject obj = new PGobject();
-                          obj.setType(codec.typeSig());
-                          if (value != null) {
-                              obj.setValue(codec.encodeInTextToString(value));
-                          }
-                          ps.setObject(index, obj);
-                      }
-
-                  }
-                  ''
+              , content = Templates.JdbcModule.run { packageName }
               }
 
         let packageName2 = Deps.CodegenKit.Name.toTextInKebab input.name
