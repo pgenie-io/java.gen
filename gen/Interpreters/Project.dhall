@@ -48,14 +48,8 @@ let combineOutputs =
                 ( \(customType : CustomTypeGen.Output) ->
                     { path = srcPrefix ++ "types/" ++ customType.modulePath
                     , content =
-                            "package "
-                        ++  packageName
-                        ++  ''
-                            .types;
-                            ''
-                        ++  "\n"
-                        ++  customType.moduleContent
-                        ++  "\n"
+                        Templates.CustomTypeFileWrapper.run
+                          { packageName, content = customType.moduleContent }
                     }
                 )
                 customTypes

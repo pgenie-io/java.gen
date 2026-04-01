@@ -1,4 +1,5 @@
 { PomXml = ./PomXml.dhall
+, CustomTypeFileWrapper = ./CustomTypeFileWrapper.dhall
 , StatementFileWrapper = ./StatementFileWrapper.dhall
 , StatementTestFileWrapper = ./StatementTestFileWrapper.dhall
 , StatementInterface = ./StatementInterface.dhall
