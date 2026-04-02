@@ -36,8 +36,7 @@ let mkParamBindCode =
                 ( \(fragment : Deps.Sdk.Project.QueryFragment) ->
                     merge
                       { Sql = \(_ : Text) -> None Natural
-                      , Var =
-                          \(v : Deps.Sdk.Project.Var) -> Some v.paramIndex
+                      , Var = \(v : Deps.Sdk.Project.Var) -> Some v.paramIndex
                       }
                       fragment
                 )

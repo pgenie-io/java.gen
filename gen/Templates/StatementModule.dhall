@@ -57,6 +57,13 @@ in  Algebra.module
                       ''
                 else  ""
 
+          let importCodec =
+                if    params.hasCodecParam
+                then  ''
+                      import io.codemine.java.postgresql.codecs.Codec;
+                      ''
+                else  ""
+
           let importArrayList =
                 if    params.needsArrayListImport
                 then  ''
@@ -77,6 +84,7 @@ in  Algebra.module
               ++  importDate
               ++  importTypes
               ++  importTimeAll
+              ++  importCodec
               ++  "\n"
               ++  importArrayList
               ++  importList
