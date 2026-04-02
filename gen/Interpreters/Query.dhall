@@ -76,17 +76,27 @@ let mkParamBindCode =
                               then  if    p.isOptional
                                     then      "        if (this."
                                           ++  p.fieldName
-                                          ++  "().isPresent()) {\n"
+                                          ++  ''
+                                              ().isPresent()) {
+                                              ''
                                           ++  "            ps.setDate("
                                           ++  idx
                                           ++  ", Date.valueOf(this."
                                           ++  p.fieldName
-                                          ++  "().get()));\n"
-                                          ++  "        } else {\n"
+                                          ++  ''
+                                              ().get()));
+                                              ''
+                                          ++  ''
+                                                      } else {
+                                              ''
                                           ++  "            ps.setNull("
                                           ++  idx
-                                          ++  ", Types.DATE);\n"
-                                          ++  "        }\n"
+                                          ++  ''
+                                              , Types.DATE);
+                                              ''
+                                          ++  ''
+                                                      }
+                                              ''
                                     else  if p.isNullable
                                     then      "        if (this."
                                           ++  p.fieldName
@@ -121,21 +131,31 @@ let mkParamBindCode =
                               else  if p.isOptional
                               then      "        if (this."
                                     ++  p.fieldName
-                                    ++  "().isPresent()) {\n"
+                                    ++  ''
+                                        ().isPresent()) {
+                                        ''
                                     ++  "            ps."
                                     ++  p.jdbcSetter
                                     ++  "("
                                     ++  idx
                                     ++  ", this."
                                     ++  p.fieldName
-                                    ++  "().get());\n"
-                                    ++  "        } else {\n"
+                                    ++  ''
+                                        ().get());
+                                        ''
+                                    ++  ''
+                                                } else {
+                                        ''
                                     ++  "            ps.setNull("
                                     ++  idx
                                     ++  ", Types."
                                     ++  p.sqlTypesConstant
-                                    ++  ");\n"
-                                    ++  "        }\n"
+                                    ++  ''
+                                        );
+                                        ''
+                                    ++  ''
+                                                }
+                                        ''
                               else  if p.isNullable
                               then      "        if (this."
                                     ++  p.fieldName
@@ -270,24 +290,24 @@ let render =
                 input.result
                 Bool
                 ( \(rows : Deps.Sdk.Project.ResultRows) ->
-                    config.useOptional
-                      &&  Deps.Prelude.List.any
-                            Deps.Sdk.Project.Member
-                            ( \(m : Deps.Sdk.Project.Member) ->
-                                    m.isNullable
-                                ||  Deps.Prelude.Optional.fold
-                                      Deps.Sdk.Project.ArraySettings
-                                      m.value.arraySettings
-                                      Bool
-                                      ( \(arr : Deps.Sdk.Project.ArraySettings) ->
-                                          arr.elementIsNullable
-                                      )
-                                      False
-                            )
-                            ( Deps.Prelude.NonEmpty.toList
-                                Deps.Sdk.Project.Member
-                                rows.columns
-                            )
+                        config.useOptional
+                    &&  Deps.Prelude.List.any
+                          Deps.Sdk.Project.Member
+                          ( \(m : Deps.Sdk.Project.Member) ->
+                                  m.isNullable
+                              ||  Deps.Prelude.Optional.fold
+                                    Deps.Sdk.Project.ArraySettings
+                                    m.value.arraySettings
+                                    Bool
+                                    ( \(arr : Deps.Sdk.Project.ArraySettings) ->
+                                        arr.elementIsNullable
+                                    )
+                                    False
+                          )
+                          ( Deps.Prelude.NonEmpty.toList
+                              Deps.Sdk.Project.Member
+                              rows.columns
+                          )
                 )
                 False
 

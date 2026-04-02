@@ -69,8 +69,10 @@ let run =
                                 then      "row -> row."
                                       ++  field.fieldName
                                       ++  "().map(list -> list.stream().map(o -> o.orElse(null)).toList()).orElse(null)"
-                                else  "row -> row." ++ field.fieldName ++ "().orElse(null)"
-                          else  if    field.elementIsOptional
+                                else      "row -> row."
+                                      ++  field.fieldName
+                                      ++  "().orElse(null)"
+                          else  if field.elementIsOptional
                           then      "row -> row."
                                 ++  field.fieldName
                                 ++  "().stream().map(o -> o.orElse(null)).toList()"
@@ -94,7 +96,7 @@ let run =
                               "("
                           ++  ( if    field.elementIsOptional
                                 then  field.rawCodecType
-                                else  if    field.isOptional
+                                else  if field.isOptional
                                 then  field.boxedJavaType
                                 else  field.fieldType
                               )
@@ -114,8 +116,10 @@ let run =
                                 then      "Optional.ofNullable("
                                       ++  field.fieldName
                                       ++  ").map(list -> list.stream().map(Optional::ofNullable).toList())"
-                                else  "Optional.ofNullable(" ++ field.fieldName ++ ")"
-                          else  if    field.elementIsOptional
+                                else      "Optional.ofNullable("
+                                      ++  field.fieldName
+                                      ++  ")"
+                          else  if field.elementIsOptional
                           then      field.fieldName
                                 ++  ".stream().map(Optional::ofNullable).toList()"
                           else  field.fieldName
@@ -130,7 +134,6 @@ let run =
                                           ''
                   ++  constructorArgs
                   ++  ")"
-
 
         let hasOptionalFields =
               Deps.Prelude.List.any

@@ -73,7 +73,8 @@ in  Algebra.module
                                                   , useCodec = member.useCodec
                                                   , isDateType =
                                                       member.isDateType
-                                                  , isOptional = member.isOptional
+                                                  , isOptional =
+                                                      member.isOptional
                                                   }
                                               )
                                               members

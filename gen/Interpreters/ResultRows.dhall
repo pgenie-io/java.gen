@@ -119,58 +119,58 @@ let run =
                                           else  ""
 
                                     in  if    ic.value.isOptional
-                                    then      "            String "
-                                          ++  ic.value.fieldName
-                                          ++  "Str = rs.getString("
-                                          ++  colIdx
-                                          ++  ''
-                                              );
-                                              ''
-                                          ++  "            "
-                                          ++  ic.value.fieldType
-                                          ++  " "
-                                          ++  ic.value.fieldName
-                                          ++  " = Optional.ofNullable("
-                                          ++  ic.value.fieldName
-                                          ++  "Str != null ? "
-                                          ++  ic.value.codecRef
-                                          ++  ".decodeInTextFromString("
-                                          ++  ic.value.fieldName
-                                          ++  "Str)"
-                                          ++  elemSuffix
-                                          ++  " : null);"
-                                    else  if    ic.value.isNullable
-                                          then      "            String "
-                                                ++  ic.value.fieldName
-                                                ++  "Str = rs.getString("
-                                                ++  colIdx
-                                                ++  ''
-                                                    );
-                                                    ''
-                                                ++  "            "
-                                                ++  ic.value.fieldType
-                                                ++  " "
-                                                ++  ic.value.fieldName
-                                                ++  " = "
-                                                ++  ic.value.fieldName
-                                                ++  "Str != null ? "
-                                                ++  ic.value.codecRef
-                                                ++  ".decodeInTextFromString("
-                                                ++  ic.value.fieldName
-                                                ++  "Str)"
-                                                ++  elemSuffix
-                                                ++  " : null;"
-                                          else      "            "
-                                                ++  ic.value.fieldType
-                                                ++  " "
-                                                ++  ic.value.fieldName
-                                                ++  " = "
-                                                ++  ic.value.codecRef
-                                                ++  ".decodeInTextFromString(rs.getString("
-                                                ++  colIdx
-                                                ++  "))"
-                                                ++  elemSuffix
-                                                ++  ";"
+                                        then      "            String "
+                                              ++  ic.value.fieldName
+                                              ++  "Str = rs.getString("
+                                              ++  colIdx
+                                              ++  ''
+                                                  );
+                                                  ''
+                                              ++  "            "
+                                              ++  ic.value.fieldType
+                                              ++  " "
+                                              ++  ic.value.fieldName
+                                              ++  " = Optional.ofNullable("
+                                              ++  ic.value.fieldName
+                                              ++  "Str != null ? "
+                                              ++  ic.value.codecRef
+                                              ++  ".decodeInTextFromString("
+                                              ++  ic.value.fieldName
+                                              ++  "Str)"
+                                              ++  elemSuffix
+                                              ++  " : null);"
+                                        else  if ic.value.isNullable
+                                        then      "            String "
+                                              ++  ic.value.fieldName
+                                              ++  "Str = rs.getString("
+                                              ++  colIdx
+                                              ++  ''
+                                                  );
+                                                  ''
+                                              ++  "            "
+                                              ++  ic.value.fieldType
+                                              ++  " "
+                                              ++  ic.value.fieldName
+                                              ++  " = "
+                                              ++  ic.value.fieldName
+                                              ++  "Str != null ? "
+                                              ++  ic.value.codecRef
+                                              ++  ".decodeInTextFromString("
+                                              ++  ic.value.fieldName
+                                              ++  "Str)"
+                                              ++  elemSuffix
+                                              ++  " : null;"
+                                        else      "            "
+                                              ++  ic.value.fieldType
+                                              ++  " "
+                                              ++  ic.value.fieldName
+                                              ++  " = "
+                                              ++  ic.value.codecRef
+                                              ++  ".decodeInTextFromString(rs.getString("
+                                              ++  colIdx
+                                              ++  "))"
+                                              ++  elemSuffix
+                                              ++  ";"
                               else  if ic.value.isDateType
                               then  if    ic.value.isOptional
                                     then      "            Date "
@@ -189,27 +189,27 @@ let run =
                                           ++  "Sql != null ? "
                                           ++  ic.value.fieldName
                                           ++  "Sql.toLocalDate() : null);"
-                                    else  if    ic.value.isNullable
-                                          then      "            Date "
-                                                ++  ic.value.fieldName
-                                                ++  "Sql = rs.getDate("
-                                                ++  colIdx
-                                                ++  ''
-                                                    );
-                                                    ''
-                                                ++  "            LocalDate "
-                                                ++  ic.value.fieldName
-                                                ++  " = "
-                                                ++  ic.value.fieldName
-                                                ++  "Sql != null ? "
-                                                ++  ic.value.fieldName
-                                                ++  "Sql.toLocalDate() : null;"
-                                          else      "            LocalDate "
-                                                ++  ic.value.fieldName
-                                                ++  " = rs.getDate("
-                                                ++  colIdx
-                                                ++  ").toLocalDate();"
-                              else  if    ic.value.isOptional
+                                    else  if ic.value.isNullable
+                                    then      "            Date "
+                                          ++  ic.value.fieldName
+                                          ++  "Sql = rs.getDate("
+                                          ++  colIdx
+                                          ++  ''
+                                              );
+                                              ''
+                                          ++  "            LocalDate "
+                                          ++  ic.value.fieldName
+                                          ++  " = "
+                                          ++  ic.value.fieldName
+                                          ++  "Sql != null ? "
+                                          ++  ic.value.fieldName
+                                          ++  "Sql.toLocalDate() : null;"
+                                    else      "            LocalDate "
+                                          ++  ic.value.fieldName
+                                          ++  " = rs.getDate("
+                                          ++  colIdx
+                                          ++  ").toLocalDate();"
+                              else  if ic.value.isOptional
                               then  if    ic.value.isJdbcPrimitive
                                     then      "            "
                                           ++  ic.value.fieldType
@@ -432,34 +432,34 @@ let run =
                                                                         ++  ".decodeInTextFromString("
                                                                         ++  ic.value.fieldName
                                                                         ++  "Str) : null);"
-                                                                  else  if    ic.value.isNullable
-                                                                        then      "        String "
-                                                                              ++  ic.value.fieldName
-                                                                              ++  "Str = rs.getString("
-                                                                              ++  colIdx
-                                                                              ++  ''
-                                                                                  );
-                                                                                  ''
-                                                                              ++  "        "
-                                                                              ++  ic.value.fieldType
-                                                                              ++  " "
-                                                                              ++  ic.value.fieldName
-                                                                              ++  " = "
-                                                                              ++  ic.value.fieldName
-                                                                              ++  "Str != null ? "
-                                                                              ++  ic.value.codecRef
-                                                                              ++  ".decodeInTextFromString("
-                                                                              ++  ic.value.fieldName
-                                                                              ++  "Str) : null;"
-                                                                        else      "        "
-                                                                              ++  ic.value.fieldType
-                                                                              ++  " "
-                                                                              ++  ic.value.fieldName
-                                                                              ++  " = "
-                                                                              ++  ic.value.codecRef
-                                                                              ++  ".decodeInTextFromString(rs.getString("
-                                                                              ++  colIdx
-                                                                              ++  "));"
+                                                                  else  if ic.value.isNullable
+                                                                  then      "        String "
+                                                                        ++  ic.value.fieldName
+                                                                        ++  "Str = rs.getString("
+                                                                        ++  colIdx
+                                                                        ++  ''
+                                                                            );
+                                                                            ''
+                                                                        ++  "        "
+                                                                        ++  ic.value.fieldType
+                                                                        ++  " "
+                                                                        ++  ic.value.fieldName
+                                                                        ++  " = "
+                                                                        ++  ic.value.fieldName
+                                                                        ++  "Str != null ? "
+                                                                        ++  ic.value.codecRef
+                                                                        ++  ".decodeInTextFromString("
+                                                                        ++  ic.value.fieldName
+                                                                        ++  "Str) : null;"
+                                                                  else      "        "
+                                                                        ++  ic.value.fieldType
+                                                                        ++  " "
+                                                                        ++  ic.value.fieldName
+                                                                        ++  " = "
+                                                                        ++  ic.value.codecRef
+                                                                        ++  ".decodeInTextFromString(rs.getString("
+                                                                        ++  colIdx
+                                                                        ++  "));"
                                                             else  if ic.value.isDateType
                                                             then  if    ic.value.isOptional
                                                                   then      "        Date "
@@ -478,27 +478,27 @@ let run =
                                                                         ++  "Sql != null ? "
                                                                         ++  ic.value.fieldName
                                                                         ++  "Sql.toLocalDate() : null);"
-                                                                  else  if    ic.value.isNullable
-                                                                        then      "        Date "
-                                                                              ++  ic.value.fieldName
-                                                                              ++  "Sql = rs.getDate("
-                                                                              ++  colIdx
-                                                                              ++  ''
-                                                                                  );
-                                                                                  ''
-                                                                              ++  "        LocalDate "
-                                                                              ++  ic.value.fieldName
-                                                                              ++  " = "
-                                                                              ++  ic.value.fieldName
-                                                                              ++  "Sql != null ? "
-                                                                              ++  ic.value.fieldName
-                                                                              ++  "Sql.toLocalDate() : null;"
-                                                                        else      "        LocalDate "
-                                                                              ++  ic.value.fieldName
-                                                                              ++  " = rs.getDate("
-                                                                              ++  colIdx
-                                                                              ++  ").toLocalDate();"
-                                                            else  if    ic.value.isOptional
+                                                                  else  if ic.value.isNullable
+                                                                  then      "        Date "
+                                                                        ++  ic.value.fieldName
+                                                                        ++  "Sql = rs.getDate("
+                                                                        ++  colIdx
+                                                                        ++  ''
+                                                                            );
+                                                                            ''
+                                                                        ++  "        LocalDate "
+                                                                        ++  ic.value.fieldName
+                                                                        ++  " = "
+                                                                        ++  ic.value.fieldName
+                                                                        ++  "Sql != null ? "
+                                                                        ++  ic.value.fieldName
+                                                                        ++  "Sql.toLocalDate() : null;"
+                                                                  else      "        LocalDate "
+                                                                        ++  ic.value.fieldName
+                                                                        ++  " = rs.getDate("
+                                                                        ++  colIdx
+                                                                        ++  ").toLocalDate();"
+                                                            else  if ic.value.isOptional
                                                             then  if    ic.value.isJdbcPrimitive
                                                                   then      "        "
                                                                         ++  ic.value.fieldType
@@ -624,34 +624,34 @@ let run =
                                                                         ++  ".decodeInTextFromString("
                                                                         ++  ic.value.fieldName
                                                                         ++  "Str) : null);"
-                                                                  else  if    ic.value.isNullable
-                                                                        then      "        String "
-                                                                              ++  ic.value.fieldName
-                                                                              ++  "Str = rs.getString("
-                                                                              ++  colIdx
-                                                                              ++  ''
-                                                                                  );
-                                                                                  ''
-                                                                              ++  "        "
-                                                                              ++  ic.value.fieldType
-                                                                              ++  " "
-                                                                              ++  ic.value.fieldName
-                                                                              ++  " = "
-                                                                              ++  ic.value.fieldName
-                                                                              ++  "Str != null ? "
-                                                                              ++  ic.value.codecRef
-                                                                              ++  ".decodeInTextFromString("
-                                                                              ++  ic.value.fieldName
-                                                                              ++  "Str) : null;"
-                                                                        else      "        "
-                                                                              ++  ic.value.fieldType
-                                                                              ++  " "
-                                                                              ++  ic.value.fieldName
-                                                                              ++  " = "
-                                                                              ++  ic.value.codecRef
-                                                                              ++  ".decodeInTextFromString(rs.getString("
-                                                                              ++  colIdx
-                                                                              ++  "));"
+                                                                  else  if ic.value.isNullable
+                                                                  then      "        String "
+                                                                        ++  ic.value.fieldName
+                                                                        ++  "Str = rs.getString("
+                                                                        ++  colIdx
+                                                                        ++  ''
+                                                                            );
+                                                                            ''
+                                                                        ++  "        "
+                                                                        ++  ic.value.fieldType
+                                                                        ++  " "
+                                                                        ++  ic.value.fieldName
+                                                                        ++  " = "
+                                                                        ++  ic.value.fieldName
+                                                                        ++  "Str != null ? "
+                                                                        ++  ic.value.codecRef
+                                                                        ++  ".decodeInTextFromString("
+                                                                        ++  ic.value.fieldName
+                                                                        ++  "Str) : null;"
+                                                                  else      "        "
+                                                                        ++  ic.value.fieldType
+                                                                        ++  " "
+                                                                        ++  ic.value.fieldName
+                                                                        ++  " = "
+                                                                        ++  ic.value.codecRef
+                                                                        ++  ".decodeInTextFromString(rs.getString("
+                                                                        ++  colIdx
+                                                                        ++  "));"
                                                             else  if ic.value.isDateType
                                                             then  if    ic.value.isOptional
                                                                   then      "        Date "
@@ -670,27 +670,27 @@ let run =
                                                                         ++  "Sql != null ? "
                                                                         ++  ic.value.fieldName
                                                                         ++  "Sql.toLocalDate() : null);"
-                                                                  else  if    ic.value.isNullable
-                                                                        then      "        Date "
-                                                                              ++  ic.value.fieldName
-                                                                              ++  "Sql = rs.getDate("
-                                                                              ++  colIdx
-                                                                              ++  ''
-                                                                                  );
-                                                                                  ''
-                                                                              ++  "        LocalDate "
-                                                                              ++  ic.value.fieldName
-                                                                              ++  " = "
-                                                                              ++  ic.value.fieldName
-                                                                              ++  "Sql != null ? "
-                                                                              ++  ic.value.fieldName
-                                                                              ++  "Sql.toLocalDate() : null;"
-                                                                        else      "        LocalDate "
-                                                                              ++  ic.value.fieldName
-                                                                              ++  " = rs.getDate("
-                                                                              ++  colIdx
-                                                                              ++  ").toLocalDate();"
-                                                            else  if    ic.value.isOptional
+                                                                  else  if ic.value.isNullable
+                                                                  then      "        Date "
+                                                                        ++  ic.value.fieldName
+                                                                        ++  "Sql = rs.getDate("
+                                                                        ++  colIdx
+                                                                        ++  ''
+                                                                            );
+                                                                            ''
+                                                                        ++  "        LocalDate "
+                                                                        ++  ic.value.fieldName
+                                                                        ++  " = "
+                                                                        ++  ic.value.fieldName
+                                                                        ++  "Sql != null ? "
+                                                                        ++  ic.value.fieldName
+                                                                        ++  "Sql.toLocalDate() : null;"
+                                                                  else      "        LocalDate "
+                                                                        ++  ic.value.fieldName
+                                                                        ++  " = rs.getDate("
+                                                                        ++  colIdx
+                                                                        ++  ").toLocalDate();"
+                                                            else  if ic.value.isOptional
                                                             then  if    ic.value.isJdbcPrimitive
                                                                   then      "        "
                                                                         ++  ic.value.fieldType
