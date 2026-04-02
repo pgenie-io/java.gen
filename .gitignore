@@ -20,5 +20,8 @@
 !/demo-output/
 !/.github/
 
+# Reignore build output:
+/demo-output/target/
+
 # Ignore noise:
 .DS_Store
