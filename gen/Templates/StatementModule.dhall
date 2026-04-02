@@ -16,6 +16,7 @@ let Params =
       , hasResultType : Bool
       , hasDateResult : Bool
       , hasCodecResult : Bool
+      , hasOptionalFields : Bool
       }
 
 in  Algebra.module
@@ -78,6 +79,13 @@ in  Algebra.module
                       ''
                 else  ""
 
+          let importOptional =
+                if    params.hasOptionalFields
+                then  ''
+                      import java.util.Optional;
+                      ''
+                else  ""
+
           in      importPreparedStatement
               ++  importResultSet
               ++  importSqlException
@@ -88,8 +96,10 @@ in  Algebra.module
               ++  "\n"
               ++  importArrayList
               ++  importList
+              ++  importOptional
               ++  ( if        params.needsArrayListImport
                           ||  params.hasResultType && True
+                          ||  params.hasOptionalFields
                     then  "\n"
                     else  ""
                   )

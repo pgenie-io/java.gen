@@ -10,7 +10,17 @@ let ProjectInterpreter = ./Interpreters/Project.dhall
 
 in  \(config : Optional Config) ->
     \(project : Sdk.Project.Project) ->
+      let useOptional =
+            Deps.Prelude.Optional.fold
+              Config
+              config
+              Bool
+              (\(c : Config) -> c.useOptional)
+              False
+
       let interpreterConfig =
-            { rootModuleName = Deps.CodegenKit.Name.toTextInSnake project.name }
+            { rootModuleName = Deps.CodegenKit.Name.toTextInSnake project.name
+            , useOptional
+            }
 
       in  ProjectInterpreter.run interpreterConfig project

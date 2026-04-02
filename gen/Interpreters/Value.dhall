@@ -39,8 +39,8 @@ let run =
                 Result
                 ( \(arraySettings : Model.ArraySettings) ->
                     let elementType =
-                          if    arraySettings.elementIsNullable
-                          then  scalar.boxedJavaType
+                          if    config.useOptional && arraySettings.elementIsNullable
+                          then  "Optional<" ++ scalar.boxedJavaType ++ ">"
                           else  scalar.boxedJavaType
 
                     let arrayType =

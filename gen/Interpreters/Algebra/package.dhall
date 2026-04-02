@@ -1,6 +1,6 @@
 let Deps = ../../Deps/package.dhall
 
-let Config = { rootModuleName : Text }
+let Config = { rootModuleName : Text, useOptional : Bool }
 
 let module =
       \(Input : Type) ->
