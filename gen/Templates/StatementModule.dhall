@@ -98,7 +98,7 @@ in  Algebra.module
               ++  importList
               ++  importOptional
               ++  ( if        params.needsArrayListImport
-                          ||  params.hasResultType && True
+                          ||  params.hasResultType
                           ||  params.hasOptionalFields
                     then  "\n"
                     else  ""
