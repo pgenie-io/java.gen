@@ -37,7 +37,7 @@ name: music_catalogue
 version: 1.0.0
 artifacts:
   java:
-    https://raw.githubusercontent.com/pgenie-io/java.gen/v0.1.0/gen/Gen.dhall
+    https://raw.githubusercontent.com/pgenie-io/java.gen/v0.1.1/gen/Gen.dhall
 ```
 
 Run the code generator:
