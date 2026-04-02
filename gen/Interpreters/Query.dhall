@@ -28,94 +28,122 @@ let Output =
 
 let mkParamBindCode =
       \(params : List MemberModule.Output) ->
-        let indexedParams = Deps.Prelude.List.indexed MemberModule.Output params
+      \(fragments : Deps.Sdk.Project.QueryFragments) ->
+        let paramOccurrences =
+              Deps.Prelude.List.filterMap
+                Deps.Sdk.Project.QueryFragment
+                Natural
+                ( \(fragment : Deps.Sdk.Project.QueryFragment) ->
+                    merge
+                      { Sql = \(_ : Text) -> None Natural
+                      , Var =
+                          \(v : Deps.Sdk.Project.Var) -> Some v.paramIndex
+                      }
+                      fragment
+                )
+                fragments
+
+        let indexedOccurrences =
+              Deps.Prelude.List.indexed Natural paramOccurrences
 
         in  Deps.Prelude.Text.concatMap
-              { index : Natural, value : MemberModule.Output }
-              ( \(ip : { index : Natural, value : MemberModule.Output }) ->
+              { index : Natural, value : Natural }
+              ( \(ip : { index : Natural, value : Natural }) ->
                   let idx = Natural/show (ip.index + 1)
 
-                  in  if    ip.value.useCodec
-                      then      "        Jdbc.bind(ps, "
-                            ++  idx
-                            ++  ", "
-                            ++  ip.value.codecRef
-                            ++  ", this."
-                            ++  ip.value.fieldName
-                            ++  ''
-                                ());
-                                ''
-                      else  if ip.value.isDateType
-                      then  if    ip.value.isNullable
-                            then      "        if (this."
-                                  ++  ip.value.fieldName
-                                  ++  ''
-                                      () != null) {
-                                      ''
-                                  ++  "            ps.setDate("
-                                  ++  idx
-                                  ++  ", Date.valueOf(this."
-                                  ++  ip.value.fieldName
-                                  ++  ''
-                                      ()));
-                                      ''
-                                  ++  ''
-                                              } else {
-                                      ''
-                                  ++  "            ps.setNull("
-                                  ++  idx
-                                  ++  ''
-                                      , Types.DATE);
-                                      ''
-                                  ++  ''
-                                              }
-                                      ''
-                            else      "        ps.setDate("
-                                  ++  idx
-                                  ++  ", Date.valueOf(this."
-                                  ++  ip.value.fieldName
-                                  ++  ''
-                                      ()));
-                                      ''
-                      else  if ip.value.isNullable
-                      then      "        if (this."
-                            ++  ip.value.fieldName
-                            ++  ''
-                                () != null) {
-                                ''
-                            ++  "            ps."
-                            ++  ip.value.jdbcSetter
-                            ++  "("
-                            ++  idx
-                            ++  ", this."
-                            ++  ip.value.fieldName
-                            ++  ''
-                                ());
-                                ''
-                            ++  ''
-                                        } else {
-                                ''
-                            ++  "            ps.setNull("
-                            ++  idx
-                            ++  ", Types."
-                            ++  ip.value.sqlTypesConstant
-                            ++  ''
-                                );
-                                ''
-                            ++  ''
-                                        }
-                                ''
-                      else      "        ps."
-                            ++  ip.value.jdbcSetter
-                            ++  "("
-                            ++  idx
-                            ++  ", this."
-                            ++  ip.value.fieldName
-                            ++  ''
-                                ());
-                                ''
+                  let mParam =
+                        Deps.Prelude.List.index
+                          ip.value
+                          MemberModule.Output
+                          params
+
+                  in  merge
+                        { None = ""
+                        , Some =
+                            \(p : MemberModule.Output) ->
+                              if    p.useCodec
+                              then      "        Jdbc.bind(ps, "
+                                    ++  idx
+                                    ++  ", "
+                                    ++  p.codecRef
+                                    ++  ", this."
+                                    ++  p.fieldName
+                                    ++  ''
+                                        ());
+                                        ''
+                              else  if p.isDateType
+                              then  if    p.isNullable
+                                    then      "        if (this."
+                                          ++  p.fieldName
+                                          ++  ''
+                                              () != null) {
+                                              ''
+                                          ++  "            ps.setDate("
+                                          ++  idx
+                                          ++  ", Date.valueOf(this."
+                                          ++  p.fieldName
+                                          ++  ''
+                                              ()));
+                                              ''
+                                          ++  ''
+                                                      } else {
+                                              ''
+                                          ++  "            ps.setNull("
+                                          ++  idx
+                                          ++  ''
+                                              , Types.DATE);
+                                              ''
+                                          ++  ''
+                                                      }
+                                              ''
+                                    else      "        ps.setDate("
+                                          ++  idx
+                                          ++  ", Date.valueOf(this."
+                                          ++  p.fieldName
+                                          ++  ''
+                                              ()));
+                                              ''
+                              else  if p.isNullable
+                              then      "        if (this."
+                                    ++  p.fieldName
+                                    ++  ''
+                                        () != null) {
+                                        ''
+                                    ++  "            ps."
+                                    ++  p.jdbcSetter
+                                    ++  "("
+                                    ++  idx
+                                    ++  ", this."
+                                    ++  p.fieldName
+                                    ++  ''
+                                        ());
+                                        ''
+                                    ++  ''
+                                                } else {
+                                        ''
+                                    ++  "            ps.setNull("
+                                    ++  idx
+                                    ++  ", Types."
+                                    ++  p.sqlTypesConstant
+                                    ++  ''
+                                        );
+                                        ''
+                                    ++  ''
+                                                }
+                                        ''
+                              else      "        ps."
+                                    ++  p.jdbcSetter
+                                    ++  "("
+                                    ++  idx
+                                    ++  ", this."
+                                    ++  p.fieldName
+                                    ++  ''
+                                        ());
+                                        ''
+                        }
+                        mParam
               )
-              indexedParams
+              indexedOccurrences
 
 let render =
       \(config : Algebra.Config) ->
@@ -137,7 +165,7 @@ let render =
 
         let sqlExp = fragments.mkSqlExp paramCastSuffixes
 
-        let paramBindCode = mkParamBindCode params
+        let paramBindCode = mkParamBindCode params input.fragments
 
         let hasResult =
               Deps.Prelude.Optional.fold
