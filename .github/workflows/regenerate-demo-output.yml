@@ -1,4 +1,4 @@
-name: CI
+name: Regenerate demo output
 
 on:
   push:
