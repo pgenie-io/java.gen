@@ -1,0 +1,53 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - master
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  regenerate-and-verify:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Clean up existing demo-output
+        run: |
+          rm -rf demo-output
+        
+      - name: Regenerate demo-output from Dhall
+        uses: nikita-volkov/dhall-directory-tree.github-action@v1
+        with:
+          dhall_file: gen/demo.dhall
+          output_dir: demo-output
+
+      - name: Set up Java 21
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: "21"
+          cache: maven
+          cache-dependency-path: demo-output/pom.xml
+
+      - name: Verify generated project
+        run: mvn -f demo-output/pom.xml verify
+
+      - name: Commit and push regenerated demo-output
+        run: |
+          git add -A demo-output
+
+          if git diff --cached --quiet -- demo-output; then
+            echo "demo-output is already up to date."
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git commit -m "chore: regenerate demo-output"
+          git push origin HEAD:${GITHUB_REF_NAME}
