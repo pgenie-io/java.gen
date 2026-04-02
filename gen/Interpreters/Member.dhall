@@ -13,6 +13,9 @@ let Input = Model.Member
 let Output =
       { fieldName : Text
       , fieldType : Text
+      , boxedJavaType : Text
+      , rawCodecType : Text
+      , elementIsOptional : Bool
       , pgName : Text
       , pgCastSuffix : Text
       , useCodec : Bool
@@ -23,6 +26,7 @@ let Output =
       , sqlTypesConstant : Text
       , codecRef : Text
       , isNullable : Bool
+      , isOptional : Bool
       , testDefaultLiteral : Text
       }
 
@@ -35,8 +39,12 @@ let run =
           ( \(value : Value.Output) ->
               let fieldName = Deps.CodegenKit.Name.toTextInCamel input.name
 
+              let isOptional = config.useOptional && input.isNullable
+
               let fieldType =
-                    if    input.isNullable
+                    if    isOptional
+                    then  "Optional<" ++ value.boxedJavaType ++ ">"
+                    else  if input.isNullable
                     then  value.boxedJavaType
                     else  value.javaType
 
@@ -44,6 +52,9 @@ let run =
                     Output
                     { fieldName
                     , fieldType
+                    , boxedJavaType = value.boxedJavaType
+                    , rawCodecType = value.rawCodecType
+                    , elementIsOptional = value.elementIsOptional
                     , pgName = input.pgName
                     , pgCastSuffix = value.pgCastSuffix
                     , useCodec = value.useCodec
@@ -54,8 +65,11 @@ let run =
                     , sqlTypesConstant = value.sqlTypesConstant
                     , codecRef = value.codecRef
                     , isNullable = input.isNullable
+                    , isOptional
                     , testDefaultLiteral =
-                        if    input.isNullable
+                        if    isOptional
+                        then  "Optional.empty()"
+                        else  if input.isNullable
                         then  "null"
                         else  value.testDefaultLiteral
                     }

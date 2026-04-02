@@ -67,11 +67,37 @@ let mkParamBindCode =
                                     ++  p.codecRef
                                     ++  ", this."
                                     ++  p.fieldName
-                                    ++  ''
-                                        ());
-                                        ''
+                                    ++  ( if    p.isOptional
+                                          then  "().orElse(null));"
+                                          else  "());"
+                                        )
+                                    ++  "\n"
                               else  if p.isDateType
-                              then  if    p.isNullable
+                              then  if    p.isOptional
+                                    then      "        if (this."
+                                          ++  p.fieldName
+                                          ++  ''
+                                              ().isPresent()) {
+                                              ''
+                                          ++  "            ps.setDate("
+                                          ++  idx
+                                          ++  ", Date.valueOf(this."
+                                          ++  p.fieldName
+                                          ++  ''
+                                              ().get()));
+                                              ''
+                                          ++  ''
+                                                      } else {
+                                              ''
+                                          ++  "            ps.setNull("
+                                          ++  idx
+                                          ++  ''
+                                              , Types.DATE);
+                                              ''
+                                          ++  ''
+                                                      }
+                                              ''
+                                    else  if p.isNullable
                                     then      "        if (this."
                                           ++  p.fieldName
                                           ++  ''
@@ -102,6 +128,34 @@ let mkParamBindCode =
                                           ++  ''
                                               ()));
                                               ''
+                              else  if p.isOptional
+                              then      "        if (this."
+                                    ++  p.fieldName
+                                    ++  ''
+                                        ().isPresent()) {
+                                        ''
+                                    ++  "            ps."
+                                    ++  p.jdbcSetter
+                                    ++  "("
+                                    ++  idx
+                                    ++  ", this."
+                                    ++  p.fieldName
+                                    ++  ''
+                                        ().get());
+                                        ''
+                                    ++  ''
+                                                } else {
+                                        ''
+                                    ++  "            ps.setNull("
+                                    ++  idx
+                                    ++  ", Types."
+                                    ++  p.sqlTypesConstant
+                                    ++  ''
+                                        );
+                                        ''
+                                    ++  ''
+                                                }
+                                        ''
                               else  if p.isNullable
                               then      "        if (this."
                                     ++  p.fieldName
@@ -224,6 +278,39 @@ let render =
                 )
                 params
 
+        let hasOptionalParam =
+              Deps.Prelude.List.any
+                MemberModule.Output
+                (\(m : MemberModule.Output) -> m.isOptional)
+                params
+
+        let hasOptionalResult =
+              Deps.Prelude.Optional.fold
+                Deps.Sdk.Project.ResultRows
+                input.result
+                Bool
+                ( \(rows : Deps.Sdk.Project.ResultRows) ->
+                        config.useOptional
+                    &&  Deps.Prelude.List.any
+                          Deps.Sdk.Project.Member
+                          ( \(m : Deps.Sdk.Project.Member) ->
+                                  m.isNullable
+                              ||  Deps.Prelude.Optional.fold
+                                    Deps.Sdk.Project.ArraySettings
+                                    m.value.arraySettings
+                                    Bool
+                                    ( \(arr : Deps.Sdk.Project.ArraySettings) ->
+                                        arr.elementIsNullable
+                                    )
+                                    False
+                          )
+                          ( Deps.Prelude.NonEmpty.toList
+                              Deps.Sdk.Project.Member
+                              rows.columns
+                          )
+                )
+                False
+
         let hasCodecResult =
               Deps.Prelude.Optional.fold
                 Deps.Sdk.Project.ResultRows
@@ -310,6 +397,7 @@ let render =
                 , hasResultType = hasResult
                 , hasDateResult = hasResult
                 , hasCodecResult = hasResult
+                , hasOptionalFields = hasOptionalParam || hasOptionalResult
                 }
 
         let defaultArgs =

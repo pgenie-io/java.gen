@@ -13,6 +13,8 @@ let Input = Model.Value
 let Output =
       { javaType : Text
       , boxedJavaType : Text
+      , rawCodecType : Text
+      , elementIsOptional : Bool
       , codecRef : Text
       , useCodec : Bool
       , isDateType : Bool
@@ -38,9 +40,12 @@ let run =
                 input.arraySettings
                 Result
                 ( \(arraySettings : Model.ArraySettings) ->
+                    let elementIsOptional =
+                          config.useOptional && arraySettings.elementIsNullable
+
                     let elementType =
-                          if    arraySettings.elementIsNullable
-                          then  scalar.boxedJavaType
+                          if    elementIsOptional
+                          then  "Optional<" ++ scalar.boxedJavaType ++ ">"
                           else  scalar.boxedJavaType
 
                     let arrayType =
@@ -49,6 +54,13 @@ let run =
                             Text
                             (\(inner : Text) -> "List<${inner}>")
                             elementType
+
+                    let rawArrayType =
+                          Natural/fold
+                            arraySettings.dimensionality
+                            Text
+                            (\(inner : Text) -> "List<${inner}>")
+                            scalar.boxedJavaType
 
                     let inDimSuffix =
                           Natural/fold
@@ -61,6 +73,8 @@ let run =
                           Output
                           { javaType = arrayType
                           , boxedJavaType = arrayType
+                          , rawCodecType = rawArrayType
+                          , elementIsOptional
                           , codecRef = inDimSuffix
                           , useCodec = True
                           , isDateType = False
@@ -76,6 +90,8 @@ let run =
                     Output
                     { javaType = scalar.javaType
                     , boxedJavaType = scalar.boxedJavaType
+                    , rawCodecType = scalar.boxedJavaType
+                    , elementIsOptional = False
                     , codecRef = scalar.codecRef
                     , useCodec = scalar.useCodec
                     , isDateType = scalar.isDateType

@@ -14,6 +14,7 @@ in  Algebra.module
           import ${params.packageName}.types.*;
           import java.sql.SQLException;
           import java.time.*;
+          import java.util.Optional;
           import org.junit.jupiter.api.Test;
 
           ${params.content}

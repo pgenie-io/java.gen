@@ -63,10 +63,18 @@ in  Algebra.module
                                                   { pgName = member.pgName
                                                   , fieldName = member.fieldName
                                                   , fieldType = member.fieldType
+                                                  , boxedJavaType =
+                                                      member.boxedJavaType
+                                                  , rawCodecType =
+                                                      member.rawCodecType
+                                                  , elementIsOptional =
+                                                      member.elementIsOptional
                                                   , codecRef = member.codecRef
                                                   , useCodec = member.useCodec
                                                   , isDateType =
                                                       member.isDateType
+                                                  , isOptional =
+                                                      member.isOptional
                                                   }
                                               )
                                               members

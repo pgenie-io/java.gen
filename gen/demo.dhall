@@ -15,11 +15,7 @@ let Gen = ./Gen.dhall
 
 let project = Sdk.Fixtures._2
 
-let config
-    : Gen.Config
-    = {=}
-
-let compiledFiles = Gen.compile (None Gen.Config) project
+let compiledFiles = Gen.compile (Some { useOptional = False }) project
 
 let compiledFileMap =
       Sdk.Compiled.map
