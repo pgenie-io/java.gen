@@ -7,6 +7,8 @@ let Field =
       , fieldName : Text
       , fieldType : Text
       , boxedJavaType : Text
+      , rawCodecType : Text
+      , elementIsOptional : Bool
       , codecRef : Text
       , useCodec : Bool
       , isDateType : Bool
@@ -63,7 +65,15 @@ let run =
 
                     let getterExpr =
                           if    field.isOptional
-                          then  "row -> row." ++ field.fieldName ++ "().orElse(null)"
+                          then  if    field.elementIsOptional
+                                then      "row -> row."
+                                      ++  field.fieldName
+                                      ++  "().map(list -> list.stream().map(o -> o.orElse(null)).toList()).orElse(null)"
+                                else  "row -> row." ++ field.fieldName ++ "().orElse(null)"
+                          else  if    field.elementIsOptional
+                          then      "row -> row."
+                                ++  field.fieldName
+                                ++  "().stream().map(o -> o.orElse(null)).toList()"
                           else  params.typeName ++ "::" ++ field.fieldName
 
                     in      "            new CompositeCodec.Field<>(\""
@@ -82,7 +92,9 @@ let run =
                       Field
                       ( \(field : Field) ->
                               "("
-                          ++  ( if    field.isOptional
+                          ++  ( if    field.elementIsOptional
+                                then  field.rawCodecType
+                                else  if    field.isOptional
                                 then  field.boxedJavaType
                                 else  field.fieldType
                               )
@@ -98,7 +110,14 @@ let run =
                       Field
                       ( \(field : Field) ->
                           if    field.isOptional
-                          then  "Optional.ofNullable(" ++ field.fieldName ++ ")"
+                          then  if    field.elementIsOptional
+                                then      "Optional.ofNullable("
+                                      ++  field.fieldName
+                                      ++  ").map(list -> list.stream().map(Optional::ofNullable).toList())"
+                                else  "Optional.ofNullable(" ++ field.fieldName ++ ")"
+                          else  if    field.elementIsOptional
+                          then      field.fieldName
+                                ++  ".stream().map(Optional::ofNullable).toList()"
                           else  field.fieldName
                       )
                       params.fields
@@ -117,6 +136,12 @@ let run =
               Deps.Prelude.List.any
                 Field
                 (\(field : Field) -> field.isOptional)
+                params.fields
+
+        let hasElementOptionalFields =
+              Deps.Prelude.List.any
+                Field
+                (\(field : Field) -> field.elementIsOptional)
                 params.fields
 
         in      ''

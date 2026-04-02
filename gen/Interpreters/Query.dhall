@@ -273,7 +273,17 @@ let render =
                     config.useOptional
                       &&  Deps.Prelude.List.any
                             Deps.Sdk.Project.Member
-                            (\(m : Deps.Sdk.Project.Member) -> m.isNullable)
+                            ( \(m : Deps.Sdk.Project.Member) ->
+                                    m.isNullable
+                                ||  Deps.Prelude.Optional.fold
+                                      Deps.Sdk.Project.ArraySettings
+                                      m.value.arraySettings
+                                      Bool
+                                      ( \(arr : Deps.Sdk.Project.ArraySettings) ->
+                                          arr.elementIsNullable
+                                      )
+                                      False
+                            )
                             ( Deps.Prelude.NonEmpty.toList
                                 Deps.Sdk.Project.Member
                                 rows.columns

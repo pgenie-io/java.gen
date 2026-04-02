@@ -113,7 +113,12 @@ let run =
                           let colIdx = Natural/show (ic.index + 1)
 
                           in  if    ic.value.useCodec
-                              then  if    ic.value.isOptional
+                              then  let elemSuffix =
+                                          if    ic.value.elementIsOptional
+                                          then  ".stream().map(Optional::ofNullable).toList()"
+                                          else  ""
+
+                                    in  if    ic.value.isOptional
                                     then      "            String "
                                           ++  ic.value.fieldName
                                           ++  "Str = rs.getString("
@@ -131,7 +136,9 @@ let run =
                                           ++  ic.value.codecRef
                                           ++  ".decodeInTextFromString("
                                           ++  ic.value.fieldName
-                                          ++  "Str) : null);"
+                                          ++  "Str)"
+                                          ++  elemSuffix
+                                          ++  " : null);"
                                     else  if    ic.value.isNullable
                                           then      "            String "
                                                 ++  ic.value.fieldName
@@ -150,7 +157,9 @@ let run =
                                                 ++  ic.value.codecRef
                                                 ++  ".decodeInTextFromString("
                                                 ++  ic.value.fieldName
-                                                ++  "Str) : null;"
+                                                ++  "Str)"
+                                                ++  elemSuffix
+                                                ++  " : null;"
                                           else      "            "
                                                 ++  ic.value.fieldType
                                                 ++  " "
@@ -159,7 +168,9 @@ let run =
                                                 ++  ic.value.codecRef
                                                 ++  ".decodeInTextFromString(rs.getString("
                                                 ++  colIdx
-                                                ++  "));"
+                                                ++  "))"
+                                                ++  elemSuffix
+                                                ++  ";"
                               else  if ic.value.isDateType
                               then  if    ic.value.isOptional
                                     then      "            Date "

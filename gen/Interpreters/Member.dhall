@@ -14,6 +14,8 @@ let Output =
       { fieldName : Text
       , fieldType : Text
       , boxedJavaType : Text
+      , rawCodecType : Text
+      , elementIsOptional : Bool
       , pgName : Text
       , pgCastSuffix : Text
       , useCodec : Bool
@@ -51,6 +53,8 @@ let run =
                     { fieldName
                     , fieldType
                     , boxedJavaType = value.boxedJavaType
+                    , rawCodecType = value.rawCodecType
+                    , elementIsOptional = value.elementIsOptional
                     , pgName = input.pgName
                     , pgCastSuffix = value.pgCastSuffix
                     , useCodec = value.useCodec
