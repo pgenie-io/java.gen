@@ -20,7 +20,8 @@ jobs:
       - name: Clean up existing demo-output
         run: |
           rm -rf demo-output
-        
+          mkdir demo-output
+
       - name: Regenerate demo-output from Dhall
         uses: nikita-volkov/dhall-directory-tree.github-action@v1
         with:
@@ -36,7 +37,9 @@ jobs:
           cache-dependency-path: demo-output/pom.xml
 
       - name: Verify generated project
-        run: mvn -f demo-output/pom.xml verify
+        run: |
+          cd demo-output
+          mvn verify
 
       - name: Commit and push regenerated demo-output
         run: |
