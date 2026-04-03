@@ -22,7 +22,9 @@ When the repository content conflicts with outside examples, prefer the structur
 
 ## Dhall libs
 
-- https://github.com/codemine-io/lude.dhall - utils. E.g., for indenting generated code.
+- https://github.com/codemine-io/lude.dhall - utils
+  - E.g., `Lude.Extensions.Text.indent` - a utility for indenting multiline strings, which is very useful for generating code with correct indentation.
+    - Use it instead of manually adding indentation in strings!
 - https://github.com/nikita-volkov/typeclasses.dhall - library of Haskell-inspired typeclasses and general utilities base on them.
 - https://github.com/codemine-io/codegen-kit.dhall - utilities for code generation.
 
