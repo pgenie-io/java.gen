@@ -2,6 +2,8 @@ let Algebra = ./Algebra/package.dhall
 
 let Deps = ../Deps/package.dhall
 
+let indent = Deps.Lude.Extensions.Text.indentNonEmpty
+
 let Params =
       { typeName : Text
       , docComment : Text
@@ -77,45 +79,30 @@ in  Algebra.module
 
           let imports = Deps.Prelude.Text.concatSep "\n\n" allImportGroups
 
-          in      imports
-              ++  "\n\n"
-              ++  params.docComment
-              ++  ''
-
-                  public record ${params.typeName}(
-                  ''
-              ++  "        "
-              ++  Deps.Lude.Extensions.Text.indentNonEmpty
-                    8
-                    params.paramFieldList
-              ++  ''
-                  )
-                          implements Statement<${params.resultTypeName}> {
-
-                  ''
-              ++  ( if    params.hasResultType
-                    then      ''
-                                  // -------------------------------------------------------------------------
-                                  // Result type
-                                  // -------------------------------------------------------------------------
-                              ''
-                          ++  "    "
-                          ++  Deps.Lude.Extensions.Text.indentNonEmpty
-                                4
-                                params.typeDecls
-                          ++  "\n\n"
-                    else  ""
-                  )
-              ++  ''
+          let resultTypeSection =
+                if    params.hasResultType
+                then  ''
                       // -------------------------------------------------------------------------
-                      // Statement implementation
+                      // Result type
                       // -------------------------------------------------------------------------
-                  ''
-              ++  "    "
-              ++  Deps.Lude.Extensions.Text.indentNonEmpty
-                    4
-                    params.statementImpl
-              ++  ''
+                      ${params.typeDecls}
 
-                  }''
+                      ''
+                else  ""
+
+          in  ''
+              ${imports}
+
+              ${params.docComment}
+              public record ${params.typeName}(
+                      ${indent 8 params.paramFieldList})
+                      implements Statement<${params.resultTypeName}> {
+
+                  ${indent
+                      4
+                      resultTypeSection}// -------------------------------------------------------------------------
+                  // Statement implementation
+                  // -------------------------------------------------------------------------
+                  ${indent 4 params.statementImpl}
+              }''
       )
