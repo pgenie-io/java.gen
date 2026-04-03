@@ -84,7 +84,8 @@ in  Algebra.module
 
                   public record ${params.typeName}(
                   ''
-              ++  params.paramFieldList
+              ++  "        "
+              ++  Deps.Lude.Extensions.Text.indent 8 params.paramFieldList
               ++  ''
                   )
                           implements Statement<${params.resultTypeName}> {

@@ -155,15 +155,15 @@ let render =
                           if member.isNullable then " Nullable." else ""
 
                     in  ''
-                        ${"        "}/**
-                        ${"        "} * Maps to {@code $${member.pgName}} in the template.${nullableDoc}
-                        ${"        "} */
-                        ${"        "}${member.fieldType} ${member.fieldName}''
+                        /**
+                         * Maps to {@code $${member.pgName}} in the template.${nullableDoc}
+                         */
+                        ${member.fieldType} ${member.fieldName}''
                 )
                 params
 
         let resultTypeName =
-              if hasResult then statementModuleName ++ ".Output" else "Long"
+              if hasResult then "${statementModuleName}.Output" else "Long"
 
         let hasCodecParam =
               Deps.Prelude.List.any
@@ -246,23 +246,22 @@ let render =
                       " * "
                       fragments.docComment
 
-              in      ''
-                      /**
-                       * Type-safe binding for the {@code ${queryName}} query.
-                       *
-                       * <h2>SQL Template</h2>
-                       *
-                       * <pre>{@code
-                       * ${sqlDoc}
-                       * }</pre>
-                       *
-                       * <h2>Source Path</h2> {@code ${input.srcPath}}
-                       *
-                       * <p>
-                       * Generated from SQL queries using the
-                       * <a href="https://pgenie.io">pGenie</a> code generator.
-                      ''
-                  ++  " */"
+              in  ''
+                  /**
+                   * Type-safe binding for the {@code ${queryName}} query.
+                   *
+                   * <h2>SQL Template</h2>
+                   *
+                   * <pre>{@code
+                   * ${sqlDoc}
+                   * }</pre>
+                   *
+                   * <h2>Source Path</h2> {@code ${input.srcPath}}
+                   *
+                   * <p>
+                   * Generated from SQL queries using the
+                   * <a href="https://pgenie.io">pGenie</a> code generator.
+                   */''
 
         let statementModuleContents =
               Templates.StatementModule.run
