@@ -32,10 +32,10 @@ let run =
                 Field
                 ( \(field : Field) ->
                     ''
-                    ${"        "}/**
-                    ${"        "} * Maps to {@code ${field.pgName}}.
-                    ${"        "} */
-                    ${"        "}${field.fieldType} ${field.fieldName}''
+                    /**
+                     * Maps to {@code ${field.pgName}}.
+                     */
+                    ${field.fieldType} ${field.fieldName}''
                 )
                 params.fields
 
@@ -62,7 +62,7 @@ let run =
                           then  "row -> row.${field.fieldName}().stream().map(o -> o.orElse(null)).toList()"
                           else  "${params.typeName}::${field.fieldName}"
 
-                    in  "            new CompositeCodec.Field<>(\"${field.pgName}\", ${getterExpr}, ${codecExpr})"
+                    in  "new CompositeCodec.Field<>(\"${field.pgName}\", ${getterExpr}, ${codecExpr})"
                 )
                 params.fields
 
@@ -71,16 +71,14 @@ let run =
                     Deps.Prelude.Text.concatMap
                       Field
                       ( \(field : Field) ->
-                              "("
-                          ++  ( if    field.elementIsOptional
+                          let paramType =
+                                if    field.elementIsOptional
                                 then  field.rawCodecType
                                 else  if field.isOptional
                                 then  field.boxedJavaType
                                 else  field.fieldType
-                              )
-                          ++  " "
-                          ++  field.fieldName
-                          ++  ") -> "
+
+                          in  "(${paramType} ${field.fieldName}) -> "
                       )
                       params.fields
 
@@ -91,27 +89,17 @@ let run =
                       ( \(field : Field) ->
                           if    field.isOptional
                           then  if    field.elementIsOptional
-                                then      "Optional.ofNullable("
-                                      ++  field.fieldName
-                                      ++  ").map(list -> list.stream().map(Optional::ofNullable).toList())"
-                                else      "Optional.ofNullable("
-                                      ++  field.fieldName
-                                      ++  ")"
+                                then  "Optional.ofNullable(${field.fieldName}).map(list -> list.stream().map(Optional::ofNullable).toList())"
+                                else  "Optional.ofNullable(${field.fieldName})"
                           else  if field.elementIsOptional
-                          then      field.fieldName
-                                ++  ".stream().map(Optional::ofNullable).toList()"
+                          then  "${field.fieldName}.stream().map(Optional::ofNullable).toList()"
                           else  field.fieldName
                       )
                       params.fields
 
-              in      paramDecls
-                  ++  "new "
-                  ++  params.typeName
-                  ++  ''
-                      (
-                                          ''
-                  ++  constructorArgs
-                  ++  ")"
+              in  ''
+                  ${paramDecls}new ${params.typeName}(
+                                      ${constructorArgs})''
 
         let hasOptionalFields =
               Deps.Prelude.List.any
@@ -125,23 +113,27 @@ let run =
                 (\(field : Field) -> field.elementIsOptional)
                 params.fields
 
-        in      ''
-                import java.time.*;
-                import java.util.List;
-                ''
-            ++  ( if    hasOptionalFields
-                  then  ''
-                        import java.util.Optional;
-                        ''
-                  else  ""
+        let javaImports =
+                [ "import java.time.*;", "import java.util.List;" ]
+              # ( if    hasOptionalFields
+                  then  [ "import java.util.Optional;" ]
+                  else  [] : List Text
                 )
-            ++  "\n"
-            ++  ''
-                import io.codemine.java.postgresql.codecs.Codec;
-                import io.codemine.java.postgresql.codecs.CompositeCodec;
 
-                ''
+        let codecImports =
+              [ "import io.codemine.java.postgresql.codecs.Codec;"
+              , "import io.codemine.java.postgresql.codecs.CompositeCodec;"
+              ]
+
+        let importSection =
+                  Deps.Prelude.Text.concatSep "\n" javaImports
+              ++  "\n\n"
+              ++  Deps.Prelude.Text.concatSep "\n" codecImports
+
+        in      importSection
             ++  ''
+
+
                 /**
                  * Representation of the {@code ${params.pgTypeName}} user-declared PostgreSQL
                  * composite (record) type.
@@ -155,7 +147,8 @@ let run =
                  */
                 public record ${params.typeName}(
                 ''
-            ++  fieldDecls
+            ++  "        "
+            ++  Deps.Lude.Extensions.Text.indent 8 fieldDecls
             ++  ''
                 ) {
 
@@ -166,7 +159,8 @@ let run =
             ++  ''
                 ,
                 ''
-            ++  codecFieldEntries
+            ++  "            "
+            ++  Deps.Lude.Extensions.Text.indent 12 codecFieldEntries
             ++  ''
                 );
 
