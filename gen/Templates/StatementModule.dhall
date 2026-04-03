@@ -22,87 +22,63 @@ let Params =
 in  Algebra.module
       Params
       ( \(params : Params) ->
-          let importPreparedStatement =
-                ''
-                import java.sql.PreparedStatement;
-                ''
-
-          let importResultSet =
-                ''
-                import java.sql.ResultSet;
-                ''
-
-          let importSqlException =
-                ''
-                import java.sql.SQLException;
-                ''
-
-          let importDate =
-                if    params.hasDateParam || params.hasDateResult
-                then  ''
-                      import java.sql.Date;
-                      ''
-                else  ""
-
-          let importTypes =
-                if    params.hasNullableJdbcParam || params.hasDateParam
-                then  ''
-                      import java.sql.Types;
-                      ''
-                else  ""
-
-          let importTimeAll =
-                if    params.hasDateParam || params.hasDateResult
-                then  ''
-                      import java.time.*;
-                      ''
-                else  ""
-
-          let importCodec =
-                if    params.hasCodecParam
-                then  ''
-                      import io.codemine.java.postgresql.codecs.Codec;
-                      ''
-                else  ""
-
-          let importArrayList =
-                if    params.needsArrayListImport
-                then  ''
-                      import java.util.ArrayList;
-                      ''
-                else  ""
-
-          let importList =
-                if    params.hasResultType
-                then  ''
-                      import java.util.List;
-                      ''
-                else  ""
-
-          let importOptional =
-                if    params.hasOptionalFields
-                then  ''
-                      import java.util.Optional;
-                      ''
-                else  ""
-
-          in      importPreparedStatement
-              ++  importResultSet
-              ++  importSqlException
-              ++  importDate
-              ++  importTypes
-              ++  importTimeAll
-              ++  importCodec
-              ++  "\n"
-              ++  importArrayList
-              ++  importList
-              ++  importOptional
-              ++  ( if        params.needsArrayListImport
-                          ||  params.hasResultType
-                          ||  params.hasOptionalFields
-                    then  "\n"
-                    else  ""
+          let sqlImports =
+                  [ "import java.sql.PreparedStatement;"
+                  , "import java.sql.ResultSet;"
+                  , "import java.sql.SQLException;"
+                  ]
+                # ( if    params.hasDateParam || params.hasDateResult
+                    then  [ "import java.sql.Date;" ]
+                    else  [] : List Text
                   )
+                # ( if    params.hasNullableJdbcParam || params.hasDateParam
+                    then  [ "import java.sql.Types;" ]
+                    else  [] : List Text
+                  )
+
+          let timeImports =
+                if    params.hasDateParam || params.hasDateResult
+                then  [ "import java.time.*;" ]
+                else  [] : List Text
+
+          let codecImports =
+                if    params.hasCodecParam
+                then  [ "import io.codemine.java.postgresql.codecs.Codec;" ]
+                else  [] : List Text
+
+          let utilImports =
+                  ( if    params.needsArrayListImport
+                    then  [ "import java.util.ArrayList;" ]
+                    else  [] : List Text
+                  )
+                # ( if    params.hasResultType
+                    then  [ "import java.util.List;" ]
+                    else  [] : List Text
+                  )
+                # ( if    params.hasOptionalFields
+                    then  [ "import java.util.Optional;" ]
+                    else  [] : List Text
+                  )
+
+          let allImportGroups =
+                  [ Deps.Prelude.Text.concatSep "\n" sqlImports ]
+                # ( if    Deps.Prelude.List.null Text timeImports
+                    then  [] : List Text
+                    else  [ Deps.Prelude.Text.concatSep "\n" timeImports ]
+                  )
+                # ( if    Deps.Prelude.List.null Text codecImports
+                    then  [] : List Text
+                    else  [ Deps.Prelude.Text.concatSep "\n" codecImports ]
+                  )
+                # ( if    Deps.Prelude.List.null Text utilImports
+                    then  [] : List Text
+                    else  [ Deps.Prelude.Text.concatSep "\n" utilImports ]
+                  )
+
+          let imports = Deps.Prelude.Text.concatSep "\n\n" allImportGroups
+
+          in      imports
+              ++  "\n\n"
               ++  params.docComment
               ++  ''
 
@@ -130,6 +106,7 @@ in  Algebra.module
                       // -------------------------------------------------------------------------
                   ''
               ++  params.statementImpl
-              ++  "\n"
-              ++  "}"
+              ++  ''
+
+                  }''
       )
