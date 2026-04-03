@@ -40,39 +40,33 @@ let run =
                 )
                 params.variants
 
-        in      ''
-                package ${params.packageName}.types;
+        in  ''
+            package ${params.packageName}.types;
 
-                import java.util.Map;
+            import java.util.Map;
 
-                import io.codemine.java.postgresql.codecs.EnumCodec;
+            import io.codemine.java.postgresql.codecs.EnumCodec;
 
-                /**
-                 * Representation of the {@code ${params.pgTypeName}} user-declared PostgreSQL
-                 * enumeration type.
-                 *
-                 * <p>
-                 * Generated from SQL queries using the
-                 * <a href="https://pgenie.io">pGenie</a> code generator.
-                 */
-                public enum ${params.typeName} {
+            /**
+             * Representation of the {@code ${params.pgTypeName}} user-declared PostgreSQL
+             * enumeration type.
+             *
+             * <p>
+             * Generated from SQL queries using the
+             * <a href="https://pgenie.io">pGenie</a> code generator.
+             */
+            public enum ${params.typeName} {
 
-                ''
-            ++  "    "
-            ++  Deps.Lude.Extensions.Text.indentNonEmpty 4 variantEntries
-            ++  ''
-                ;
+                ${Deps.Lude.Extensions.Text.indentNonEmpty 4 variantEntries};
 
-                    public static final EnumCodec<${params.typeName}> CODEC = new EnumCodec<>(
-                            "${params.pgSchema}", "${params.pgTypeName}",
-                            Map.ofEntries(
-                ''
-            ++  "                    "
-            ++  Deps.Lude.Extensions.Text.indentNonEmpty 20 codecEntries
-            ++  ''
-                ));
+                public static final EnumCodec<${params.typeName}> CODEC = new EnumCodec<>(
+                        "${params.pgSchema}", "${params.pgTypeName}",
+                        Map.ofEntries(
+                                ${Deps.Lude.Extensions.Text.indentNonEmpty
+                                    20
+                                    codecEntries}));
 
-                }
-                ''
+            }
+            ''
 
 in  { Params, Variant, run }
