@@ -16,7 +16,8 @@ let Field =
       }
 
 let Params =
-      { typeName : Text
+      { packageName : Text
+      , typeName : Text
       , pgSchema : Text
       , pgTypeName : Text
       , fields : List Field
@@ -130,9 +131,10 @@ let run =
               ++  "\n\n"
               ++  Deps.Prelude.Text.concatSep "\n" codecImports
 
-        in      importSection
-            ++  ''
+        in      ''
+                package ${params.packageName}.types;
 
+                ${importSection}
 
                 /**
                  * Representation of the {@code ${params.pgTypeName}} user-declared PostgreSQL
@@ -164,6 +166,7 @@ let run =
             ++  ''
                 );
 
-                }''
+                }
+                ''
 
 in  { Params, Field, run }

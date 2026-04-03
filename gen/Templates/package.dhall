@@ -1,7 +1,4 @@
 { PomXml = ./PomXml.dhall
-, CustomTypeFileWrapper = ./CustomTypeFileWrapper.dhall
-, StatementFileWrapper = ./StatementFileWrapper.dhall
-, StatementTestFileWrapper = ./StatementTestFileWrapper.dhall
 , StatementInterface = ./StatementInterface.dhall
 , JdbcModule = ./JdbcModule.dhall
 , StatementModule = ./StatementModule.dhall

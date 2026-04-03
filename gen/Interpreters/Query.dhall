@@ -259,7 +259,8 @@ let render =
 
         let statementModuleContents =
               Templates.StatementModule.run
-                { typeName = statementModuleName
+                { packageName = config.packageName
+                , typeName = statementModuleName
                 , docComment
                 , paramFieldList
                 , resultTypeName
@@ -289,7 +290,8 @@ let render =
 
         let testModuleContents =
               Templates.StatementTestModule.run
-                { typeName = statementModuleName
+                { packageName = config.packageName
+                , typeName = statementModuleName
                 , defaultConstruction
                 , hasResult
                 }

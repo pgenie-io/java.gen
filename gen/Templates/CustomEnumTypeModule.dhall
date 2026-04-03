@@ -5,7 +5,8 @@ let Deps = ../Deps/package.dhall
 let Variant = { name : Text, pgValue : Text }
 
 let Params =
-      { typeName : Text
+      { packageName : Text
+      , typeName : Text
       , pgSchema : Text
       , pgTypeName : Text
       , variants : List Variant
@@ -40,6 +41,8 @@ let run =
                 params.variants
 
         in      ''
+                package ${params.packageName}.types;
+
                 import java.util.Map;
 
                 import io.codemine.java.postgresql.codecs.EnumCodec;
@@ -69,6 +72,7 @@ let run =
             ++  ''
                 ));
 
-                }''
+                }
+                ''
 
 in  { Params, Variant, run }

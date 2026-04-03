@@ -52,7 +52,8 @@ in  Algebra.module
                                   , modulePath
                                   , moduleContent =
                                       Templates.CustomCompositeTypeModule.run
-                                        { typeName
+                                        { packageName = config.packageName
+                                        , typeName
                                         , pgSchema = input.pgSchema
                                         , pgTypeName = input.pgName
                                         , fields =
@@ -93,7 +94,8 @@ in  Algebra.module
                         , modulePath
                         , moduleContent =
                             Templates.CustomEnumTypeModule.run
-                              { typeName
+                              { packageName = config.packageName
+                              , typeName
                               , pgSchema = input.pgSchema
                               , pgTypeName = input.pgName
                               , variants =

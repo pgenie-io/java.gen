@@ -47,9 +47,7 @@ let combineOutputs =
                 Sdk.File.Type
                 ( \(customType : CustomTypeGen.Output) ->
                     { path = srcPrefix ++ "types/" ++ customType.modulePath
-                    , content =
-                        Templates.CustomTypeFileWrapper.run
-                          { packageName, content = customType.moduleContent }
+                    , content = customType.moduleContent
                     }
                 )
                 customTypes
@@ -62,11 +60,7 @@ let combineOutputs =
                 ( \(query : QueryGen.Output) ->
                     { path =
                         srcPrefix ++ "statements/" ++ query.statementModulePath
-                    , content =
-                        Templates.StatementFileWrapper.run
-                          { packageName
-                          , content = query.statementModuleContents
-                          }
+                    , content = query.statementModuleContents
                     }
                 )
                 queries
@@ -78,9 +72,7 @@ let combineOutputs =
                 Sdk.File.Type
                 ( \(query : QueryGen.Output) ->
                     { path = testPrefix ++ "statements/" ++ query.testModulePath
-                    , content =
-                        Templates.StatementTestFileWrapper.run
-                          { packageName, content = query.testModuleContents }
+                    , content = query.testModuleContents
                     }
                 )
                 queries

@@ -20,6 +20,18 @@ in  \(config : Optional Config) ->
 
       let interpreterConfig =
             { rootModuleName = Deps.CodegenKit.Name.toTextInSnake project.name
+            , packageName =
+                "io.pgenie.artifacts.${Deps.Prelude.Text.replace
+                                         "_"
+                                         ""
+                                         ( Deps.CodegenKit.Name.toTextInSnake
+                                             project.space
+                                         )}.${Deps.Prelude.Text.replace
+                                                "_"
+                                                ""
+                                                ( Deps.CodegenKit.Name.toTextInSnake
+                                                    project.name
+                                                )}"
             , useOptional
             }
 

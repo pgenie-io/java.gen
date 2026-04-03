@@ -5,7 +5,8 @@ let Deps = ../Deps/package.dhall
 let indent = Deps.Lude.Extensions.Text.indentNonEmpty
 
 let Params =
-      { typeName : Text
+      { packageName : Text
+      , typeName : Text
       , docComment : Text
       , paramFieldList : Text
       , resultTypeName : Text
@@ -91,6 +92,12 @@ in  Algebra.module
                 else  ""
 
           in  ''
+              package ${params.packageName}.statements;
+
+              import ${params.packageName}.Statement;
+              import ${params.packageName}.codecs.Jdbc;
+              import ${params.packageName}.types.*;
+
               ${imports}
 
               ${params.docComment}
@@ -104,5 +111,6 @@ in  Algebra.module
                   // Statement implementation
                   // -------------------------------------------------------------------------
                   ${indent 4 params.statementImpl}
-              }''
+              }
+              ''
       )
