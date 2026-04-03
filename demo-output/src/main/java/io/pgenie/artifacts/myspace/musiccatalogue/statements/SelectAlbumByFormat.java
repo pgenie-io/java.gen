@@ -1,20 +1,16 @@
 package io.pgenie.artifacts.myspace.musiccatalogue.statements;
 
-import io.pgenie.artifacts.myspace.musiccatalogue.Statement;
-import io.pgenie.artifacts.myspace.musiccatalogue.codecs.Jdbc;
-import io.pgenie.artifacts.myspace.musiccatalogue.types.*;
-
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Date;
-
 import java.time.*;
-
-import io.codemine.java.postgresql.codecs.Codec;
-
 import java.util.ArrayList;
 import java.util.List;
+import io.codemine.java.postgresql.codecs.Codec;
+import io.pgenie.artifacts.myspace.musiccatalogue.Statement;
+import io.pgenie.artifacts.myspace.musiccatalogue.codecs.Jdbc;
+import io.pgenie.artifacts.myspace.musiccatalogue.types.*;
 
 /**
  * Type-safe binding for the {@code select_album_by_format} query.

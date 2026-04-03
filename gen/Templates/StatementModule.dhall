@@ -22,63 +22,58 @@ let Params =
       , hasOptionalFields : Bool
       }
 
+let someIf =
+      \(V : Type) ->
+      \(condition : Bool) ->
+      \(v : V) ->
+        if condition then Some v else None V
+
 in  Algebra.module
       Params
       ( \(params : Params) ->
-          let sqlImports =
-                  [ "import java.sql.PreparedStatement;"
-                  , "import java.sql.ResultSet;"
-                  , "import java.sql.SQLException;"
-                  ]
-                # ( if    params.hasDateParam || params.hasDateResult
-                    then  [ "import java.sql.Date;" ]
-                    else  [] : List Text
+          let imports =
+                Deps.Prelude.Text.concatMap
+                  Text
+                  ( \(import : Text) ->
+                      ''
+                      import ${import};
+                      ''
                   )
-                # ( if    params.hasNullableJdbcParam || params.hasDateParam
-                    then  [ "import java.sql.Types;" ]
-                    else  [] : List Text
+                  ( Deps.Prelude.List.unpackOptionals
+                      Text
+                      [ Some "java.sql.PreparedStatement"
+                      , Some "java.sql.ResultSet"
+                      , Some "java.sql.SQLException"
+                      , someIf
+                          Text
+                          (params.hasDateParam || params.hasDateResult)
+                          "java.sql.Date"
+                      , someIf
+                          Text
+                          (params.hasNullableJdbcParam || params.hasDateParam)
+                          "java.sql.Types"
+                      , someIf
+                          Text
+                          (params.hasDateParam || params.hasDateResult)
+                          "java.time.*"
+                      , someIf
+                          Text
+                          params.needsArrayListImport
+                          "java.util.ArrayList"
+                      , someIf Text params.hasResultType "java.util.List"
+                      , someIf
+                          Text
+                          params.hasOptionalFields
+                          "java.util.Optional"
+                      , someIf
+                          Text
+                          params.hasCodecParam
+                          "io.codemine.java.postgresql.codecs.Codec"
+                      , Some "${params.packageName}.Statement"
+                      , Some "${params.packageName}.codecs.Jdbc"
+                      , Some "${params.packageName}.types.*"
+                      ]
                   )
-
-          let timeImports =
-                if    params.hasDateParam || params.hasDateResult
-                then  [ "import java.time.*;" ]
-                else  [] : List Text
-
-          let codecImports =
-                if    params.hasCodecParam
-                then  [ "import io.codemine.java.postgresql.codecs.Codec;" ]
-                else  [] : List Text
-
-          let utilImports =
-                  ( if    params.needsArrayListImport
-                    then  [ "import java.util.ArrayList;" ]
-                    else  [] : List Text
-                  )
-                # ( if    params.hasResultType
-                    then  [ "import java.util.List;" ]
-                    else  [] : List Text
-                  )
-                # ( if    params.hasOptionalFields
-                    then  [ "import java.util.Optional;" ]
-                    else  [] : List Text
-                  )
-
-          let allImportGroups =
-                  [ Deps.Prelude.Text.concatSep "\n" sqlImports ]
-                # ( if    Deps.Prelude.List.null Text timeImports
-                    then  [] : List Text
-                    else  [ Deps.Prelude.Text.concatSep "\n" timeImports ]
-                  )
-                # ( if    Deps.Prelude.List.null Text codecImports
-                    then  [] : List Text
-                    else  [ Deps.Prelude.Text.concatSep "\n" codecImports ]
-                  )
-                # ( if    Deps.Prelude.List.null Text utilImports
-                    then  [] : List Text
-                    else  [ Deps.Prelude.Text.concatSep "\n" utilImports ]
-                  )
-
-          let imports = Deps.Prelude.Text.concatSep "\n\n" allImportGroups
 
           let resultTypeSection =
                 if    params.hasResultType
@@ -94,12 +89,7 @@ in  Algebra.module
           in  ''
               package ${params.packageName}.statements;
 
-              import ${params.packageName}.Statement;
-              import ${params.packageName}.codecs.Jdbc;
-              import ${params.packageName}.types.*;
-
               ${imports}
-
               ${params.docComment}
               public record ${params.typeName}(
                       ${indent 8 params.paramFieldList})
