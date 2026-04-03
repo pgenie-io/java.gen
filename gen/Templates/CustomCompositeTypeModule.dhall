@@ -31,21 +31,11 @@ let run =
                 ''
                 Field
                 ( \(field : Field) ->
-                        ''
-                                /**
-                        ''
-                    ++  "         * Maps to {@code "
-                    ++  field.pgName
-                    ++  ''
-                        }.
-                        ''
-                    ++  ''
-                                 */
-                        ''
-                    ++  "        "
-                    ++  field.fieldType
-                    ++  " "
-                    ++  field.fieldName
+                    ''
+                    ${"        "}/**
+                    ${"        "} * Maps to {@code ${field.pgName}}.
+                    ${"        "} */
+                    ${"        "}${field.fieldType} ${field.fieldName}''
                 )
                 params.fields
 
@@ -66,25 +56,13 @@ let run =
                     let getterExpr =
                           if    field.isOptional
                           then  if    field.elementIsOptional
-                                then      "row -> row."
-                                      ++  field.fieldName
-                                      ++  "().map(list -> list.stream().map(o -> o.orElse(null)).toList()).orElse(null)"
-                                else      "row -> row."
-                                      ++  field.fieldName
-                                      ++  "().orElse(null)"
+                                then  "row -> row.${field.fieldName}().map(list -> list.stream().map(o -> o.orElse(null)).toList()).orElse(null)"
+                                else  "row -> row.${field.fieldName}().orElse(null)"
                           else  if field.elementIsOptional
-                          then      "row -> row."
-                                ++  field.fieldName
-                                ++  "().stream().map(o -> o.orElse(null)).toList()"
-                          else  params.typeName ++ "::" ++ field.fieldName
+                          then  "row -> row.${field.fieldName}().stream().map(o -> o.orElse(null)).toList()"
+                          else  "${params.typeName}::${field.fieldName}"
 
-                    in      "            new CompositeCodec.Field<>(\""
-                        ++  field.pgName
-                        ++  "\", "
-                        ++  getterExpr
-                        ++  ", "
-                        ++  codecExpr
-                        ++  ")"
+                    in  "            new CompositeCodec.Field<>(\"${field.pgName}\", ${getterExpr}, ${codecExpr})"
                 )
                 params.fields
 
@@ -149,8 +127,6 @@ let run =
 
         in      ''
                 import java.time.*;
-                ''
-            ++  ''
                 import java.util.List;
                 ''
             ++  ( if    hasOptionalFields
@@ -162,69 +138,30 @@ let run =
             ++  "\n"
             ++  ''
                 import io.codemine.java.postgresql.codecs.Codec;
-                ''
-            ++  ''
                 import io.codemine.java.postgresql.codecs.CompositeCodec;
+
                 ''
-            ++  "\n"
             ++  ''
                 /**
-                ''
-            ++  " * Representation of the {@code "
-            ++  params.pgTypeName
-            ++  ''
-                } user-declared PostgreSQL
-                ''
-            ++  ''
+                 * Representation of the {@code ${params.pgTypeName}} user-declared PostgreSQL
                  * composite (record) type.
-                ''
-            ++  ''
                  *
-                ''
-            ++  ''
                  * <p>
-                ''
-            ++  ''
                  * Generated from SQL queries using the
-                ''
-            ++  ''
                  * <a href="https://pgenie.io">pGenie</a> code generator.
-                ''
-            ++  ''
                  *
-                ''
-            ++  ''
                  * <p>
-                ''
-            ++  ''
                  * All fields are nullable, matching the PostgreSQL column definitions.
-                ''
-            ++  ''
                  */
-                ''
-            ++  "public record "
-            ++  params.typeName
-            ++  ''
-                (
+                public record ${params.typeName}(
                 ''
             ++  fieldDecls
             ++  ''
                 ) {
-                ''
-            ++  "\n"
-            ++  "    public static final CompositeCodec<"
-            ++  params.typeName
-            ++  ''
-                > CODEC = new CompositeCodec<>(
-                ''
-            ++  "            \""
-            ++  params.pgSchema
-            ++  "\", \""
-            ++  params.pgTypeName
-            ++  ''
-                ",
-                ''
-            ++  "            "
+
+                    public static final CompositeCodec<${params.typeName}> CODEC = new CompositeCodec<>(
+                            "${params.pgSchema}", "${params.pgTypeName}",
+                            ''
             ++  curriedConstructor
             ++  ''
                 ,
@@ -232,8 +169,7 @@ let run =
             ++  codecFieldEntries
             ++  ''
                 );
-                ''
-            ++  "\n"
-            ++  "}"
+
+                }''
 
 in  { Params, Field, run }

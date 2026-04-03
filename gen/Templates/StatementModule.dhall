@@ -104,30 +104,20 @@ in  Algebra.module
                     else  ""
                   )
               ++  params.docComment
-              ++  "\n"
-              ++  "public record "
-              ++  params.typeName
               ++  ''
-                  (
+
+                  public record ${params.typeName}(
                   ''
               ++  params.paramFieldList
               ++  ''
                   )
+                          implements Statement<${params.resultTypeName}> {
+
                   ''
-              ++  "        implements Statement<"
-              ++  params.resultTypeName
-              ++  ''
-                  > {
-                  ''
-              ++  "\n"
               ++  ( if    params.hasResultType
                     then      ''
                                   // -------------------------------------------------------------------------
-                              ''
-                          ++  ''
                                   // Result type
-                              ''
-                          ++  ''
                                   // -------------------------------------------------------------------------
                               ''
                           ++  params.typeDecls
@@ -136,11 +126,7 @@ in  Algebra.module
                   )
               ++  ''
                       // -------------------------------------------------------------------------
-                  ''
-              ++  ''
                       // Statement implementation
-                  ''
-              ++  ''
                       // -------------------------------------------------------------------------
                   ''
               ++  params.statementImpl

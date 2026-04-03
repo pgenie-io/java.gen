@@ -61,138 +61,52 @@ let mkParamBindCode =
                         , Some =
                             \(p : MemberModule.Output) ->
                               if    p.useCodec
-                              then      "        Jdbc.bind(ps, "
-                                    ++  idx
-                                    ++  ", "
-                                    ++  p.codecRef
-                                    ++  ", this."
-                                    ++  p.fieldName
-                                    ++  ( if    p.isOptional
-                                          then  "().orElse(null));"
-                                          else  "());"
-                                        )
-                                    ++  "\n"
+                              then  if    p.isOptional
+                                    then  ''
+                                                  Jdbc.bind(ps, ${idx}, ${p.codecRef}, this.${p.fieldName}().orElse(null));
+                                          ''
+                                    else  ''
+                                                  Jdbc.bind(ps, ${idx}, ${p.codecRef}, this.${p.fieldName}());
+                                          ''
                               else  if p.isDateType
                               then  if    p.isOptional
-                                    then      "        if (this."
-                                          ++  p.fieldName
-                                          ++  ''
-                                              ().isPresent()) {
-                                              ''
-                                          ++  "            ps.setDate("
-                                          ++  idx
-                                          ++  ", Date.valueOf(this."
-                                          ++  p.fieldName
-                                          ++  ''
-                                              ().get()));
-                                              ''
-                                          ++  ''
-                                                      } else {
-                                              ''
-                                          ++  "            ps.setNull("
-                                          ++  idx
-                                          ++  ''
-                                              , Types.DATE);
-                                              ''
-                                          ++  ''
-                                                      }
-                                              ''
+                                    then  ''
+                                                  if (this.${p.fieldName}().isPresent()) {
+                                                      ps.setDate(${idx}, Date.valueOf(this.${p.fieldName}().get()));
+                                                  } else {
+                                                      ps.setNull(${idx}, Types.DATE);
+                                                  }
+                                          ''
                                     else  if p.isNullable
-                                    then      "        if (this."
-                                          ++  p.fieldName
-                                          ++  ''
-                                              () != null) {
-                                              ''
-                                          ++  "            ps.setDate("
-                                          ++  idx
-                                          ++  ", Date.valueOf(this."
-                                          ++  p.fieldName
-                                          ++  ''
-                                              ()));
-                                              ''
-                                          ++  ''
-                                                      } else {
-                                              ''
-                                          ++  "            ps.setNull("
-                                          ++  idx
-                                          ++  ''
-                                              , Types.DATE);
-                                              ''
-                                          ++  ''
-                                                      }
-                                              ''
-                                    else      "        ps.setDate("
-                                          ++  idx
-                                          ++  ", Date.valueOf(this."
-                                          ++  p.fieldName
-                                          ++  ''
-                                              ()));
-                                              ''
+                                    then  ''
+                                                  if (this.${p.fieldName}() != null) {
+                                                      ps.setDate(${idx}, Date.valueOf(this.${p.fieldName}()));
+                                                  } else {
+                                                      ps.setNull(${idx}, Types.DATE);
+                                                  }
+                                          ''
+                                    else  ''
+                                                  ps.setDate(${idx}, Date.valueOf(this.${p.fieldName}()));
+                                          ''
                               else  if p.isOptional
-                              then      "        if (this."
-                                    ++  p.fieldName
-                                    ++  ''
-                                        ().isPresent()) {
-                                        ''
-                                    ++  "            ps."
-                                    ++  p.jdbcSetter
-                                    ++  "("
-                                    ++  idx
-                                    ++  ", this."
-                                    ++  p.fieldName
-                                    ++  ''
-                                        ().get());
-                                        ''
-                                    ++  ''
-                                                } else {
-                                        ''
-                                    ++  "            ps.setNull("
-                                    ++  idx
-                                    ++  ", Types."
-                                    ++  p.sqlTypesConstant
-                                    ++  ''
-                                        );
-                                        ''
-                                    ++  ''
-                                                }
-                                        ''
+                              then  ''
+                                            if (this.${p.fieldName}().isPresent()) {
+                                                ps.${p.jdbcSetter}(${idx}, this.${p.fieldName}().get());
+                                            } else {
+                                                ps.setNull(${idx}, Types.${p.sqlTypesConstant});
+                                            }
+                                    ''
                               else  if p.isNullable
-                              then      "        if (this."
-                                    ++  p.fieldName
-                                    ++  ''
-                                        () != null) {
-                                        ''
-                                    ++  "            ps."
-                                    ++  p.jdbcSetter
-                                    ++  "("
-                                    ++  idx
-                                    ++  ", this."
-                                    ++  p.fieldName
-                                    ++  ''
-                                        ());
-                                        ''
-                                    ++  ''
-                                                } else {
-                                        ''
-                                    ++  "            ps.setNull("
-                                    ++  idx
-                                    ++  ", Types."
-                                    ++  p.sqlTypesConstant
-                                    ++  ''
-                                        );
-                                        ''
-                                    ++  ''
-                                                }
-                                        ''
-                              else      "        ps."
-                                    ++  p.jdbcSetter
-                                    ++  "("
-                                    ++  idx
-                                    ++  ", this."
-                                    ++  p.fieldName
-                                    ++  ''
-                                        ());
-                                        ''
+                              then  ''
+                                            if (this.${p.fieldName}() != null) {
+                                                ps.${p.jdbcSetter}(${idx}, this.${p.fieldName}());
+                                            } else {
+                                                ps.setNull(${idx}, Types.${p.sqlTypesConstant});
+                                            }
+                                    ''
+                              else  ''
+                                            ps.${p.jdbcSetter}(${idx}, this.${p.fieldName}());
+                                    ''
                         }
                         mParam
               )
@@ -237,21 +151,14 @@ let render =
                 ''
                 MemberModule.Output
                 ( \(member : MemberModule.Output) ->
-                        ''
-                                /**
-                        ''
-                    ++  "         * Maps to {@code \$"
-                    ++  member.pgName
-                    ++  "} in the template."
-                    ++  (if member.isNullable then " Nullable." else "")
-                    ++  "\n"
-                    ++  ''
-                                 */
-                        ''
-                    ++  "        "
-                    ++  member.fieldType
-                    ++  " "
-                    ++  member.fieldName
+                    let nullableDoc =
+                          if member.isNullable then " Nullable." else ""
+
+                    in  ''
+                        ${"        "}/**
+                        ${"        "} * Maps to {@code $${member.pgName}} in the template.${nullableDoc}
+                        ${"        "} */
+                        ${"        "}${member.fieldType} ${member.fieldName}''
                 )
                 params
 
@@ -332,55 +239,30 @@ let render =
                 False
 
         let docComment =
-                  ''
-                  /**
-                  ''
-              ++  " * Type-safe binding for the {@code "
-              ++  Deps.CodegenKit.Name.toTextInSnake input.name
-              ++  ''
-                  } query.
-                  ''
-              ++  ''
-                   *
-                  ''
-              ++  ''
-                   * <h2>SQL Template</h2>
-                  ''
-              ++  ''
-                   *
-                  ''
-              ++  ''
-                   * <pre>{@code
-                  ''
-              ++  " * "
-              ++  Deps.Lude.Extensions.Text.prefixEachLine
-                    " * "
-                    fragments.docComment
-              ++  "\n"
-              ++  ''
-                   * }</pre>
-                  ''
-              ++  ''
-                   *
-                  ''
-              ++  " * <h2>Source Path</h2> {@code "
-              ++  input.srcPath
-              ++  ''
-                  }
-                  ''
-              ++  ''
-                   *
-                  ''
-              ++  ''
-                   * <p>
-                  ''
-              ++  ''
-                   * Generated from SQL queries using the
-                  ''
-              ++  ''
-                   * <a href="https://pgenie.io">pGenie</a> code generator.
-                  ''
-              ++  " */"
+              let queryName = Deps.CodegenKit.Name.toTextInSnake input.name
+
+              let sqlDoc =
+                    Deps.Lude.Extensions.Text.prefixEachLine
+                      " * "
+                      fragments.docComment
+
+              in      ''
+                      /**
+                       * Type-safe binding for the {@code ${queryName}} query.
+                       *
+                       * <h2>SQL Template</h2>
+                       *
+                       * <pre>{@code
+                       * ${sqlDoc}
+                       * }</pre>
+                       *
+                       * <h2>Source Path</h2> {@code ${input.srcPath}}
+                       *
+                       * <p>
+                       * Generated from SQL queries using the
+                       * <a href="https://pgenie.io">pGenie</a> code generator.
+                      ''
+                  ++  " */"
 
         let statementModuleContents =
               Templates.StatementModule.run

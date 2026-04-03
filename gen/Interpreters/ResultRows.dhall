@@ -49,21 +49,11 @@ let run =
                                     then  " Nullable."
                                     else  ""
 
-                              in      ''
-                                                  /**
-                                      ''
-                                  ++  "             * Maps to the {@code "
-                                  ++  ic.value.pgName
-                                  ++  "} result-set column."
-                                  ++  nullDoc
-                                  ++  "\n"
-                                  ++  ''
-                                                   */
-                                      ''
-                                  ++  "            "
-                                  ++  ic.value.fieldType
-                                  ++  " "
-                                  ++  ic.value.fieldName
+                              in  ''
+                                  ${"            "}/**
+                                  ${"            "} * Maps to the {@code ${ic.value.pgName}} result-set column.${nullDoc}
+                                  ${"            "} */
+                                  ${"            "}${ic.value.fieldType} ${ic.value.fieldName}''
                           )
                           ( Deps.Prelude.List.map
                               { index : Natural, value : Member.Output }
@@ -90,21 +80,11 @@ let run =
                                     then  " Nullable."
                                     else  ""
 
-                              in      ''
-                                                  /**
-                                      ''
-                                  ++  "             * Maps to the {@code "
-                                  ++  ic.value.pgName
-                                  ++  "} result-set column."
-                                  ++  nullDoc
-                                  ++  "\n"
-                                  ++  ''
-                                                   */
-                                      ''
-                                  ++  "            "
-                                  ++  ic.value.fieldType
-                                  ++  " "
-                                  ++  ic.value.fieldName
+                              in  ''
+                                  ${"            "}/**
+                                  ${"            "} * Maps to the {@code ${ic.value.pgName}} result-set column.${nullDoc}
+                                  ${"            "} */
+                                  ${"            "}${ic.value.fieldType} ${ic.value.fieldName}''
                           )
                           indexedColumns
 
@@ -119,136 +99,32 @@ let run =
                                           else  ""
 
                                     in  if    ic.value.isOptional
-                                        then      "            String "
-                                              ++  ic.value.fieldName
-                                              ++  "Str = rs.getString("
-                                              ++  colIdx
-                                              ++  ''
-                                                  );
-                                                  ''
-                                              ++  "            "
-                                              ++  ic.value.fieldType
-                                              ++  " "
-                                              ++  ic.value.fieldName
-                                              ++  " = Optional.ofNullable("
-                                              ++  ic.value.fieldName
-                                              ++  "Str != null ? "
-                                              ++  ic.value.codecRef
-                                              ++  ".decodeInTextFromString("
-                                              ++  ic.value.fieldName
-                                              ++  "Str)"
-                                              ++  elemSuffix
-                                              ++  " : null);"
+                                        then  ''
+                                              ${"            "}String ${ic.value.fieldName}Str = rs.getString(${colIdx});
+                                              ${"            "}${ic.value.fieldType} ${ic.value.fieldName} = Optional.ofNullable(${ic.value.fieldName}Str != null ? ${ic.value.codecRef}.decodeInTextFromString(${ic.value.fieldName}Str)${elemSuffix} : null);''
                                         else  if ic.value.isNullable
-                                        then      "            String "
-                                              ++  ic.value.fieldName
-                                              ++  "Str = rs.getString("
-                                              ++  colIdx
-                                              ++  ''
-                                                  );
-                                                  ''
-                                              ++  "            "
-                                              ++  ic.value.fieldType
-                                              ++  " "
-                                              ++  ic.value.fieldName
-                                              ++  " = "
-                                              ++  ic.value.fieldName
-                                              ++  "Str != null ? "
-                                              ++  ic.value.codecRef
-                                              ++  ".decodeInTextFromString("
-                                              ++  ic.value.fieldName
-                                              ++  "Str)"
-                                              ++  elemSuffix
-                                              ++  " : null;"
-                                        else      "            "
-                                              ++  ic.value.fieldType
-                                              ++  " "
-                                              ++  ic.value.fieldName
-                                              ++  " = "
-                                              ++  ic.value.codecRef
-                                              ++  ".decodeInTextFromString(rs.getString("
-                                              ++  colIdx
-                                              ++  "))"
-                                              ++  elemSuffix
-                                              ++  ";"
+                                        then  ''
+                                              ${"            "}String ${ic.value.fieldName}Str = rs.getString(${colIdx});
+                                              ${"            "}${ic.value.fieldType} ${ic.value.fieldName} = ${ic.value.fieldName}Str != null ? ${ic.value.codecRef}.decodeInTextFromString(${ic.value.fieldName}Str)${elemSuffix} : null;''
+                                        else  "            ${ic.value.fieldType} ${ic.value.fieldName} = ${ic.value.codecRef}.decodeInTextFromString(rs.getString(${colIdx}))${elemSuffix};"
                               else  if ic.value.isDateType
                               then  if    ic.value.isOptional
-                                    then      "            Date "
-                                          ++  ic.value.fieldName
-                                          ++  "Sql = rs.getDate("
-                                          ++  colIdx
-                                          ++  ''
-                                              );
-                                              ''
-                                          ++  "            "
-                                          ++  ic.value.fieldType
-                                          ++  " "
-                                          ++  ic.value.fieldName
-                                          ++  " = Optional.ofNullable("
-                                          ++  ic.value.fieldName
-                                          ++  "Sql != null ? "
-                                          ++  ic.value.fieldName
-                                          ++  "Sql.toLocalDate() : null);"
+                                    then  ''
+                                          ${"            "}Date ${ic.value.fieldName}Sql = rs.getDate(${colIdx});
+                                          ${"            "}${ic.value.fieldType} ${ic.value.fieldName} = Optional.ofNullable(${ic.value.fieldName}Sql != null ? ${ic.value.fieldName}Sql.toLocalDate() : null);''
                                     else  if ic.value.isNullable
-                                    then      "            Date "
-                                          ++  ic.value.fieldName
-                                          ++  "Sql = rs.getDate("
-                                          ++  colIdx
-                                          ++  ''
-                                              );
-                                              ''
-                                          ++  "            LocalDate "
-                                          ++  ic.value.fieldName
-                                          ++  " = "
-                                          ++  ic.value.fieldName
-                                          ++  "Sql != null ? "
-                                          ++  ic.value.fieldName
-                                          ++  "Sql.toLocalDate() : null;"
-                                    else      "            LocalDate "
-                                          ++  ic.value.fieldName
-                                          ++  " = rs.getDate("
-                                          ++  colIdx
-                                          ++  ").toLocalDate();"
+                                    then  ''
+                                          ${"            "}Date ${ic.value.fieldName}Sql = rs.getDate(${colIdx});
+                                          ${"            "}LocalDate ${ic.value.fieldName} = ${ic.value.fieldName}Sql != null ? ${ic.value.fieldName}Sql.toLocalDate() : null;''
+                                    else  "            LocalDate ${ic.value.fieldName} = rs.getDate(${colIdx}).toLocalDate();"
                               else  if ic.value.isOptional
                               then  if    ic.value.isJdbcPrimitive
-                                    then      "            "
-                                          ++  ic.value.fieldType
-                                          ++  " "
-                                          ++  ic.value.fieldName
-                                          ++  " = Optional.ofNullable(("
-                                          ++  ic.value.boxedJavaType
-                                          ++  ") rs.getObject("
-                                          ++  colIdx
-                                          ++  "));"
-                                    else      "            "
-                                          ++  ic.value.fieldType
-                                          ++  " "
-                                          ++  ic.value.fieldName
-                                          ++  " = Optional.ofNullable(rs."
-                                          ++  ic.value.jdbcGetter
-                                          ++  "("
-                                          ++  colIdx
-                                          ++  "));"
+                                    then  "            ${ic.value.fieldType} ${ic.value.fieldName} = Optional.ofNullable((${ic.value.boxedJavaType}) rs.getObject(${colIdx}));"
+                                    else  "            ${ic.value.fieldType} ${ic.value.fieldName} = Optional.ofNullable(rs.${ic.value.jdbcGetter}(${colIdx}));"
                               else  if     ic.value.isNullable
                                        &&  ic.value.isJdbcPrimitive
-                              then      "            "
-                                    ++  ic.value.fieldType
-                                    ++  " "
-                                    ++  ic.value.fieldName
-                                    ++  " = ("
-                                    ++  ic.value.fieldType
-                                    ++  ") rs.getObject("
-                                    ++  colIdx
-                                    ++  ");"
-                              else      "            "
-                                    ++  ic.value.fieldType
-                                    ++  " "
-                                    ++  ic.value.fieldName
-                                    ++  " = rs."
-                                    ++  ic.value.jdbcGetter
-                                    ++  "("
-                                    ++  colIdx
-                                    ++  ");"
+                              then  "            ${ic.value.fieldType} ${ic.value.fieldName} = (${ic.value.fieldType}) rs.getObject(${colIdx});"
+                              else  "            ${ic.value.fieldType} ${ic.value.fieldName} = rs.${ic.value.jdbcGetter}(${colIdx});"
 
                   let decodeLines =
                         Deps.Prelude.Text.concatMapSep
@@ -276,11 +152,7 @@ let run =
                               ++  varRefs
                               ++  ''
                                   ));
-                                  ''
-                              ++  ''
                                               } catch (io.codemine.java.postgresql.codecs.Codec.DecodingException e) {
-                                  ''
-                              ++  ''
                                                   throw new IllegalStateException(e);
                                   ''
                               ++  "            }"
@@ -303,61 +175,34 @@ let run =
                                       ++  typeNameBase
                                       ++  ''
                                           }.
-                                          ''
-                                      ++  ''
                                                */
-                                          ''
-                                      ++  ''
                                               public static final class Output extends ArrayList<OutputRow> {
-                                          ''
-                                      ++  "\n"
-                                      ++  ''
+
                                                   Output() {
-                                          ''
-                                      ++  ''
                                                   }
-                                          ''
-                                      ++  ''
                                               }
-                                          ''
-                                      ++  "\n"
-                                      ++  ''
+
                                               /**
-                                          ''
-                                      ++  ''
                                                * Row of {@link Output}.
-                                          ''
-                                      ++  ''
                                                */
-                                          ''
-                                      ++  ''
                                               public record OutputRow(
                                           ''
                                       ++  columnFieldList
                                       ++  ''
                                           ) {
-                                          ''
-                                      ++  "\n"
-                                      ++  "    }"
+
+                                              }''
                                   , decodeMethod =
                                           ''
                                               @Override
-                                          ''
-                                      ++  ''
                                               public Output decodeResultSet(ResultSet rs) throws SQLException {
-                                          ''
-                                      ++  ''
                                                   Output output = new Output();
-                                          ''
-                                      ++  ''
                                                   while (rs.next()) {
                                           ''
                                       ++  decodeBody
                                       ++  "\n"
                                       ++  ''
                                                   }
-                                          ''
-                                      ++  ''
                                                   return output;
                                           ''
                                       ++  "    }"
@@ -373,27 +218,18 @@ let run =
                                       ++  typeNameBase
                                       ++  ''
                                           }.
-                                          ''
-                                      ++  ''
                                                */
-                                          ''
-                                      ++  ''
                                               public record Output(
                                           ''
                                       ++  columnFieldList
                                       ++  ''
                                           ) {
-                                          ''
-                                      ++  "\n"
-                                      ++  "    }"
+
+                                              }''
                                   , decodeMethod =
                                           ''
                                               @Override
-                                          ''
-                                      ++  ''
                                               public Output decodeResultSet(ResultSet rs) throws SQLException {
-                                          ''
-                                      ++  ''
                                                   rs.next();
                                           ''
                                       ++  ( let singleDecodeLines =
@@ -413,131 +249,38 @@ let run =
                                                                 (ic.index + 1)
 
                                                         in  if    ic.value.useCodec
-                                                            then  if    ic.value.isOptional
-                                                                  then      "        String "
-                                                                        ++  ic.value.fieldName
-                                                                        ++  "Str = rs.getString("
-                                                                        ++  colIdx
-                                                                        ++  ''
-                                                                            );
-                                                                            ''
-                                                                        ++  "        "
-                                                                        ++  ic.value.fieldType
-                                                                        ++  " "
-                                                                        ++  ic.value.fieldName
-                                                                        ++  " = Optional.ofNullable("
-                                                                        ++  ic.value.fieldName
-                                                                        ++  "Str != null ? "
-                                                                        ++  ic.value.codecRef
-                                                                        ++  ".decodeInTextFromString("
-                                                                        ++  ic.value.fieldName
-                                                                        ++  "Str) : null);"
-                                                                  else  if ic.value.isNullable
-                                                                  then      "        String "
-                                                                        ++  ic.value.fieldName
-                                                                        ++  "Str = rs.getString("
-                                                                        ++  colIdx
-                                                                        ++  ''
-                                                                            );
-                                                                            ''
-                                                                        ++  "        "
-                                                                        ++  ic.value.fieldType
-                                                                        ++  " "
-                                                                        ++  ic.value.fieldName
-                                                                        ++  " = "
-                                                                        ++  ic.value.fieldName
-                                                                        ++  "Str != null ? "
-                                                                        ++  ic.value.codecRef
-                                                                        ++  ".decodeInTextFromString("
-                                                                        ++  ic.value.fieldName
-                                                                        ++  "Str) : null;"
-                                                                  else      "        "
-                                                                        ++  ic.value.fieldType
-                                                                        ++  " "
-                                                                        ++  ic.value.fieldName
-                                                                        ++  " = "
-                                                                        ++  ic.value.codecRef
-                                                                        ++  ".decodeInTextFromString(rs.getString("
-                                                                        ++  colIdx
-                                                                        ++  "));"
+                                                            then  let elemSuffix =
+                                                                        if    ic.value.elementIsOptional
+                                                                        then  ".stream().map(Optional::ofNullable).toList()"
+                                                                        else  ""
+
+                                                                  in  if    ic.value.isOptional
+                                                                      then  ''
+                                                                            ${"        "}String ${ic.value.fieldName}Str = rs.getString(${colIdx});
+                                                                            ${"        "}${ic.value.fieldType} ${ic.value.fieldName} = Optional.ofNullable(${ic.value.fieldName}Str != null ? ${ic.value.codecRef}.decodeInTextFromString(${ic.value.fieldName}Str)${elemSuffix} : null);''
+                                                                      else  if ic.value.isNullable
+                                                                      then  ''
+                                                                            ${"        "}String ${ic.value.fieldName}Str = rs.getString(${colIdx});
+                                                                            ${"        "}${ic.value.fieldType} ${ic.value.fieldName} = ${ic.value.fieldName}Str != null ? ${ic.value.codecRef}.decodeInTextFromString(${ic.value.fieldName}Str)${elemSuffix} : null;''
+                                                                      else  "        ${ic.value.fieldType} ${ic.value.fieldName} = ${ic.value.codecRef}.decodeInTextFromString(rs.getString(${colIdx}))${elemSuffix};"
                                                             else  if ic.value.isDateType
                                                             then  if    ic.value.isOptional
-                                                                  then      "        Date "
-                                                                        ++  ic.value.fieldName
-                                                                        ++  "Sql = rs.getDate("
-                                                                        ++  colIdx
-                                                                        ++  ''
-                                                                            );
-                                                                            ''
-                                                                        ++  "        "
-                                                                        ++  ic.value.fieldType
-                                                                        ++  " "
-                                                                        ++  ic.value.fieldName
-                                                                        ++  " = Optional.ofNullable("
-                                                                        ++  ic.value.fieldName
-                                                                        ++  "Sql != null ? "
-                                                                        ++  ic.value.fieldName
-                                                                        ++  "Sql.toLocalDate() : null);"
+                                                                  then  ''
+                                                                        ${"        "}Date ${ic.value.fieldName}Sql = rs.getDate(${colIdx});
+                                                                        ${"        "}${ic.value.fieldType} ${ic.value.fieldName} = Optional.ofNullable(${ic.value.fieldName}Sql != null ? ${ic.value.fieldName}Sql.toLocalDate() : null);''
                                                                   else  if ic.value.isNullable
-                                                                  then      "        Date "
-                                                                        ++  ic.value.fieldName
-                                                                        ++  "Sql = rs.getDate("
-                                                                        ++  colIdx
-                                                                        ++  ''
-                                                                            );
-                                                                            ''
-                                                                        ++  "        LocalDate "
-                                                                        ++  ic.value.fieldName
-                                                                        ++  " = "
-                                                                        ++  ic.value.fieldName
-                                                                        ++  "Sql != null ? "
-                                                                        ++  ic.value.fieldName
-                                                                        ++  "Sql.toLocalDate() : null;"
-                                                                  else      "        LocalDate "
-                                                                        ++  ic.value.fieldName
-                                                                        ++  " = rs.getDate("
-                                                                        ++  colIdx
-                                                                        ++  ").toLocalDate();"
+                                                                  then  ''
+                                                                        ${"        "}Date ${ic.value.fieldName}Sql = rs.getDate(${colIdx});
+                                                                        ${"        "}LocalDate ${ic.value.fieldName} = ${ic.value.fieldName}Sql != null ? ${ic.value.fieldName}Sql.toLocalDate() : null;''
+                                                                  else  "        LocalDate ${ic.value.fieldName} = rs.getDate(${colIdx}).toLocalDate();"
                                                             else  if ic.value.isOptional
                                                             then  if    ic.value.isJdbcPrimitive
-                                                                  then      "        "
-                                                                        ++  ic.value.fieldType
-                                                                        ++  " "
-                                                                        ++  ic.value.fieldName
-                                                                        ++  " = Optional.ofNullable(("
-                                                                        ++  ic.value.boxedJavaType
-                                                                        ++  ") rs.getObject("
-                                                                        ++  colIdx
-                                                                        ++  "));"
-                                                                  else      "        "
-                                                                        ++  ic.value.fieldType
-                                                                        ++  " "
-                                                                        ++  ic.value.fieldName
-                                                                        ++  " = Optional.ofNullable(rs."
-                                                                        ++  ic.value.jdbcGetter
-                                                                        ++  "("
-                                                                        ++  colIdx
-                                                                        ++  "));"
+                                                                  then  "        ${ic.value.fieldType} ${ic.value.fieldName} = Optional.ofNullable((${ic.value.boxedJavaType}) rs.getObject(${colIdx}));"
+                                                                  else  "        ${ic.value.fieldType} ${ic.value.fieldName} = Optional.ofNullable(rs.${ic.value.jdbcGetter}(${colIdx}));"
                                                             else  if     ic.value.isNullable
                                                                      &&  ic.value.isJdbcPrimitive
-                                                            then      "        "
-                                                                  ++  ic.value.fieldType
-                                                                  ++  " "
-                                                                  ++  ic.value.fieldName
-                                                                  ++  " = ("
-                                                                  ++  ic.value.fieldType
-                                                                  ++  ") rs.getObject("
-                                                                  ++  colIdx
-                                                                  ++  ");"
-                                                            else      "        "
-                                                                  ++  ic.value.fieldType
-                                                                  ++  " "
-                                                                  ++  ic.value.fieldName
-                                                                  ++  " = rs."
-                                                                  ++  ic.value.jdbcGetter
-                                                                  ++  "("
-                                                                  ++  colIdx
-                                                                  ++  ");"
+                                                            then  "        ${ic.value.fieldType} ${ic.value.fieldName} = (${ic.value.fieldType}) rs.getObject(${colIdx});"
+                                                            else  "        ${ic.value.fieldType} ${ic.value.fieldName} = rs.${ic.value.jdbcGetter}(${colIdx});"
                                                     )
                                                     indexedColumns
 
@@ -551,11 +294,7 @@ let run =
                                                       ++  varRefs
                                                       ++  ''
                                                           );
-                                                          ''
-                                                      ++  ''
                                                                   } catch (io.codemine.java.postgresql.codecs.Codec.DecodingException e) {
-                                                          ''
-                                                      ++  ''
                                                                       throw new IllegalStateException(e);
                                                           ''
                                                       ++  "        }"
@@ -575,17 +314,9 @@ let run =
                                   , decodeMethod =
                                           ''
                                               @Override
-                                          ''
-                                      ++  ''
                                               public Output decodeResultSet(ResultSet rs) throws SQLException {
-                                          ''
-                                      ++  ''
                                                   if (!rs.next()) {
-                                          ''
-                                      ++  ''
                                                       return null;
-                                          ''
-                                      ++  ''
                                                   }
                                           ''
                                       ++  ( let optDecodeLines =
@@ -605,131 +336,38 @@ let run =
                                                                 (ic.index + 1)
 
                                                         in  if    ic.value.useCodec
-                                                            then  if    ic.value.isOptional
-                                                                  then      "        String "
-                                                                        ++  ic.value.fieldName
-                                                                        ++  "Str = rs.getString("
-                                                                        ++  colIdx
-                                                                        ++  ''
-                                                                            );
-                                                                            ''
-                                                                        ++  "        "
-                                                                        ++  ic.value.fieldType
-                                                                        ++  " "
-                                                                        ++  ic.value.fieldName
-                                                                        ++  " = Optional.ofNullable("
-                                                                        ++  ic.value.fieldName
-                                                                        ++  "Str != null ? "
-                                                                        ++  ic.value.codecRef
-                                                                        ++  ".decodeInTextFromString("
-                                                                        ++  ic.value.fieldName
-                                                                        ++  "Str) : null);"
-                                                                  else  if ic.value.isNullable
-                                                                  then      "        String "
-                                                                        ++  ic.value.fieldName
-                                                                        ++  "Str = rs.getString("
-                                                                        ++  colIdx
-                                                                        ++  ''
-                                                                            );
-                                                                            ''
-                                                                        ++  "        "
-                                                                        ++  ic.value.fieldType
-                                                                        ++  " "
-                                                                        ++  ic.value.fieldName
-                                                                        ++  " = "
-                                                                        ++  ic.value.fieldName
-                                                                        ++  "Str != null ? "
-                                                                        ++  ic.value.codecRef
-                                                                        ++  ".decodeInTextFromString("
-                                                                        ++  ic.value.fieldName
-                                                                        ++  "Str) : null;"
-                                                                  else      "        "
-                                                                        ++  ic.value.fieldType
-                                                                        ++  " "
-                                                                        ++  ic.value.fieldName
-                                                                        ++  " = "
-                                                                        ++  ic.value.codecRef
-                                                                        ++  ".decodeInTextFromString(rs.getString("
-                                                                        ++  colIdx
-                                                                        ++  "));"
+                                                            then  let elemSuffix =
+                                                                        if    ic.value.elementIsOptional
+                                                                        then  ".stream().map(Optional::ofNullable).toList()"
+                                                                        else  ""
+
+                                                                  in  if    ic.value.isOptional
+                                                                      then  ''
+                                                                            ${"        "}String ${ic.value.fieldName}Str = rs.getString(${colIdx});
+                                                                            ${"        "}${ic.value.fieldType} ${ic.value.fieldName} = Optional.ofNullable(${ic.value.fieldName}Str != null ? ${ic.value.codecRef}.decodeInTextFromString(${ic.value.fieldName}Str)${elemSuffix} : null);''
+                                                                      else  if ic.value.isNullable
+                                                                      then  ''
+                                                                            ${"        "}String ${ic.value.fieldName}Str = rs.getString(${colIdx});
+                                                                            ${"        "}${ic.value.fieldType} ${ic.value.fieldName} = ${ic.value.fieldName}Str != null ? ${ic.value.codecRef}.decodeInTextFromString(${ic.value.fieldName}Str)${elemSuffix} : null;''
+                                                                      else  "        ${ic.value.fieldType} ${ic.value.fieldName} = ${ic.value.codecRef}.decodeInTextFromString(rs.getString(${colIdx}))${elemSuffix};"
                                                             else  if ic.value.isDateType
                                                             then  if    ic.value.isOptional
-                                                                  then      "        Date "
-                                                                        ++  ic.value.fieldName
-                                                                        ++  "Sql = rs.getDate("
-                                                                        ++  colIdx
-                                                                        ++  ''
-                                                                            );
-                                                                            ''
-                                                                        ++  "        "
-                                                                        ++  ic.value.fieldType
-                                                                        ++  " "
-                                                                        ++  ic.value.fieldName
-                                                                        ++  " = Optional.ofNullable("
-                                                                        ++  ic.value.fieldName
-                                                                        ++  "Sql != null ? "
-                                                                        ++  ic.value.fieldName
-                                                                        ++  "Sql.toLocalDate() : null);"
+                                                                  then  ''
+                                                                        ${"        "}Date ${ic.value.fieldName}Sql = rs.getDate(${colIdx});
+                                                                        ${"        "}${ic.value.fieldType} ${ic.value.fieldName} = Optional.ofNullable(${ic.value.fieldName}Sql != null ? ${ic.value.fieldName}Sql.toLocalDate() : null);''
                                                                   else  if ic.value.isNullable
-                                                                  then      "        Date "
-                                                                        ++  ic.value.fieldName
-                                                                        ++  "Sql = rs.getDate("
-                                                                        ++  colIdx
-                                                                        ++  ''
-                                                                            );
-                                                                            ''
-                                                                        ++  "        LocalDate "
-                                                                        ++  ic.value.fieldName
-                                                                        ++  " = "
-                                                                        ++  ic.value.fieldName
-                                                                        ++  "Sql != null ? "
-                                                                        ++  ic.value.fieldName
-                                                                        ++  "Sql.toLocalDate() : null;"
-                                                                  else      "        LocalDate "
-                                                                        ++  ic.value.fieldName
-                                                                        ++  " = rs.getDate("
-                                                                        ++  colIdx
-                                                                        ++  ").toLocalDate();"
+                                                                  then  ''
+                                                                        ${"        "}Date ${ic.value.fieldName}Sql = rs.getDate(${colIdx});
+                                                                        ${"        "}LocalDate ${ic.value.fieldName} = ${ic.value.fieldName}Sql != null ? ${ic.value.fieldName}Sql.toLocalDate() : null;''
+                                                                  else  "        LocalDate ${ic.value.fieldName} = rs.getDate(${colIdx}).toLocalDate();"
                                                             else  if ic.value.isOptional
                                                             then  if    ic.value.isJdbcPrimitive
-                                                                  then      "        "
-                                                                        ++  ic.value.fieldType
-                                                                        ++  " "
-                                                                        ++  ic.value.fieldName
-                                                                        ++  " = Optional.ofNullable(("
-                                                                        ++  ic.value.boxedJavaType
-                                                                        ++  ") rs.getObject("
-                                                                        ++  colIdx
-                                                                        ++  "));"
-                                                                  else      "        "
-                                                                        ++  ic.value.fieldType
-                                                                        ++  " "
-                                                                        ++  ic.value.fieldName
-                                                                        ++  " = Optional.ofNullable(rs."
-                                                                        ++  ic.value.jdbcGetter
-                                                                        ++  "("
-                                                                        ++  colIdx
-                                                                        ++  "));"
+                                                                  then  "        ${ic.value.fieldType} ${ic.value.fieldName} = Optional.ofNullable((${ic.value.boxedJavaType}) rs.getObject(${colIdx}));"
+                                                                  else  "        ${ic.value.fieldType} ${ic.value.fieldName} = Optional.ofNullable(rs.${ic.value.jdbcGetter}(${colIdx}));"
                                                             else  if     ic.value.isNullable
                                                                      &&  ic.value.isJdbcPrimitive
-                                                            then      "        "
-                                                                  ++  ic.value.fieldType
-                                                                  ++  " "
-                                                                  ++  ic.value.fieldName
-                                                                  ++  " = ("
-                                                                  ++  ic.value.fieldType
-                                                                  ++  ") rs.getObject("
-                                                                  ++  colIdx
-                                                                  ++  ");"
-                                                            else      "        "
-                                                                  ++  ic.value.fieldType
-                                                                  ++  " "
-                                                                  ++  ic.value.fieldName
-                                                                  ++  " = rs."
-                                                                  ++  ic.value.jdbcGetter
-                                                                  ++  "("
-                                                                  ++  colIdx
-                                                                  ++  ");"
+                                                            then  "        ${ic.value.fieldType} ${ic.value.fieldName} = (${ic.value.fieldType}) rs.getObject(${colIdx});"
+                                                            else  "        ${ic.value.fieldType} ${ic.value.fieldName} = rs.${ic.value.jdbcGetter}(${colIdx});"
                                                     )
                                                     indexedColumns
 
@@ -743,11 +381,7 @@ let run =
                                                       ++  varRefs
                                                       ++  ''
                                                           );
-                                                          ''
-                                                      ++  ''
                                                                   } catch (io.codemine.java.postgresql.codecs.Codec.DecodingException e) {
-                                                          ''
-                                                      ++  ''
                                                                       throw new IllegalStateException(e);
                                                           ''
                                                       ++  "        }"
@@ -773,8 +407,6 @@ let run =
                             in  { statementImpl =
                                         ''
                                             @Override
-                                        ''
-                                    ++  ''
                                             public String sql() {
                                         ''
                                     ++  "        return \"\"\""
@@ -789,47 +421,27 @@ let run =
                                     ++  "\n"
                                     ++  ''
                                             }
-                                        ''
-                                    ++  "\n"
-                                    ++  ''
+
                                             @Override
-                                        ''
-                                    ++  ''
                                             public void bindParams(PreparedStatement ps) throws SQLException {
                                         ''
                                     ++  ctx.paramBindCode
                                     ++  ''
                                             }
-                                        ''
-                                    ++  "\n"
-                                    ++  ''
+
                                             @Override
-                                        ''
-                                    ++  ''
                                             public boolean returnsRows() {
-                                        ''
-                                    ++  ''
                                                 return true;
-                                        ''
-                                    ++  ''
                                             }
                                         ''
                                     ++  "\n"
                                     ++  resolved.decodeMethod
-                                    ++  "\n"
-                                    ++  "\n"
+                                    ++  "\n\n"
                                     ++  ''
-                                            @Override
-                                        ''
-                                    ++  "    public "
-                                    ++  resolved.resultTypeName
-                                    ++  ''
-                                         decodeAffectedRows(long affectedRows) {
-                                        ''
-                                    ++  ''
-                                                throw new UnsupportedOperationException();
-                                        ''
-                                    ++  "    }"
+                                        ${"    "}@Override
+                                        ${"    "}public ${resolved.resultTypeName} decodeAffectedRows(long affectedRows) {
+                                        ${"    "}    throw new UnsupportedOperationException();
+                                        ${"    "}}''
                                 , typeDecls = resolved.typeDecls
                                 }
                         )
