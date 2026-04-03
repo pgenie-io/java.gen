@@ -21,10 +21,10 @@ let run =
                 Variant
                 ( \(variant : Variant) ->
                     ''
-                    ${"    "}/**
-                    ${"    "} * Corresponds to the PostgreSQL enum variant {@code ${variant.pgValue}}.
-                    ${"    "} */
-                    ${"    "}${variant.name}''
+                    /**
+                     * Corresponds to the PostgreSQL enum variant {@code ${variant.pgValue}}.
+                     */
+                    ${variant.name}''
                 )
                 params.variants
 
@@ -35,7 +35,7 @@ let run =
                 ''
                 Variant
                 ( \(variant : Variant) ->
-                    "                    Map.entry(${variant.name}, \"${variant.pgValue}\")"
+                    "Map.entry(${variant.name}, \"${variant.pgValue}\")"
                 )
                 params.variants
 
@@ -44,8 +44,6 @@ let run =
 
                 import io.codemine.java.postgresql.codecs.EnumCodec;
 
-                ''
-            ++  ''
                 /**
                  * Representation of the {@code ${params.pgTypeName}} user-declared PostgreSQL
                  * enumeration type.
@@ -57,7 +55,8 @@ let run =
                 public enum ${params.typeName} {
 
                 ''
-            ++  variantEntries
+            ++  "    "
+            ++  Deps.Lude.Extensions.Text.indent 4 variantEntries
             ++  ''
                 ;
 
@@ -65,7 +64,8 @@ let run =
                             "${params.pgSchema}", "${params.pgTypeName}",
                             Map.ofEntries(
                 ''
-            ++  codecEntries
+            ++  "                    "
+            ++  Deps.Lude.Extensions.Text.indent 20 codecEntries
             ++  ''
                 ));
 
