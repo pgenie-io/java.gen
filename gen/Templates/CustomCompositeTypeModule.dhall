@@ -131,42 +131,33 @@ let run =
               ++  "\n\n"
               ++  Deps.Prelude.Text.concatSep "\n" codecImports
 
-        in      ''
-                package ${params.packageName}.types;
+        in  ''
+            package ${params.packageName}.types;
 
-                ${importSection}
+            ${importSection}
 
-                /**
-                 * Representation of the {@code ${params.pgTypeName}} user-declared PostgreSQL
-                 * composite (record) type.
-                 *
-                 * <p>
-                 * Generated from SQL queries using the
-                 * <a href="https://pgenie.io">pGenie</a> code generator.
-                 *
-                 * <p>
-                 * All fields are nullable, matching the PostgreSQL column definitions.
-                 */
-                public record ${params.typeName}(
-                ''
-            ++  "        "
-            ++  Deps.Lude.Extensions.Text.indentNonEmpty 8 fieldDecls
-            ++  ''
-                ) {
+            /**
+             * Representation of the {@code ${params.pgTypeName}} user-declared PostgreSQL
+             * composite (record) type.
+             *
+             * <p>
+             * Generated from SQL queries using the
+             * <a href="https://pgenie.io">pGenie</a> code generator.
+             *
+             * <p>
+             * All fields are nullable, matching the PostgreSQL column definitions.
+             */
+            public record ${params.typeName}(
+                    ${Deps.Lude.Extensions.Text.indentNonEmpty 8 fieldDecls}) {
 
-                    public static final CompositeCodec<${params.typeName}> CODEC = new CompositeCodec<>(
-                            "${params.pgSchema}", "${params.pgTypeName}",
-                            ''
-            ++  curriedConstructor
-            ++  ''
-                ,
-                ''
-            ++  "            "
-            ++  Deps.Lude.Extensions.Text.indentNonEmpty 12 codecFieldEntries
-            ++  ''
-                );
+                public static final CompositeCodec<${params.typeName}> CODEC = new CompositeCodec<>(
+                        "${params.pgSchema}", "${params.pgTypeName}",
+                        ${curriedConstructor},
+                        ${Deps.Lude.Extensions.Text.indentNonEmpty
+                            12
+                            codecFieldEntries});
 
-                }
-                ''
+            }
+            ''
 
 in  { Params, Field, run }
