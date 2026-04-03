@@ -22,6 +22,7 @@ When the repository content conflicts with outside examples, prefer the structur
 
 ## Dhall libs
 
+- [Prelude](https://store.dhall-lang.org/Prelude-v23.1.0/index.html) - the standard Dhall Prelude library, for basic utilities and data structures. Load that into memory! This is your bread and butter for working with Dhall.
 - https://github.com/codemine-io/lude.dhall - utils
   - E.g., `Lude.Extensions.Text.indent` - a utility for indenting multiline strings, which is very useful for generating code with correct indentation.
     - Use it instead of manually adding indentation in strings!
