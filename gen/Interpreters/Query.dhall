@@ -45,72 +45,66 @@ let mkParamBindCode =
         let indexedOccurrences =
               Deps.Prelude.List.indexed Natural paramOccurrences
 
-        in  Deps.Prelude.Text.concatMap
-              { index : Natural, value : Natural }
-              ( \(ip : { index : Natural, value : Natural }) ->
-                  let idx = Natural/show (ip.index + 1)
+        in  Deps.Prelude.Text.concatSep
+              "\n"
+              ( Deps.Prelude.List.filterMap
+                  { index : Natural, value : Natural }
+                  Text
+                  ( \(ip : { index : Natural, value : Natural }) ->
+                      let idx = Natural/show (ip.index + 1)
 
-                  let mParam =
-                        Deps.Prelude.List.index
-                          ip.value
-                          MemberModule.Output
-                          params
+                      let mParam =
+                            Deps.Prelude.List.index
+                              ip.value
+                              MemberModule.Output
+                              params
 
-                  in  merge
-                        { None = ""
-                        , Some =
-                            \(p : MemberModule.Output) ->
-                              if    p.useCodec
-                              then  if    p.isOptional
-                                    then  ''
-                                                  Jdbc.bind(ps, ${idx}, ${p.codecRef}, this.${p.fieldName}().orElse(null));
-                                          ''
-                                    else  ''
-                                                  Jdbc.bind(ps, ${idx}, ${p.codecRef}, this.${p.fieldName}());
-                                          ''
-                              else  if p.isDateType
-                              then  if    p.isOptional
-                                    then  ''
+                      in  merge
+                            { None = None Text
+                            , Some =
+                                \(p : MemberModule.Output) ->
+                                  Some
+                                    ( if    p.useCodec
+                                      then  if    p.isOptional
+                                            then  "Jdbc.bind(ps, ${idx}, ${p.codecRef}, this.${p.fieldName}().orElse(null));"
+                                            else  "Jdbc.bind(ps, ${idx}, ${p.codecRef}, this.${p.fieldName}());"
+                                      else  if p.isDateType
+                                      then  if    p.isOptional
+                                            then  ''
                                                   if (this.${p.fieldName}().isPresent()) {
                                                       ps.setDate(${idx}, Date.valueOf(this.${p.fieldName}().get()));
                                                   } else {
                                                       ps.setNull(${idx}, Types.DATE);
-                                                  }
-                                          ''
-                                    else  if p.isNullable
-                                    then  ''
+                                                  }''
+                                            else  if p.isNullable
+                                            then  ''
                                                   if (this.${p.fieldName}() != null) {
                                                       ps.setDate(${idx}, Date.valueOf(this.${p.fieldName}()));
                                                   } else {
                                                       ps.setNull(${idx}, Types.DATE);
-                                                  }
-                                          ''
-                                    else  ''
-                                                  ps.setDate(${idx}, Date.valueOf(this.${p.fieldName}()));
-                                          ''
-                              else  if p.isOptional
-                              then  ''
+                                                  }''
+                                            else  "ps.setDate(${idx}, Date.valueOf(this.${p.fieldName}()));"
+                                      else  if p.isOptional
+                                      then  ''
                                             if (this.${p.fieldName}().isPresent()) {
                                                 ps.${p.jdbcSetter}(${idx}, this.${p.fieldName}().get());
                                             } else {
                                                 ps.setNull(${idx}, Types.${p.sqlTypesConstant});
-                                            }
-                                    ''
-                              else  if p.isNullable
-                              then  ''
+                                            }''
+                                      else  if p.isNullable
+                                      then  ''
                                             if (this.${p.fieldName}() != null) {
                                                 ps.${p.jdbcSetter}(${idx}, this.${p.fieldName}());
                                             } else {
                                                 ps.setNull(${idx}, Types.${p.sqlTypesConstant});
-                                            }
-                                    ''
-                              else  ''
-                                            ps.${p.jdbcSetter}(${idx}, this.${p.fieldName}());
-                                    ''
-                        }
-                        mParam
+                                            }''
+                                      else  "ps.${p.jdbcSetter}(${idx}, this.${p.fieldName}());"
+                                    )
+                            }
+                            mParam
+                  )
+                  indexedOccurrences
               )
-              indexedOccurrences
 
 let render =
       \(config : Algebra.Config) ->

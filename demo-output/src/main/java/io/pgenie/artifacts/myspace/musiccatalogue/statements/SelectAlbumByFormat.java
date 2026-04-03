@@ -52,9 +52,7 @@ public record SelectAlbumByFormat(
      * Result of the statement parameterised by {@link SelectAlbumByFormat}.
      */
     public static final class Output extends ArrayList<OutputRow> {
-
-        Output() {
-        }
+        Output() {}
     }
 
     /**
@@ -80,9 +78,7 @@ public record SelectAlbumByFormat(
             /**
              * Maps to the {@code recording} result-set column. Nullable.
              */
-            RecordingInfo recording) {
-
-    }
+            RecordingInfo recording) {}
 
     // -------------------------------------------------------------------------
     // Statement implementation
@@ -124,6 +120,7 @@ public record SelectAlbumByFormat(
                 AlbumFormat format = formatStr != null ? AlbumFormat.CODEC.decodeInTextFromString(formatStr) : null;
                 String recordingStr = rs.getString(5);
                 RecordingInfo recording = recordingStr != null ? RecordingInfo.CODEC.decodeInTextFromString(recordingStr) : null;
+
                 output.add(new OutputRow(id, name, released, format, recording));
             } catch (io.codemine.java.postgresql.codecs.Codec.DecodingException e) {
                 throw new IllegalStateException(e);

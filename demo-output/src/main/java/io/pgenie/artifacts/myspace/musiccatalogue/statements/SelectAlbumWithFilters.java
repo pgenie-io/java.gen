@@ -88,9 +88,7 @@ public record SelectAlbumWithFilters(
      * Result of the statement parameterised by {@link SelectAlbumWithFilters}.
      */
     public static final class Output extends ArrayList<OutputRow> {
-
-        Output() {
-        }
+        Output() {}
     }
 
     /**
@@ -112,9 +110,7 @@ public record SelectAlbumWithFilters(
             /**
              * Maps to the {@code format} result-set column. Nullable.
              */
-            AlbumFormat format) {
-
-    }
+            AlbumFormat format) {}
 
     // -------------------------------------------------------------------------
     // Statement implementation
@@ -200,6 +196,7 @@ public record SelectAlbumWithFilters(
                 LocalDate released = releasedSql != null ? releasedSql.toLocalDate() : null;
                 String formatStr = rs.getString(4);
                 AlbumFormat format = formatStr != null ? AlbumFormat.CODEC.decodeInTextFromString(formatStr) : null;
+
                 output.add(new OutputRow(id, name, released, format));
             } catch (io.codemine.java.postgresql.codecs.Codec.DecodingException e) {
                 throw new IllegalStateException(e);

@@ -53,9 +53,7 @@ public record UpdateAlbumRecordingReturning(
      * Result of the statement parameterised by {@link UpdateAlbumRecordingReturning}.
      */
     public static final class Output extends ArrayList<OutputRow> {
-
-        Output() {
-        }
+        Output() {}
     }
 
     /**
@@ -89,9 +87,7 @@ public record UpdateAlbumRecordingReturning(
             /**
              * Maps to the {@code disc} result-set column. Nullable.
              */
-            DiscInfo disc) {
-
-    }
+            DiscInfo disc) {}
 
     // -------------------------------------------------------------------------
     // Statement implementation
@@ -135,6 +131,7 @@ public record UpdateAlbumRecordingReturning(
                 List<TrackInfo> tracks = tracksStr != null ? TrackInfo.CODEC.inDim().decodeInTextFromString(tracksStr) : null;
                 String discStr = rs.getString(7);
                 DiscInfo disc = discStr != null ? DiscInfo.CODEC.decodeInTextFromString(discStr) : null;
+
                 output.add(new OutputRow(id, name, released, format, recording, tracks, disc));
             } catch (io.codemine.java.postgresql.codecs.Codec.DecodingException e) {
                 throw new IllegalStateException(e);

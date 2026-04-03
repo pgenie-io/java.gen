@@ -85,7 +85,9 @@ in  Algebra.module
                   public record ${params.typeName}(
                   ''
               ++  "        "
-              ++  Deps.Lude.Extensions.Text.indent 8 params.paramFieldList
+              ++  Deps.Lude.Extensions.Text.indentNonEmpty
+                    8
+                    params.paramFieldList
               ++  ''
                   )
                           implements Statement<${params.resultTypeName}> {
@@ -97,7 +99,10 @@ in  Algebra.module
                                   // Result type
                                   // -------------------------------------------------------------------------
                               ''
-                          ++  params.typeDecls
+                          ++  "    "
+                          ++  Deps.Lude.Extensions.Text.indentNonEmpty
+                                4
+                                params.typeDecls
                           ++  "\n\n"
                     else  ""
                   )
@@ -106,7 +111,10 @@ in  Algebra.module
                       // Statement implementation
                       // -------------------------------------------------------------------------
                   ''
-              ++  params.statementImpl
+              ++  "    "
+              ++  Deps.Lude.Extensions.Text.indentNonEmpty
+                    4
+                    params.statementImpl
               ++  ''
 
                   }''

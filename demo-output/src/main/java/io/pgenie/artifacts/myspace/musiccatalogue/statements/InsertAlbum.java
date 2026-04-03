@@ -62,9 +62,7 @@ public record InsertAlbum(
             /**
              * Maps to the {@code id} result-set column.
              */
-            long id) {
-
-    }
+            long id) {}
 
     // -------------------------------------------------------------------------
     // Statement implementation

@@ -114,30 +114,19 @@ let run =
 
                   let decodeBody =
                         if    hasCodecDecode
-                        then      ''
-                                              try {
-                                  ''
-                              ++  "                "
-                              ++  Deps.Lude.Extensions.Text.indent
-                                    16
-                                    decodeLines
-                              ++  "\n"
-                              ++  ''
-                                                  output.add(new OutputRow(${varRefs}));
-                                  ''
-                              ++  ''
-                                              } catch (io.codemine.java.postgresql.codecs.Codec.DecodingException e) {
-                                  ''
-                              ++  ''
-                                                  throw new IllegalStateException(e);
-                                  ''
-                              ++  "            }"
-                        else      "            "
-                              ++  Deps.Lude.Extensions.Text.indent
-                                    12
-                                    decodeLines
-                              ++  "\n"
-                              ++  "            output.add(new OutputRow(${varRefs}));"
+                        then  ''
+                              try {
+                                  ${Deps.Lude.Extensions.Text.indentNonEmpty
+                                      4
+                                      decodeLines}
+
+                                  output.add(new OutputRow(${varRefs}));
+                              } catch (io.codemine.java.postgresql.codecs.Codec.DecodingException e) {
+                                  throw new IllegalStateException(e);
+                              }''
+                        else  ''
+                              ${decodeLines}
+                              output.add(new OutputRow(${varRefs}));''
 
                   in  Deps.Sdk.Compiled.ok
                         Output
@@ -145,98 +134,71 @@ let run =
                           \(typeNameBase : Text) ->
                             let multipleResult =
                                   { typeDecls =
-                                          ''
-                                              /**
-                                               * Result of the statement parameterised by {@link ${typeNameBase}}.
-                                               */
-                                              public static final class Output extends ArrayList<OutputRow> {
+                                      ''
+                                      /**
+                                       * Result of the statement parameterised by {@link ${typeNameBase}}.
+                                       */
+                                      public static final class Output extends ArrayList<OutputRow> {
+                                          Output() {}
+                                      }
 
-                                                  Output() {
-                                                  }
-                                              }
-
-                                              /**
-                                               * Row of {@link Output}.
-                                               */
-                                              public record OutputRow(
-                                          ''
-                                      ++  "            "
-                                      ++  Deps.Lude.Extensions.Text.indent
-                                            12
-                                            columnFieldList
-                                      ++  ''
-                                          ) {
-
-                                              }''
+                                      /**
+                                       * Row of {@link Output}.
+                                       */
+                                      public record OutputRow(
+                                              ${Deps.Lude.Extensions.Text.indentNonEmpty
+                                                  8
+                                                  columnFieldList}) {}''
                                   , decodeMethod =
-                                          ''
-                                              @Override
-                                              public Output decodeResultSet(ResultSet rs) throws SQLException {
-                                                  Output output = new Output();
-                                                  while (rs.next()) {
-                                          ''
-                                      ++  decodeBody
-                                      ++  ''
-
-                                          ${"    "}    }
-                                          ${"    "}    return output;
-                                          ${"    "}}''
+                                      ''
+                                      @Override
+                                      public Output decodeResultSet(ResultSet rs) throws SQLException {
+                                          Output output = new Output();
+                                          while (rs.next()) {
+                                              ${Deps.Lude.Extensions.Text.indentNonEmpty
+                                                  8
+                                                  decodeBody}
+                                          }
+                                          return output;
+                                      }''
                                   , resultTypeName = "${typeNameBase}.Output"
                                   }
 
                             let singleResult =
                                   let singleDecodeBody =
                                         if    hasCodecDecode
-                                        then      ''
-                                                          try {
-                                                  ''
-                                              ++  "            "
-                                              ++  Deps.Lude.Extensions.Text.indent
-                                                    12
-                                                    decodeLines
-                                              ++  "\n"
-                                              ++  ''
-                                                              return new Output(${varRefs});
-                                                  ''
-                                              ++  ''
-                                                          } catch (io.codemine.java.postgresql.codecs.Codec.DecodingException e) {
-                                                  ''
-                                              ++  ''
-                                                              throw new IllegalStateException(e);
-                                                  ''
-                                              ++  "        }"
-                                        else      "        "
-                                              ++  Deps.Lude.Extensions.Text.indent
-                                                    8
-                                                    decodeLines
-                                              ++  "\n"
-                                              ++  "        return new Output(${varRefs});"
+                                        then  ''
+                                              try {
+                                                  ${Deps.Lude.Extensions.Text.indentNonEmpty
+                                                      4
+                                                      decodeLines}
+
+                                                  return new Output(${varRefs});
+                                              } catch (io.codemine.java.postgresql.codecs.Codec.DecodingException e) {
+                                                  throw new IllegalStateException(e);
+                                              }''
+                                        else  ''
+                                              ${decodeLines}
+                                              return new Output(${varRefs});''
 
                                   in  { typeDecls =
-                                              ''
-                                                  /**
-                                                   * Result of the statement parameterised by {@link ${typeNameBase}}.
-                                                   */
-                                                  public record Output(
-                                              ''
-                                          ++  "            "
-                                          ++  Deps.Lude.Extensions.Text.indent
-                                                12
-                                                columnFieldList
-                                          ++  ''
-                                              ) {
-
-                                                  }''
+                                          ''
+                                          /**
+                                           * Result of the statement parameterised by {@link ${typeNameBase}}.
+                                           */
+                                          public record Output(
+                                                  ${Deps.Lude.Extensions.Text.indentNonEmpty
+                                                      8
+                                                      columnFieldList}) {}''
                                       , decodeMethod =
-                                              ''
-                                                  @Override
-                                                  public Output decodeResultSet(ResultSet rs) throws SQLException {
-                                                      rs.next();
-                                              ''
-                                          ++  singleDecodeBody
-                                          ++  ''
-
-                                              ${"    "}}''
+                                          ''
+                                          @Override
+                                          public Output decodeResultSet(ResultSet rs) throws SQLException {
+                                              rs.next();
+                                              ${Deps.Lude.Extensions.Text.indentNonEmpty
+                                                  4
+                                                  singleDecodeBody}
+                                          }''
                                       , resultTypeName =
                                           "${typeNameBase}.Output"
                                       }
@@ -244,44 +206,32 @@ let run =
                             let optionalResult =
                                   let optDecodeBody =
                                         if    hasCodecDecode
-                                        then      ''
-                                                          try {
-                                                  ''
-                                              ++  "            "
-                                              ++  Deps.Lude.Extensions.Text.indent
-                                                    12
-                                                    decodeLines
-                                              ++  "\n"
-                                              ++  ''
-                                                              return new Output(${varRefs});
-                                                  ''
-                                              ++  ''
-                                                          } catch (io.codemine.java.postgresql.codecs.Codec.DecodingException e) {
-                                                  ''
-                                              ++  ''
-                                                              throw new IllegalStateException(e);
-                                                  ''
-                                              ++  "        }"
-                                        else      "        "
-                                              ++  Deps.Lude.Extensions.Text.indent
-                                                    8
-                                                    decodeLines
-                                              ++  "\n"
-                                              ++  "        return new Output(${varRefs});"
+                                        then  ''
+                                              try {
+                                                  ${Deps.Lude.Extensions.Text.indentNonEmpty
+                                                      4
+                                                      decodeLines}
+
+                                                  return new Output(${varRefs});
+                                              } catch (io.codemine.java.postgresql.codecs.Codec.DecodingException e) {
+                                                  throw new IllegalStateException(e);
+                                              }''
+                                        else  ''
+                                              ${decodeLines}
+                                              return new Output(${varRefs});''
 
                                   in  { typeDecls = singleResult.typeDecls
                                       , decodeMethod =
-                                              ''
-                                                  @Override
-                                                  public Output decodeResultSet(ResultSet rs) throws SQLException {
-                                                      if (!rs.next()) {
-                                                          return null;
-                                                      }
-                                              ''
-                                          ++  optDecodeBody
-                                          ++  ''
-
-                                              ${"    "}}''
+                                          ''
+                                          @Override
+                                          public Output decodeResultSet(ResultSet rs) throws SQLException {
+                                              if (!rs.next()) {
+                                                  return null;
+                                              }
+                                              ${Deps.Lude.Extensions.Text.indentNonEmpty
+                                                  4
+                                                  optDecodeBody}
+                                          }''
                                       , resultTypeName =
                                           "${typeNameBase}.Output"
                                       }
@@ -295,54 +245,34 @@ let run =
                                     input.cardinality
 
                             in  { statementImpl =
-                                        ''
-                                            @Override
-                                            public String sql() {
-                                        ''
-                                    ++  "        return \"\"\""
-                                    ++  Deps.Lude.Extensions.Text.indent
-                                          15
-                                          (     "\n"
-                                            ++  ctx.sqlExp
-                                            ++  ''
+                                    ''
+                                    @Override
+                                    public String sql() {
+                                        return """
+                                               ${Deps.Lude.Extensions.Text.indentNonEmpty
+                                                   11
+                                                   ctx.sqlExp}
+                                               """;
+                                    }
 
-                                                """;''
-                                          )
-                                    ++  ''
+                                    @Override
+                                    public void bindParams(PreparedStatement ps) throws SQLException {
+                                        ${Deps.Lude.Extensions.Text.indentNonEmpty
+                                            4
+                                            ctx.paramBindCode}
+                                    }
 
-                                            }
+                                    @Override
+                                    public boolean returnsRows() {
+                                        return true;
+                                    }
 
-                                            @Override
-                                            public void bindParams(PreparedStatement ps) throws SQLException {
-                                        ''
-                                    ++  ctx.paramBindCode
-                                    ++  ''
-                                            }
+                                    ${resolved.decodeMethod}
 
-                                            @Override
-                                            public boolean returnsRows() {
-                                                return true;
-                                            }
-
-                                        ''
-                                    ++  resolved.decodeMethod
-                                    ++  ''
-
-
-                                        ${"    "}''
-                                    ++  Deps.Lude.Extensions.Text.indent
-                                          4
-                                          (     ''
-                                                @Override
-                                                ''
-                                            ++  ''
-                                                public ${resolved.resultTypeName} decodeAffectedRows(long affectedRows) {
-                                                ''
-                                            ++  ''
-                                                    throw new UnsupportedOperationException();
-                                                ''
-                                            ++  "}"
-                                          )
+                                    @Override
+                                    public ${resolved.resultTypeName} decodeAffectedRows(long affectedRows) {
+                                        throw new UnsupportedOperationException();
+                                    }''
                                 , typeDecls = resolved.typeDecls
                                 }
                         )

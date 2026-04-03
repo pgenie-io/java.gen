@@ -45,9 +45,7 @@ public record SelectAlbumWithTracks(
      * Result of the statement parameterised by {@link SelectAlbumWithTracks}.
      */
     public static final class Output extends ArrayList<OutputRow> {
-
-        Output() {
-        }
+        Output() {}
     }
 
     /**
@@ -69,9 +67,7 @@ public record SelectAlbumWithTracks(
             /**
              * Maps to the {@code disc} result-set column. Nullable.
              */
-            DiscInfo disc) {
-
-    }
+            DiscInfo disc) {}
 
     // -------------------------------------------------------------------------
     // Statement implementation
@@ -105,6 +101,7 @@ public record SelectAlbumWithTracks(
                 List<TrackInfo> tracks = TrackInfo.CODEC.inDim().decodeInTextFromString(rs.getString(3));
                 String discStr = rs.getString(4);
                 DiscInfo disc = discStr != null ? DiscInfo.CODEC.decodeInTextFromString(discStr) : null;
+
                 output.add(new OutputRow(id, name, tracks, disc));
             } catch (io.codemine.java.postgresql.codecs.Codec.DecodingException e) {
                 throw new IllegalStateException(e);

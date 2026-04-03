@@ -37,7 +37,7 @@ in  Algebra.module
           public abstract class AbstractDatabaseIT {
 
               private static final String[] MIGRATIONS = {
-                  ${Deps.Lude.Extensions.Text.indent
+                  ${Deps.Lude.Extensions.Text.indentNonEmpty
                       8
                       ( Deps.Prelude.Text.concatMapSep
                           ''

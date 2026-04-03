@@ -148,7 +148,7 @@ let run =
                 public record ${params.typeName}(
                 ''
             ++  "        "
-            ++  Deps.Lude.Extensions.Text.indent 8 fieldDecls
+            ++  Deps.Lude.Extensions.Text.indentNonEmpty 8 fieldDecls
             ++  ''
                 ) {
 
@@ -160,7 +160,7 @@ let run =
                 ,
                 ''
             ++  "            "
-            ++  Deps.Lude.Extensions.Text.indent 12 codecFieldEntries
+            ++  Deps.Lude.Extensions.Text.indentNonEmpty 12 codecFieldEntries
             ++  ''
                 );
 

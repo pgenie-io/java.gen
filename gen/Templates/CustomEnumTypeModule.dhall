@@ -56,7 +56,7 @@ let run =
 
                 ''
             ++  "    "
-            ++  Deps.Lude.Extensions.Text.indent 4 variantEntries
+            ++  Deps.Lude.Extensions.Text.indentNonEmpty 4 variantEntries
             ++  ''
                 ;
 
@@ -65,7 +65,7 @@ let run =
                             Map.ofEntries(
                 ''
             ++  "                    "
-            ++  Deps.Lude.Extensions.Text.indent 20 codecEntries
+            ++  Deps.Lude.Extensions.Text.indentNonEmpty 20 codecEntries
             ++  ''
                 ));
 

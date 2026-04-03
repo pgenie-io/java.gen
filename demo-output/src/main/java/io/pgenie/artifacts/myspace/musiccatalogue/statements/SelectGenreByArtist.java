@@ -47,9 +47,7 @@ public record SelectGenreByArtist(
      * Result of the statement parameterised by {@link SelectGenreByArtist}.
      */
     public static final class Output extends ArrayList<OutputRow> {
-
-        Output() {
-        }
+        Output() {}
     }
 
     /**
@@ -63,9 +61,7 @@ public record SelectGenreByArtist(
             /**
              * Maps to the {@code name} result-set column.
              */
-            String name) {
-
-    }
+            String name) {}
 
     // -------------------------------------------------------------------------
     // Statement implementation
