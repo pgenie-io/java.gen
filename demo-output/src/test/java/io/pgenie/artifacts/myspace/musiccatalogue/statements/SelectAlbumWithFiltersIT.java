@@ -13,7 +13,7 @@ class SelectAlbumWithFiltersIT extends AbstractDatabaseIT {
 
     @Test
     void executesWithDefaultValues() throws SQLException {
-        var result = execute(new SelectAlbumWithFilters(null, null, null, null, null, false, false));
+        var result = execute(new SelectAlbumWithFilters(Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), false, false));
         assertNotNull(result);
 
     }

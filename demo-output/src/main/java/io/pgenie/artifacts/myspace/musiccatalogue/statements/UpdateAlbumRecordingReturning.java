@@ -7,6 +7,7 @@ import java.sql.Date;
 import java.time.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import io.codemine.java.postgresql.codecs.Codec;
 import io.pgenie.artifacts.myspace.musiccatalogue.Statement;
 import io.pgenie.artifacts.myspace.musiccatalogue.codecs.Jdbc;
@@ -35,7 +36,7 @@ public record UpdateAlbumRecordingReturning(
         /**
          * Maps to {@code $recording} in the template. Nullable.
          */
-        RecordingInfo recording,
+        Optional<RecordingInfo> recording,
         /**
          * Maps to {@code $id} in the template.
          */
@@ -67,23 +68,23 @@ public record UpdateAlbumRecordingReturning(
             /**
              * Maps to the {@code released} result-set column. Nullable.
              */
-            LocalDate released,
+            Optional<LocalDate> released,
             /**
              * Maps to the {@code format} result-set column. Nullable.
              */
-            AlbumFormat format,
+            Optional<AlbumFormat> format,
             /**
              * Maps to the {@code recording} result-set column. Nullable.
              */
-            RecordingInfo recording,
+            Optional<RecordingInfo> recording,
             /**
              * Maps to the {@code tracks} result-set column. Nullable.
              */
-            List<TrackInfo> tracks,
+            Optional<List<TrackInfo>> tracks,
             /**
              * Maps to the {@code disc} result-set column. Nullable.
              */
-            DiscInfo disc) {}
+            Optional<DiscInfo> disc) {}
 
     // -------------------------------------------------------------------------
     // Statement implementation
@@ -101,7 +102,7 @@ public record UpdateAlbumRecordingReturning(
 
     @Override
     public void bindParams(PreparedStatement ps) throws SQLException {
-        Jdbc.bind(ps, 1, RecordingInfo.CODEC, this.recording());
+        Jdbc.bind(ps, 1, RecordingInfo.CODEC, this.recording().orElse(null));
         ps.setLong(2, this.id());
     }
 
@@ -118,15 +119,15 @@ public record UpdateAlbumRecordingReturning(
                 long id = rs.getLong(1);
                 String name = rs.getString(2);
                 Date releasedSql = rs.getDate(3);
-                LocalDate released = releasedSql != null ? releasedSql.toLocalDate() : null;
+                Optional<LocalDate> released = Optional.ofNullable(releasedSql != null ? releasedSql.toLocalDate() : null);
                 String formatStr = rs.getString(4);
-                AlbumFormat format = formatStr != null ? AlbumFormat.CODEC.decodeInTextFromString(formatStr) : null;
+                Optional<AlbumFormat> format = Optional.ofNullable(formatStr != null ? AlbumFormat.CODEC.decodeInTextFromString(formatStr) : null);
                 String recordingStr = rs.getString(5);
-                RecordingInfo recording = recordingStr != null ? RecordingInfo.CODEC.decodeInTextFromString(recordingStr) : null;
+                Optional<RecordingInfo> recording = Optional.ofNullable(recordingStr != null ? RecordingInfo.CODEC.decodeInTextFromString(recordingStr) : null);
                 String tracksStr = rs.getString(6);
-                List<TrackInfo> tracks = tracksStr != null ? TrackInfo.CODEC.inDim().decodeInTextFromString(tracksStr) : null;
+                Optional<List<TrackInfo>> tracks = Optional.ofNullable(tracksStr != null ? TrackInfo.CODEC.inDim().decodeInTextFromString(tracksStr) : null);
                 String discStr = rs.getString(7);
-                DiscInfo disc = discStr != null ? DiscInfo.CODEC.decodeInTextFromString(discStr) : null;
+                Optional<DiscInfo> disc = Optional.ofNullable(discStr != null ? DiscInfo.CODEC.decodeInTextFromString(discStr) : null);
 
                 output.add(new OutputRow(id, name, released, format, recording, tracks, disc));
             } catch (io.codemine.java.postgresql.codecs.Codec.DecodingException e) {

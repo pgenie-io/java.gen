@@ -7,6 +7,7 @@ import java.sql.Date;
 import java.time.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import io.pgenie.artifacts.myspace.musiccatalogue.Statement;
 import io.pgenie.artifacts.myspace.musiccatalogue.codecs.Jdbc;
 import io.pgenie.artifacts.myspace.musiccatalogue.types.*;
@@ -64,7 +65,7 @@ public record SelectAlbumWithTracks(
             /**
              * Maps to the {@code disc} result-set column. Nullable.
              */
-            DiscInfo disc) {}
+            Optional<DiscInfo> disc) {}
 
     // -------------------------------------------------------------------------
     // Statement implementation
@@ -97,7 +98,7 @@ public record SelectAlbumWithTracks(
                 String name = rs.getString(2);
                 List<TrackInfo> tracks = TrackInfo.CODEC.inDim().decodeInTextFromString(rs.getString(3));
                 String discStr = rs.getString(4);
-                DiscInfo disc = discStr != null ? DiscInfo.CODEC.decodeInTextFromString(discStr) : null;
+                Optional<DiscInfo> disc = Optional.ofNullable(discStr != null ? DiscInfo.CODEC.decodeInTextFromString(discStr) : null);
 
                 output.add(new OutputRow(id, name, tracks, disc));
             } catch (io.codemine.java.postgresql.codecs.Codec.DecodingException e) {

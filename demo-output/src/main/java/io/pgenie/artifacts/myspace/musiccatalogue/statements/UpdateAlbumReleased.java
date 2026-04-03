@@ -6,6 +6,7 @@ import java.sql.SQLException;
 import java.sql.Date;
 import java.sql.Types;
 import java.time.*;
+import java.util.Optional;
 import io.pgenie.artifacts.myspace.musiccatalogue.Statement;
 import io.pgenie.artifacts.myspace.musiccatalogue.codecs.Jdbc;
 import io.pgenie.artifacts.myspace.musiccatalogue.types.*;
@@ -31,7 +32,7 @@ public record UpdateAlbumReleased(
         /**
          * Maps to {@code $released} in the template. Nullable.
          */
-        LocalDate released,
+        Optional<LocalDate> released,
         /**
          * Maps to {@code $id} in the template.
          */
@@ -52,8 +53,8 @@ public record UpdateAlbumReleased(
 
     @Override
     public void bindParams(PreparedStatement ps) throws SQLException {
-        if (this.released() != null) {
-            ps.setDate(1, Date.valueOf(this.released()));
+        if (this.released().isPresent()) {
+            ps.setDate(1, Date.valueOf(this.released().get()));
         } else {
             ps.setNull(1, Types.DATE);
         }

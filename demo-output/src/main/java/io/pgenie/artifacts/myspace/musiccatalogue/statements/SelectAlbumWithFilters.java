@@ -8,6 +8,7 @@ import java.sql.Types;
 import java.time.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import io.codemine.java.postgresql.codecs.Codec;
 import io.pgenie.artifacts.myspace.musiccatalogue.Statement;
 import io.pgenie.artifacts.myspace.musiccatalogue.codecs.Jdbc;
@@ -50,23 +51,23 @@ public record SelectAlbumWithFilters(
         /**
          * Maps to {@code $artist_name} in the template. Nullable.
          */
-        String artistName,
+        Optional<String> artistName,
         /**
          * Maps to {@code $genre_name} in the template. Nullable.
          */
-        String genreName,
+        Optional<String> genreName,
         /**
          * Maps to {@code $format} in the template. Nullable.
          */
-        AlbumFormat format,
+        Optional<AlbumFormat> format,
         /**
          * Maps to {@code $released_after} in the template. Nullable.
          */
-        LocalDateTime releasedAfter,
+        Optional<LocalDateTime> releasedAfter,
         /**
          * Maps to {@code $name_like} in the template. Nullable.
          */
-        String nameLike,
+        Optional<String> nameLike,
         /**
          * Maps to {@code $order_by_name} in the template.
          */
@@ -102,11 +103,11 @@ public record SelectAlbumWithFilters(
             /**
              * Maps to the {@code released} result-set column. Nullable.
              */
-            LocalDate released,
+            Optional<LocalDate> released,
             /**
              * Maps to the {@code format} result-set column. Nullable.
              */
-            AlbumFormat format) {}
+            Optional<AlbumFormat> format) {}
 
     // -------------------------------------------------------------------------
     // Statement implementation
@@ -138,37 +139,37 @@ public record SelectAlbumWithFilters(
 
     @Override
     public void bindParams(PreparedStatement ps) throws SQLException {
-        if (this.artistName() != null) {
-            ps.setString(1, this.artistName());
+        if (this.artistName().isPresent()) {
+            ps.setString(1, this.artistName().get());
         } else {
             ps.setNull(1, Types.VARCHAR);
         }
-        if (this.artistName() != null) {
-            ps.setString(2, this.artistName());
+        if (this.artistName().isPresent()) {
+            ps.setString(2, this.artistName().get());
         } else {
             ps.setNull(2, Types.VARCHAR);
         }
-        if (this.genreName() != null) {
-            ps.setString(3, this.genreName());
+        if (this.genreName().isPresent()) {
+            ps.setString(3, this.genreName().get());
         } else {
             ps.setNull(3, Types.VARCHAR);
         }
-        if (this.genreName() != null) {
-            ps.setString(4, this.genreName());
+        if (this.genreName().isPresent()) {
+            ps.setString(4, this.genreName().get());
         } else {
             ps.setNull(4, Types.VARCHAR);
         }
-        Jdbc.bind(ps, 5, AlbumFormat.CODEC, this.format());
-        Jdbc.bind(ps, 6, AlbumFormat.CODEC, this.format());
-        Jdbc.bind(ps, 7, Codec.TIMESTAMP, this.releasedAfter());
-        Jdbc.bind(ps, 8, Codec.TIMESTAMP, this.releasedAfter());
-        if (this.nameLike() != null) {
-            ps.setString(9, this.nameLike());
+        Jdbc.bind(ps, 5, AlbumFormat.CODEC, this.format().orElse(null));
+        Jdbc.bind(ps, 6, AlbumFormat.CODEC, this.format().orElse(null));
+        Jdbc.bind(ps, 7, Codec.TIMESTAMP, this.releasedAfter().orElse(null));
+        Jdbc.bind(ps, 8, Codec.TIMESTAMP, this.releasedAfter().orElse(null));
+        if (this.nameLike().isPresent()) {
+            ps.setString(9, this.nameLike().get());
         } else {
             ps.setNull(9, Types.VARCHAR);
         }
-        if (this.nameLike() != null) {
-            ps.setString(10, this.nameLike());
+        if (this.nameLike().isPresent()) {
+            ps.setString(10, this.nameLike().get());
         } else {
             ps.setNull(10, Types.VARCHAR);
         }
@@ -189,9 +190,9 @@ public record SelectAlbumWithFilters(
                 long id = rs.getLong(1);
                 String name = rs.getString(2);
                 Date releasedSql = rs.getDate(3);
-                LocalDate released = releasedSql != null ? releasedSql.toLocalDate() : null;
+                Optional<LocalDate> released = Optional.ofNullable(releasedSql != null ? releasedSql.toLocalDate() : null);
                 String formatStr = rs.getString(4);
-                AlbumFormat format = formatStr != null ? AlbumFormat.CODEC.decodeInTextFromString(formatStr) : null;
+                Optional<AlbumFormat> format = Optional.ofNullable(formatStr != null ? AlbumFormat.CODEC.decodeInTextFromString(formatStr) : null);
 
                 output.add(new OutputRow(id, name, released, format));
             } catch (io.codemine.java.postgresql.codecs.Codec.DecodingException e) {
