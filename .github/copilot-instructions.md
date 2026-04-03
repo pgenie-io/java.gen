@@ -50,6 +50,56 @@ When the repository content conflicts with outside examples, prefer the structur
 - Skip any statements that depend on unsupported composite types.
 - Do not silently generate partial bindings for unsupported inputs.
 
+## Dhall Code Style Rules
+
+### No pointless string concatenations
+
+Never concatenate two string literals with `++` when they can be a single literal. A `"\n"` between two multiline strings, or a short literal like `" */"` after a multiline string, must be absorbed into the adjacent string.
+
+Bad: `'' ... '' ++ " */"` or `someStr ++ "\n" ++ '' ... ''`
+Good: fold the literal into the neighbouring multiline string.
+
+### Prefer interpolation over concatenation
+
+When embedding a variable in a string, use Dhall string interpolation (`${expr}`) instead of `"prefix" ++ expr ++ "suffix"`.
+
+Bad: `"Optional<" ++ boxedType ++ ">"`
+Good: `"Optional<${boxedType}>"`
+
+### Indentation via `indent`, never manual
+
+Never embed indentation in generated string fragments using `${"    "}` padding or hardcoded leading spaces. Instead, produce the string content without indentation and apply `Deps.Lude.Extensions.Text.indent` at the splice site.
+
+Bad (in fragment builder):
+```dhall
+''
+${"        "}/**
+${"        "} * Doc.
+${"        "} */
+${"        "}${fieldType} ${fieldName}''
+```
+
+Good (fragment builder produces unindented content, splice site indents):
+```dhall
+-- builder:
+''
+/**
+ * Doc.
+ */
+${fieldType} ${fieldName}''
+
+-- splice site:
+Deps.Lude.Extensions.Text.indent 8 fragment
+```
+
+### Indentation belongs at the splice site, not the construction site
+
+Any string that is meant to be spliced into another string must be constructed without indentation. The `Deps.Lude.Extensions.Text.indent` utility must be applied where the string is spliced into its surrounding context. This eliminates coupling between the string builder and the indentation level of the context it lands in.
+
+### Import lists via list operations, not per-import conditionals
+
+Instead of declaring individual `let importFoo = if cond then "import ..." else ""` variables and concatenating them, collect imports into a `List Text` using conditional list append or filter, then join them with `Deps.Prelude.Text.concatSep "\n"`. Group imports into sections (e.g., `java.sql.*`, `java.util.*`) with a blank line between groups.
+
 ## Working Expectations
 
 - Make changes that preserve the structure and conventions already established in the repo.
