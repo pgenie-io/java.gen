@@ -28,8 +28,6 @@ let run =
                   , statementImpl =
                           ''
                               @Override
-                          ''
-                      ++  ''
                               public String sql() {
                           ''
                       ++  "        return \"\"\""
@@ -41,85 +39,39 @@ let run =
 
                                   """;''
                             )
-                      ++  "\n"
                       ++  ''
+
                               }
-                          ''
-                      ++  "\n"
-                      ++  ''
+
                               @Override
-                          ''
-                      ++  ''
                               public void bindParams(PreparedStatement ps) throws SQLException {
                           ''
                       ++  ctx.paramBindCode
                       ++  ''
                               }
-                          ''
-                      ++  "\n"
-                      ++  ''
+
                               /**
-                          ''
-                      ++  ''
                                * Returns the number of rows affected by the statement.
-                          ''
-                      ++  ''
                                */
-                          ''
-                      ++  ''
                               @Override
-                          ''
-                      ++  ''
                               public boolean returnsRows() {
-                          ''
-                      ++  ''
                                   return false;
-                          ''
-                      ++  ''
                               }
-                          ''
-                      ++  "\n"
-                      ++  ''
+
                               /**
-                          ''
-                      ++  ''
                                * Returns the number of rows affected by the statement.
-                          ''
-                      ++  ''
                                *
-                          ''
-                      ++  ''
                                * <p>
-                          ''
-                      ++  ''
                                * Uses {@code affectedRows} forwarded from
-                          ''
-                      ++  ''
                                * {@link java.sql.PreparedStatement#executeUpdate()}.
-                          ''
-                      ++  ''
                                */
-                          ''
-                      ++  ''
                               @Override
-                          ''
-                      ++  ''
                               public Long decodeAffectedRows(long affectedRows) throws SQLException {
-                          ''
-                      ++  ''
                                   return affectedRows;
-                          ''
-                      ++  ''
                               }
-                          ''
-                      ++  "\n"
-                      ++  ''
+
                               @Override
-                          ''
-                      ++  ''
                               public Long decodeResultSet(ResultSet rs) {
-                          ''
-                      ++  ''
                                   throw new UnsupportedOperationException();
                           ''
                       ++  "    }"

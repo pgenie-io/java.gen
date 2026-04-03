@@ -118,7 +118,7 @@ let combineOutputs =
                 "\n"
                 QueryGen.Output
                 ( \(query : QueryGen.Output) ->
-                    "- `" ++ query.statementModuleName ++ "`"
+                    "- `${query.statementModuleName}`"
                 )
                 queries
 
@@ -127,7 +127,7 @@ let combineOutputs =
                 "\n"
                 CustomTypeGen.Output
                 ( \(customType : CustomTypeGen.Output) ->
-                    "- `" ++ customType.typeName ++ "`"
+                    "- `${customType.typeName}`"
                 )
                 customTypes
 
@@ -154,11 +154,10 @@ let combineOutputs =
                     , artifactId = packageName2
                     , packageName
                     , version =
-                            Natural/show input.version.major
-                        ++  "."
-                        ++  Natural/show input.version.minor
-                        ++  "."
-                        ++  Natural/show input.version.patch
+                        "${Natural/show
+                             input.version.major}.${Natural/show
+                                                      input.version.minor}.${Natural/show
+                                                                               input.version.patch}"
                     , statementNames = statementNamesSection
                     , typeNames = typeNamesSection
                     , firstStatementName
@@ -173,11 +172,10 @@ let combineOutputs =
                     { groupId = "io.pgenie.artifacts.${spacePkg}"
                     , artifactId = packageName2
                     , version =
-                            Natural/show input.version.major
-                        ++  "."
-                        ++  Natural/show input.version.minor
-                        ++  "."
-                        ++  Natural/show input.version.patch
+                        "${Natural/show
+                             input.version.major}.${Natural/show
+                                                      input.version.minor}.${Natural/show
+                                                                               input.version.patch}"
                     , projectName
                     , dbName = Deps.CodegenKit.Name.toTextInSnake input.name
                     }

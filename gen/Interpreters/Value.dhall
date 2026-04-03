@@ -45,7 +45,7 @@ let run =
 
                     let elementType =
                           if    elementIsOptional
-                          then  "Optional<" ++ scalar.boxedJavaType ++ ">"
+                          then  "Optional<${scalar.boxedJavaType}>"
                           else  scalar.boxedJavaType
 
                     let arrayType =

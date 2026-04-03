@@ -43,7 +43,7 @@ let run =
 
               let fieldType =
                     if    isOptional
-                    then  "Optional<" ++ value.boxedJavaType ++ ">"
+                    then  "Optional<${value.boxedJavaType}>"
                     else  if input.isNullable
                     then  value.boxedJavaType
                     else  value.javaType
