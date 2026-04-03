@@ -43,7 +43,7 @@ let renderSqlExp
                               (\(s : Text) -> s)
                               ""
 
-                      in  "?" ++ suffix
+                      in  "?${suffix}"
                 }
                 queryFragment
           )
@@ -56,7 +56,7 @@ let renderDocComment
         ( \(queryFragment : Deps.Sdk.Project.QueryFragment) ->
             merge
               { Sql = Prelude.Function.identity Text
-              , Var = \(var : Deps.Sdk.Project.Var) -> "\$" ++ var.rawName
+              , Var = \(var : Deps.Sdk.Project.Var) -> "\$${var.rawName}"
               }
               queryFragment
         )
