@@ -65,7 +65,7 @@ let run =
                       , jdbcSetter = ""
                       , jdbcGetter = ""
                       , sqlTypesConstant = ""
-                      , pgCastSuffix = "::public.${pgName}"
+                      , pgCastSuffix = "::${pgName}"
                       , testDefaultLiteral = "null"
                       }
           }
