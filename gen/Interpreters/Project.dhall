@@ -89,7 +89,7 @@ let combineOutputs =
               , content = Templates.JdbcModule.run { packageName }
               }
 
-        let packageName2 = Deps.CodegenKit.Name.toTextInKebab input.name
+        let artifactId = Deps.CodegenKit.Name.toTextInKebab input.name
 
         let migrations =
               Deps.Prelude.List.map
@@ -143,7 +143,7 @@ let combineOutputs =
                   Templates.ReadmeMd.run
                     { projectName
                     , groupId = "io.pgenie.artifacts.${spacePkg}"
-                    , artifactId = packageName2
+                    , artifactId
                     , packageName
                     , version =
                         "${Natural/show
@@ -162,7 +162,7 @@ let combineOutputs =
               , content =
                   Templates.PomXml.run
                     { groupId = "io.pgenie.artifacts.${spacePkg}"
-                    , artifactId = packageName2
+                    , artifactId
                     , version =
                         "${Natural/show
                              input.version.major}.${Natural/show
