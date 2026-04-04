@@ -10,6 +10,8 @@ let Sdk = Deps.Sdk
 
 let Templates = ../Templates/package.dhall
 
+let StatementModuleSub = ../Templates/StatementModule/package.dhall
+
 let ResultModule = ./Result.dhall
 
 let QueryFragmentsModule = ./QueryFragments.dhall
@@ -64,41 +66,17 @@ let mkParamBindCode =
                             , Some =
                                 \(p : MemberModule.Output) ->
                                   Some
-                                    ( if    p.useCodec
-                                      then  if    p.isOptional
-                                            then  "Jdbc.bind(ps, ${idx}, ${p.codecRef}, this.${p.fieldName}().orElse(null));"
-                                            else  "Jdbc.bind(ps, ${idx}, ${p.codecRef}, this.${p.fieldName}());"
-                                      else  if p.isDateType
-                                      then  if    p.isOptional
-                                            then  ''
-                                                  if (this.${p.fieldName}().isPresent()) {
-                                                      ps.setDate(${idx}, Date.valueOf(this.${p.fieldName}().get()));
-                                                  } else {
-                                                      ps.setNull(${idx}, Types.DATE);
-                                                  }''
-                                            else  if p.isNullable
-                                            then  ''
-                                                  if (this.${p.fieldName}() != null) {
-                                                      ps.setDate(${idx}, Date.valueOf(this.${p.fieldName}()));
-                                                  } else {
-                                                      ps.setNull(${idx}, Types.DATE);
-                                                  }''
-                                            else  "ps.setDate(${idx}, Date.valueOf(this.${p.fieldName}()));"
-                                      else  if p.isOptional
-                                      then  ''
-                                            if (this.${p.fieldName}().isPresent()) {
-                                                ps.${p.jdbcSetter}(${idx}, this.${p.fieldName}().get());
-                                            } else {
-                                                ps.setNull(${idx}, Types.${p.sqlTypesConstant});
-                                            }''
-                                      else  if p.isNullable
-                                      then  ''
-                                            if (this.${p.fieldName}() != null) {
-                                                ps.${p.jdbcSetter}(${idx}, this.${p.fieldName}());
-                                            } else {
-                                                ps.setNull(${idx}, Types.${p.sqlTypesConstant});
-                                            }''
-                                      else  "ps.${p.jdbcSetter}(${idx}, this.${p.fieldName}());"
+                                    ( StatementModuleSub.ParamBindStatement.run
+                                        { idx
+                                        , fieldName = p.fieldName
+                                        , useCodec = p.useCodec
+                                        , codecRef = p.codecRef
+                                        , isDateType = p.isDateType
+                                        , isOptional = p.isOptional
+                                        , isNullable = p.isNullable
+                                        , jdbcSetter = p.jdbcSetter
+                                        , sqlTypesConstant = p.sqlTypesConstant
+                                        }
                                     )
                             }
                             mParam
@@ -138,26 +116,22 @@ let render =
 
         let resultInfo = result { sqlExp, paramBindCode } statementModuleName
 
-        let paramFieldList =
-              Deps.Prelude.Text.concatMapSep
-                ''
-                ,
-                ''
+        let paramFields =
+              Deps.Prelude.List.map
                 MemberModule.Output
+                { pgName : Text
+                , fieldType : Text
+                , fieldName : Text
+                , isNullable : Bool
+                }
                 ( \(member : MemberModule.Output) ->
-                    let nullableDoc =
-                          if member.isNullable then " Nullable." else ""
-
-                    in  ''
-                        /**
-                         * Maps to {@code $${member.pgName}} in the template.${nullableDoc}
-                         */
-                        ${member.fieldType} ${member.fieldName}''
+                    { pgName = member.pgName
+                    , fieldType = member.fieldType
+                    , fieldName = member.fieldName
+                    , isNullable = member.isNullable
+                    }
                 )
                 params
-
-        let resultTypeName =
-              if hasResult then "${statementModuleName}.Output" else "Long"
 
         let hasCodecParam =
               Deps.Prelude.List.any
@@ -232,38 +206,14 @@ let render =
                 )
                 False
 
-        let docComment =
-              let queryName = Deps.CodegenKit.Name.toTextInSnake input.name
-
-              let sqlDoc =
-                    Deps.Lude.Extensions.Text.prefixEachLine
-                      " * "
-                      fragments.docComment
-
-              in  ''
-                  /**
-                   * Type-safe binding for the {@code ${queryName}} query.
-                   *
-                   * <h2>SQL Template</h2>
-                   *
-                   * <pre>{@code
-                   * ${sqlDoc}
-                   * }</pre>
-                   *
-                   * <h2>Source Path</h2> {@code ${input.srcPath}}
-                   *
-                   * <p>
-                   * Generated from SQL queries using the
-                   * <a href="https://pgenie.io">pGenie</a> code generator.
-                   */''
-
         let statementModuleContents =
               Templates.StatementModule.run
                 { packageName = config.packageName
                 , typeName = statementModuleName
-                , docComment
-                , paramFieldList
-                , resultTypeName
+                , queryName = Deps.CodegenKit.Name.toTextInSnake input.name
+                , sqlDoc = fragments.docComment
+                , srcPath = input.srcPath
+                , paramFields
                 , typeDecls = resultInfo.typeDecls
                 , statementImpl = resultInfo.statementImpl
                 , hasCodecParam
@@ -277,13 +227,11 @@ let render =
                 }
 
         let defaultArgs =
-              Deps.Prelude.Text.concatMapSep
-                ", "
+              Deps.Prelude.List.map
                 MemberModule.Output
+                Text
                 (\(m : MemberModule.Output) -> m.testDefaultLiteral)
                 params
-
-        let defaultConstruction = "${statementModuleName}(${defaultArgs})"
 
         let testModulePath =
               Deps.CodegenKit.Name.toTextInPascal input.name ++ "IT.java"
@@ -292,7 +240,7 @@ let render =
               Templates.StatementTestModule.run
                 { packageName = config.packageName
                 , typeName = statementModuleName
-                , defaultConstruction
+                , defaultArgs
                 , hasResult
                 }
 

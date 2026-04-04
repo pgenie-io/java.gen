@@ -4,6 +4,8 @@ let Algebra = ./Algebra/package.dhall
 
 let Member = ./Member.dhall
 
+let StatementModuleSub = ../Templates/StatementModule/package.dhall
+
 let Input = Deps.Sdk.Project.ResultRows
 
 let ExtraCtx = { sqlExp : Text, paramBindCode : Text }
@@ -47,56 +49,31 @@ let run =
                           ( \ ( ic
                               : { index : Natural, value : Member.Output }
                               ) ->
-                              let nullDoc =
-                                    if    ic.value.isNullable
-                                    then  " Nullable."
-                                    else  ""
-
-                              in  ''
-                                  /**
-                                   * Maps to the {@code ${ic.value.pgName}} result-set column.${nullDoc}
-                                   */
-                                  ${ic.value.fieldType} ${ic.value.fieldName}''
+                              StatementModuleSub.ResultColumnField.run
+                                { pgName = ic.value.pgName
+                                , fieldType = ic.value.fieldType
+                                , fieldName = ic.value.fieldName
+                                , isNullable = ic.value.isNullable
+                                }
                           )
                           indexedColumns
 
                   let mkDecodeExpr =
                         \(ic : { index : Natural, value : Member.Output }) ->
-                          let colIdx = Natural/show (ic.index + 1)
-
-                          in  if    ic.value.useCodec
-                              then  let elemSuffix =
-                                          if    ic.value.elementIsOptional
-                                          then  ".stream().map(Optional::ofNullable).toList()"
-                                          else  ""
-
-                                    in  if    ic.value.isOptional
-                                        then  ''
-                                              String ${ic.value.fieldName}Str = rs.getString(${colIdx});
-                                              ${ic.value.fieldType} ${ic.value.fieldName} = Optional.ofNullable(${ic.value.fieldName}Str != null ? ${ic.value.codecRef}.decodeInTextFromString(${ic.value.fieldName}Str)${elemSuffix} : null);''
-                                        else  if ic.value.isNullable
-                                        then  ''
-                                              String ${ic.value.fieldName}Str = rs.getString(${colIdx});
-                                              ${ic.value.fieldType} ${ic.value.fieldName} = ${ic.value.fieldName}Str != null ? ${ic.value.codecRef}.decodeInTextFromString(${ic.value.fieldName}Str)${elemSuffix} : null;''
-                                        else  "${ic.value.fieldType} ${ic.value.fieldName} = ${ic.value.codecRef}.decodeInTextFromString(rs.getString(${colIdx}))${elemSuffix};"
-                              else  if ic.value.isDateType
-                              then  if    ic.value.isOptional
-                                    then  ''
-                                          Date ${ic.value.fieldName}Sql = rs.getDate(${colIdx});
-                                          ${ic.value.fieldType} ${ic.value.fieldName} = Optional.ofNullable(${ic.value.fieldName}Sql != null ? ${ic.value.fieldName}Sql.toLocalDate() : null);''
-                                    else  if ic.value.isNullable
-                                    then  ''
-                                          Date ${ic.value.fieldName}Sql = rs.getDate(${colIdx});
-                                          LocalDate ${ic.value.fieldName} = ${ic.value.fieldName}Sql != null ? ${ic.value.fieldName}Sql.toLocalDate() : null;''
-                                    else  "LocalDate ${ic.value.fieldName} = rs.getDate(${colIdx}).toLocalDate();"
-                              else  if ic.value.isOptional
-                              then  if    ic.value.isJdbcPrimitive
-                                    then  "${ic.value.fieldType} ${ic.value.fieldName} = Optional.ofNullable((${ic.value.boxedJavaType}) rs.getObject(${colIdx}));"
-                                    else  "${ic.value.fieldType} ${ic.value.fieldName} = Optional.ofNullable(rs.${ic.value.jdbcGetter}(${colIdx}));"
-                              else  if     ic.value.isNullable
-                                       &&  ic.value.isJdbcPrimitive
-                              then  "${ic.value.fieldType} ${ic.value.fieldName} = (${ic.value.fieldType}) rs.getObject(${colIdx});"
-                              else  "${ic.value.fieldType} ${ic.value.fieldName} = rs.${ic.value.jdbcGetter}(${colIdx});"
+                          StatementModuleSub.ColDecodeStatement.run
+                            { colIdx = Natural/show (ic.index + 1)
+                            , fieldName = ic.value.fieldName
+                            , fieldType = ic.value.fieldType
+                            , boxedJavaType = ic.value.boxedJavaType
+                            , useCodec = ic.value.useCodec
+                            , codecRef = ic.value.codecRef
+                            , elementIsOptional = ic.value.elementIsOptional
+                            , isOptional = ic.value.isOptional
+                            , isNullable = ic.value.isNullable
+                            , isDateType = ic.value.isDateType
+                            , isJdbcPrimitive = ic.value.isJdbcPrimitive
+                            , jdbcGetter = ic.value.jdbcGetter
+                            }
 
                   let decodeLines =
                         Deps.Prelude.Text.concatMapSep

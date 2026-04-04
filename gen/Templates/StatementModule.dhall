@@ -2,14 +2,17 @@ let Algebra = ./Algebra/package.dhall
 
 let Deps = ../Deps/package.dhall
 
+let Sub = ./StatementModule/package.dhall
+
 let indent = Deps.Lude.Extensions.Text.indentNonEmpty
 
 let Params =
       { packageName : Text
       , typeName : Text
-      , docComment : Text
-      , paramFieldList : Text
-      , resultTypeName : Text
+      , queryName : Text
+      , sqlDoc : Text
+      , srcPath : Text
+      , paramFields : List Sub.ParamField.Params
       , typeDecls : Text
       , statementImpl : Text
       , hasCodecParam : Bool
@@ -75,6 +78,15 @@ in  Algebra.module
                       ]
                   )
 
+          let paramFieldList =
+                Deps.Prelude.Text.concatMapSep
+                  ''
+                  ,
+                  ''
+                  Sub.ParamField.Params
+                  (\(f : Sub.ParamField.Params) -> Sub.ParamField.run f)
+                  params.paramFields
+
           let resultTypeSection =
                 if    params.hasResultType
                 then  ''
@@ -90,10 +102,26 @@ in  Algebra.module
               package ${params.packageName}.statements;
 
               ${imports}
-              ${params.docComment}
+              /**
+               * Type-safe binding for the {@code ${params.queryName}} query.
+               *
+               * <h2>SQL Template</h2>
+               *
+               * <pre>{@code
+               * ${Deps.Lude.Extensions.Text.prefixEachLine " * " params.sqlDoc}
+               * }</pre>
+               *
+               * <h2>Source Path</h2> {@code ${params.srcPath}}
+               *
+               * <p>
+               * Generated from SQL queries using the
+               * <a href="https://pgenie.io">pGenie</a> code generator.
+               */
               public record ${params.typeName}(
-                      ${indent 8 params.paramFieldList})
-                      implements Statement<${params.resultTypeName}> {
+                      ${indent 8 paramFieldList})
+                      implements Statement<${if    params.hasResultType
+                                             then  "${params.typeName}.Output"
+                                             else  "Long"}> {
 
                   ${indent
                       4
