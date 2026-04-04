@@ -72,8 +72,8 @@ in  Algebra.module
                           Text
                           params.hasCodecParam
                           "io.codemine.java.postgresql.codecs.Codec"
+                      , Some "${params.packageName}.JdbcCodec"
                       , Some "${params.packageName}.Statement"
-                      , Some "${params.packageName}.codecs.Jdbc"
                       , Some "${params.packageName}.types.*"
                       ]
                   )

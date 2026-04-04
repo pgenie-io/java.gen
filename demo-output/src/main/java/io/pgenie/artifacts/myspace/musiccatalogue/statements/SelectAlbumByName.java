@@ -8,8 +8,8 @@ import java.time.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import io.pgenie.artifacts.myspace.musiccatalogue.JdbcCodec;
 import io.pgenie.artifacts.myspace.musiccatalogue.Statement;
-import io.pgenie.artifacts.myspace.musiccatalogue.codecs.Jdbc;
 import io.pgenie.artifacts.myspace.musiccatalogue.types.*;
 
 /**
@@ -106,42 +106,25 @@ public record SelectAlbumByName(
     @Override
     public Output decodeResultSet(ResultSet rs) throws SQLException {
         Output output = new Output();
+        int row = 0;
+        
         while (rs.next()) {
-            try {
-                long id = rs.getLong(1);
-                String name = rs.getString(2);
-                Optional<LocalDate> released;
-                {
-                    Date releasedSql = rs.getDate(3);
-                    if (releasedSql != null) {
-                        released = Optional.of(releasedSql.toLocalDate());
-                    } else {
-                        released = Optional.empty();
-                    }
+            long idCol = rs.getLong(1);
+            String nameCol = rs.getString(2);
+            Optional<LocalDate> releasedCol;
+            {
+                Date releasedColBase = rs.getDate(3);
+                if (releasedColBase != null) {
+                    releasedCol = Optional.of(releasedColBase.toLocalDate());
+                } else {
+                    releasedCol = Optional.empty();
                 }
-                Optional<AlbumFormat> format;
-                {
-                    String formatStr = rs.getString(4);
-                    if (formatStr != null) {
-                        format = Optional.of(AlbumFormat.CODEC.decodeInTextFromString(formatStr));
-                    } else {
-                        format = Optional.empty();
-                    }
-                }
-                Optional<RecordingInfo> recording;
-                {
-                    String recordingStr = rs.getString(5);
-                    if (recordingStr != null) {
-                        recording = Optional.of(RecordingInfo.CODEC.decodeInTextFromString(recordingStr));
-                    } else {
-                        recording = Optional.empty();
-                    }
-                }
-
-                output.add(new OutputRow(id, name, released, format, recording));
-            } catch (io.codemine.java.postgresql.codecs.Codec.DecodingException e) {
-                throw new IllegalStateException(e);
             }
+            Optional<AlbumFormat> formatCol = Optional.ofNullable(new JdbcCodec<>(AlbumFormat.CODEC).decodeNullable(rs, row, 4));
+            Optional<RecordingInfo> recordingCol = Optional.ofNullable(new JdbcCodec<>(RecordingInfo.CODEC).decodeNullable(rs, row, 5));
+
+            output.add(new OutputRow(idCol, nameCol, releasedCol, formatCol, recordingCol));
+            row++;
         }
 
         return output;

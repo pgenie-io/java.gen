@@ -1,6 +1,6 @@
 { PomXml = ./PomXml.dhall
 , StatementInterface = ./StatementInterface.dhall
-, JdbcModule = ./JdbcModule.dhall
+, JdbcCodecModule = ./JdbcCodecModule.dhall
 , StatementModule = ./StatementModule.dhall
 , StatementTestModule = ./StatementTestModule.dhall
 , AbstractDatabaseIT = ./AbstractDatabaseIT.dhall

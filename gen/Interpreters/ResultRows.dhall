@@ -31,12 +31,6 @@ let run =
               (List Member.Output)
               Output
               ( \(columns : List Member.Output) ->
-                  let hasCodecDecode =
-                        Deps.Prelude.List.any
-                          Member.Output
-                          (\(col : Member.Output) -> col.useCodec)
-                          columns
-
                   let indexedColumns =
                         Deps.Prelude.List.indexed Member.Output columns
 
@@ -58,43 +52,39 @@ let run =
                           )
                           indexedColumns
 
-                  let mkDecodeExpr =
-                        \(ic : { index : Natural, value : Member.Output }) ->
-                          StatementModuleSub.ColDecodeStatement.run
-                            { colIdx = Natural/show (ic.index + 1)
-                            , fieldName = ic.value.fieldName
-                            , fieldType = ic.value.fieldType
-                            , boxedJavaType = ic.value.boxedJavaType
-                            , useCodec = ic.value.useCodec
-                            , codecRef = ic.value.codecRef
-                            , elementIsOptional = ic.value.elementIsOptional
-                            , isOptional = ic.value.isOptional
-                            , isNullable = ic.value.isNullable
-                            , isDateType = ic.value.isDateType
-                            , isJdbcPrimitive = ic.value.isJdbcPrimitive
-                            , jdbcGetter = ic.value.jdbcGetter
-                            }
-
                   let decodeLines =
-                        Deps.Prelude.Text.concatMapSep
-                          "\n"
-                          { index : Natural, value : Member.Output }
-                          mkDecodeExpr
-                          indexedColumns
+                        \(rowVarPresent : Bool) ->
+                          Deps.Prelude.Text.concatMapSep
+                            "\n"
+                            { index : Natural, value : Member.Output }
+                            ( \ ( ic
+                                : { index : Natural, value : Member.Output }
+                                ) ->
+                                StatementModuleSub.ColDecodeStatement.run
+                                  { colIdx = Natural/show (ic.index + 1)
+                                  , fieldName = ic.value.fieldName
+                                  , fieldType = ic.value.fieldType
+                                  , boxedJavaType = ic.value.boxedJavaType
+                                  , useCodec = ic.value.useCodec
+                                  , codecRef = ic.value.codecRef
+                                  , elementIsOptional =
+                                      ic.value.elementIsOptional
+                                  , isOptional = ic.value.isOptional
+                                  , isNullable = ic.value.isNullable
+                                  , isDateType = ic.value.isDateType
+                                  , isJdbcPrimitive = ic.value.isJdbcPrimitive
+                                  , jdbcGetter = ic.value.jdbcGetter
+                                  , rowVarPresent
+                                  }
+                            )
+                            indexedColumns
 
-                  let varRefs =
-                        Deps.Prelude.Text.concatMapSep
-                          ", "
+                  let columnNames =
+                        Deps.Prelude.List.map
                           Member.Output
+                          Text
                           (\(col : Member.Output) -> col.fieldName)
                           columns
-
-                  let returnBody =
-                        StatementModuleSub.DecodeBody.run
-                          { hasCodecDecode
-                          , decodeLines
-                          , finalStatement = "return new Output(${varRefs});"
-                          }
 
                   in  Deps.Sdk.Compiled.ok
                         Output
@@ -106,7 +96,9 @@ let run =
                                         { typeNameBase, columnFieldList }
                                   , decodeMethod =
                                       StatementModuleSub.MultipleDecodeMethod.run
-                                        { hasCodecDecode, decodeLines, varRefs }
+                                        { decodeLines = decodeLines True
+                                        , columnNames
+                                        }
                                   , resultTypeName = "${typeNameBase}.Output"
                                   }
 
@@ -116,7 +108,9 @@ let run =
                                         { typeNameBase, columnFieldList }
                                   , decodeMethod =
                                       StatementModuleSub.SingleDecodeMethod.run
-                                        { decodeBody = returnBody }
+                                        { decodeLines = decodeLines False
+                                        , columnNames
+                                        }
                                   , resultTypeName = "${typeNameBase}.Output"
                                   }
 
@@ -124,7 +118,9 @@ let run =
                                   { typeDecls = singleResult.typeDecls
                                   , decodeMethod =
                                       StatementModuleSub.OptionalDecodeMethod.run
-                                        { decodeBody = returnBody }
+                                        { decodeLines = decodeLines False
+                                        , columnNames
+                                        }
                                   , resultTypeName = "${typeNameBase}.Output"
                                   }
 

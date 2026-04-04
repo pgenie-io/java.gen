@@ -7,8 +7,8 @@ import java.sql.Date;
 import java.sql.Types;
 import java.time.*;
 import java.util.Optional;
+import io.pgenie.artifacts.myspace.musiccatalogue.JdbcCodec;
 import io.pgenie.artifacts.myspace.musiccatalogue.Statement;
-import io.pgenie.artifacts.myspace.musiccatalogue.codecs.Jdbc;
 import io.pgenie.artifacts.myspace.musiccatalogue.types.*;
 
 /**

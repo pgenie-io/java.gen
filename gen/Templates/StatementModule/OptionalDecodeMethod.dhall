@@ -6,7 +6,7 @@ let Deps = ../../Deps/package.dhall
 
 let indent = Deps.Lude.Extensions.Text.indentNonEmpty
 
-let Params = { decodeBody : Text }
+let Params = { decodeLines : Text, columnNames : List Text }
 
 in  Algebra.module
       Params
@@ -17,6 +17,12 @@ in  Algebra.module
               if (!rs.next()) {
                   return null;
               }
-              ${indent 4 p.decodeBody}
+              ${indent 4 p.decodeLines}
+
+              return new Output(${Deps.Prelude.Text.concatMapSep
+                                    ", "
+                                    Text
+                                    (\(col : Text) -> "${col}Col")
+                                    p.columnNames});
           }''
       )

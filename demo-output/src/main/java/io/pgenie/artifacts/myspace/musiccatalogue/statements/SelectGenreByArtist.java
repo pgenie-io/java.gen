@@ -7,8 +7,8 @@ import java.sql.Date;
 import java.time.*;
 import java.util.ArrayList;
 import java.util.List;
+import io.pgenie.artifacts.myspace.musiccatalogue.JdbcCodec;
 import io.pgenie.artifacts.myspace.musiccatalogue.Statement;
-import io.pgenie.artifacts.myspace.musiccatalogue.codecs.Jdbc;
 import io.pgenie.artifacts.myspace.musiccatalogue.types.*;
 
 /**
@@ -87,11 +87,14 @@ public record SelectGenreByArtist(
     @Override
     public Output decodeResultSet(ResultSet rs) throws SQLException {
         Output output = new Output();
+        int row = 0;
+        
         while (rs.next()) {
-            int id = rs.getInt(1);
-            String name = rs.getString(2);
+            int idCol = rs.getInt(1);
+            String nameCol = rs.getString(2);
 
-            output.add(new OutputRow(id, name));
+            output.add(new OutputRow(idCol, nameCol));
+            row++;
         }
 
         return output;

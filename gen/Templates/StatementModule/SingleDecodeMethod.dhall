@@ -1,12 +1,10 @@
--- Renders the decodeResultSet method for a statement that always returns exactly one row.
--- Produces the method without any surrounding indentation; splice site must indent.
 let Algebra = ../Algebra/package.dhall
 
 let Deps = ../../Deps/package.dhall
 
 let indent = Deps.Lude.Extensions.Text.indentNonEmpty
 
-let Params = { decodeBody : Text }
+let Params = { decodeLines : Text, columnNames : List Text }
 
 in  Algebra.module
       Params
@@ -15,6 +13,13 @@ in  Algebra.module
           @Override
           public Output decodeResultSet(ResultSet rs) throws SQLException {
               rs.next();
-              ${indent 4 p.decodeBody}
+
+              ${indent 4 p.decodeLines}
+
+              return new Output(${Deps.Prelude.Text.concatMapSep
+                                    ", "
+                                    Text
+                                    (\(col : Text) -> "${col}Col")
+                                    p.columnNames});
           }''
       )

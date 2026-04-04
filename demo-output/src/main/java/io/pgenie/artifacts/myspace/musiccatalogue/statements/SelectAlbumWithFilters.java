@@ -10,8 +10,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import io.codemine.java.postgresql.codecs.Codec;
+import io.pgenie.artifacts.myspace.musiccatalogue.JdbcCodec;
 import io.pgenie.artifacts.myspace.musiccatalogue.Statement;
-import io.pgenie.artifacts.myspace.musiccatalogue.codecs.Jdbc;
 import io.pgenie.artifacts.myspace.musiccatalogue.types.*;
 
 /**
@@ -128,7 +128,7 @@ public record SelectAlbumWithFilters(
                WHERE
                  (?::text IS NULL OR artist.name = ?)
                  AND (?::text IS NULL OR genre.name = ?)
-                 AND (?::public.album_format::album_format IS NULL OR album.format = ?::public.album_format)
+                 AND (?::album_format::album_format IS NULL OR album.format = ?::album_format)
                  AND (?::timestamp IS NULL OR album.released >= ?)
                  AND (?::text IS NULL OR album.name LIKE ?)
                ORDER BY
@@ -159,10 +159,10 @@ public record SelectAlbumWithFilters(
         } else {
             ps.setNull(4, Types.VARCHAR);
         }
-        Jdbc.bind(ps, 5, AlbumFormat.CODEC, this.format().orElse(null));
-        Jdbc.bind(ps, 6, AlbumFormat.CODEC, this.format().orElse(null));
-        Jdbc.bind(ps, 7, Codec.TIMESTAMP, this.releasedAfter().orElse(null));
-        Jdbc.bind(ps, 8, Codec.TIMESTAMP, this.releasedAfter().orElse(null));
+        new JdbcCodec<>(AlbumFormat.CODEC).bind(ps, 5, this.format().orElse(null));
+        new JdbcCodec<>(AlbumFormat.CODEC).bind(ps, 6, this.format().orElse(null));
+        new JdbcCodec<>(Codec.TIMESTAMP).bind(ps, 7, this.releasedAfter().orElse(null));
+        new JdbcCodec<>(Codec.TIMESTAMP).bind(ps, 8, this.releasedAfter().orElse(null));
         if (this.nameLike().isPresent()) {
             ps.setString(9, this.nameLike().get());
         } else {
@@ -185,33 +185,24 @@ public record SelectAlbumWithFilters(
     @Override
     public Output decodeResultSet(ResultSet rs) throws SQLException {
         Output output = new Output();
+        int row = 0;
+        
         while (rs.next()) {
-            try {
-                long id = rs.getLong(1);
-                String name = rs.getString(2);
-                Optional<LocalDate> released;
-                {
-                    Date releasedSql = rs.getDate(3);
-                    if (releasedSql != null) {
-                        released = Optional.of(releasedSql.toLocalDate());
-                    } else {
-                        released = Optional.empty();
-                    }
+            long idCol = rs.getLong(1);
+            String nameCol = rs.getString(2);
+            Optional<LocalDate> releasedCol;
+            {
+                Date releasedColBase = rs.getDate(3);
+                if (releasedColBase != null) {
+                    releasedCol = Optional.of(releasedColBase.toLocalDate());
+                } else {
+                    releasedCol = Optional.empty();
                 }
-                Optional<AlbumFormat> format;
-                {
-                    String formatStr = rs.getString(4);
-                    if (formatStr != null) {
-                        format = Optional.of(AlbumFormat.CODEC.decodeInTextFromString(formatStr));
-                    } else {
-                        format = Optional.empty();
-                    }
-                }
-
-                output.add(new OutputRow(id, name, released, format));
-            } catch (io.codemine.java.postgresql.codecs.Codec.DecodingException e) {
-                throw new IllegalStateException(e);
             }
+            Optional<AlbumFormat> formatCol = Optional.ofNullable(new JdbcCodec<>(AlbumFormat.CODEC).decodeNullable(rs, row, 4));
+
+            output.add(new OutputRow(idCol, nameCol, releasedCol, formatCol));
+            row++;
         }
 
         return output;

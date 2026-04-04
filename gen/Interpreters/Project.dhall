@@ -83,10 +83,10 @@ let combineOutputs =
               , content = Templates.StatementInterface.run { packageName }
               }
 
-        let jdbcJava
+        let jdbcCodecJava
             : Sdk.File.Type
-            = { path = srcPrefix ++ "codecs/Jdbc.java"
-              , content = Templates.JdbcModule.run { packageName }
+            = { path = srcPrefix ++ "JdbcCodec.java"
+              , content = Templates.JdbcCodecModule.run { packageName }
               }
 
         let artifactId = Deps.CodegenKit.Name.toTextInKebab input.name
@@ -176,7 +176,7 @@ let combineOutputs =
         in      [ pomXml
                 , readmeMd
                 , statementJava
-                , jdbcJava
+                , jdbcCodecJava
                 , abstractDatabaseIT
                 ]
               # customTypeFiles

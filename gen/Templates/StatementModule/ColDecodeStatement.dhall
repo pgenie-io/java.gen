@@ -15,66 +15,53 @@ let Params =
       , isNullable : Bool
       , isDateType : Bool
       , isJdbcPrimitive : Bool
+      , rowVarPresent : Bool
       , jdbcGetter : Text
       }
 
 in  Algebra.module
       Params
       ( \(p : Params) ->
-          if    p.useCodec
-          then  let elemSuffix =
-                      if    p.elementIsOptional
-                      then  ".stream().map(Optional::ofNullable).toList()"
-                      else  ""
+          let rowExpr = if p.rowVarPresent then "row" else "0"
 
-                in  if    p.isOptional
+          in  if    p.useCodec
+              then  let elemSuffix =
+                          if    p.elementIsOptional
+                          then  ".stream().map(Optional::ofNullable).toList()"
+                          else  ""
+
+                    in  if    p.isOptional
+                        then  "${p.fieldType} ${p.fieldName}Col = Optional.ofNullable(new JdbcCodec<>(${p.codecRef}).decodeNullable(rs, ${rowExpr}, ${p.colIdx})${elemSuffix});"
+                        else  if p.isNullable
+                        then  "${p.fieldType} ${p.fieldName}Col = new JdbcCodec<>(${p.codecRef}).decodeNullable(rs, ${rowExpr}, ${p.colIdx})${elemSuffix};"
+                        else  "${p.fieldType} ${p.fieldName}Col = new JdbcCodec<>(${p.codecRef}).decodeNonNullable(rs, ${rowExpr}, ${p.colIdx})${elemSuffix};"
+              else  if p.isDateType
+              then  if    p.isOptional
                     then  ''
-                          ${p.fieldType} ${p.fieldName};
+                          ${p.fieldType} ${p.fieldName}Col;
                           {
-                              String ${p.fieldName}Str = rs.getString(${p.colIdx});
-                              if (${p.fieldName}Str != null) {
-                                  ${p.fieldName} = Optional.of(${p.codecRef}.decodeInTextFromString(${p.fieldName}Str)${elemSuffix});
+                              Date ${p.fieldName}ColBase = rs.getDate(${p.colIdx});
+                              if (${p.fieldName}ColBase != null) {
+                                  ${p.fieldName}Col = Optional.of(${p.fieldName}ColBase.toLocalDate());
                               } else {
-                                  ${p.fieldName} = Optional.empty();
+                                  ${p.fieldName}Col = Optional.empty();
                               }
                           }''
                     else  if p.isNullable
                     then  ''
-                          ${p.fieldType} ${p.fieldName};
+                          LocalDate ${p.fieldName}Col;
                           {
-                              String ${p.fieldName}Str = rs.getString(${p.colIdx});
-                              if (${p.fieldName}Str != null) {
-                                  ${p.fieldName} = ${p.codecRef}.decodeInTextFromString(${p.fieldName}Str)${elemSuffix};
+                              Date ${p.fieldName}ColBase = rs.getDate(${p.colIdx});
+                              if (${p.fieldName}ColBase != null) {
+                                  ${p.fieldName}Col = ${p.fieldName}ColBase.toLocalDate();
                               }
                           }''
-                    else  "${p.fieldType} ${p.fieldName} = ${p.codecRef}.decodeInTextFromString(rs.getString(${p.colIdx}))${elemSuffix};"
-          else  if p.isDateType
-          then  if    p.isOptional
-                then  ''
-                      ${p.fieldType} ${p.fieldName};
-                      {
-                          Date ${p.fieldName}Sql = rs.getDate(${p.colIdx});
-                          if (${p.fieldName}Sql != null) {
-                              ${p.fieldName} = Optional.of(${p.fieldName}Sql.toLocalDate());
-                          } else {
-                              ${p.fieldName} = Optional.empty();
-                          }
-                      }''
-                else  if p.isNullable
-                then  ''
-                      LocalDate ${p.fieldName};
-                      {
-                          Date ${p.fieldName}Sql = rs.getDate(${p.colIdx});
-                          if (${p.fieldName}Sql != null) {
-                              ${p.fieldName} = ${p.fieldName}Sql.toLocalDate();
-                          }
-                      }''
-                else  "LocalDate ${p.fieldName} = rs.getDate(${p.colIdx}).toLocalDate();"
-          else  if p.isOptional
-          then  if    p.isJdbcPrimitive
-                then  "${p.fieldType} ${p.fieldName} = Optional.ofNullable((${p.boxedJavaType}) rs.getObject(${p.colIdx}));"
-                else  "${p.fieldType} ${p.fieldName} = Optional.ofNullable(rs.${p.jdbcGetter}(${p.colIdx}));"
-          else  if p.isNullable && p.isJdbcPrimitive
-          then  "${p.fieldType} ${p.fieldName} = (${p.fieldType}) rs.getObject(${p.colIdx});"
-          else  "${p.fieldType} ${p.fieldName} = rs.${p.jdbcGetter}(${p.colIdx});"
+                    else  "LocalDate ${p.fieldName}Col = rs.getDate(${p.colIdx}).toLocalDate();"
+              else  if p.isOptional
+              then  if    p.isJdbcPrimitive
+                    then  "${p.fieldType} ${p.fieldName}Col = Optional.ofNullable((${p.boxedJavaType}) rs.getObject(${p.colIdx}));"
+                    else  "${p.fieldType} ${p.fieldName}Col = Optional.ofNullable(rs.${p.jdbcGetter}(${p.colIdx}));"
+              else  if p.isNullable && p.isJdbcPrimitive
+              then  "${p.fieldType} ${p.fieldName}Col = (${p.fieldType}) rs.getObject(${p.colIdx});"
+              else  "${p.fieldType} ${p.fieldName}Col = rs.${p.jdbcGetter}(${p.colIdx});"
       )

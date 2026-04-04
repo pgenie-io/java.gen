@@ -8,8 +8,8 @@ import java.sql.Types;
 import java.time.*;
 import java.util.List;
 import io.codemine.java.postgresql.codecs.Codec;
+import io.pgenie.artifacts.myspace.musiccatalogue.JdbcCodec;
 import io.pgenie.artifacts.myspace.musiccatalogue.Statement;
-import io.pgenie.artifacts.myspace.musiccatalogue.codecs.Jdbc;
 import io.pgenie.artifacts.myspace.musiccatalogue.types.*;
 
 /**
@@ -67,7 +67,7 @@ public record InsertAlbum(
     public String sql() {
         return """
                insert into album (name, released, format, recording)
-               values (?, ?, ?::public.album_format, ?::public.recording_info)
+               values (?, ?, ?::album_format, ?::recording_info)
                returning id
                """;
     }
@@ -76,8 +76,8 @@ public record InsertAlbum(
     public void bindParams(PreparedStatement ps) throws SQLException {
         ps.setString(1, this.name());
         ps.setDate(2, Date.valueOf(this.released()));
-        Jdbc.bind(ps, 3, AlbumFormat.CODEC, this.format());
-        Jdbc.bind(ps, 4, RecordingInfo.CODEC, this.recording());
+        new JdbcCodec<>(AlbumFormat.CODEC).bind(ps, 3, this.format());
+        new JdbcCodec<>(RecordingInfo.CODEC).bind(ps, 4, this.recording());
     }
 
     @Override
@@ -88,8 +88,10 @@ public record InsertAlbum(
     @Override
     public Output decodeResultSet(ResultSet rs) throws SQLException {
         rs.next();
-        long id = rs.getLong(1);
-        return new Output(id);
+
+        long idCol = rs.getLong(1);
+
+        return new Output(idCol);
     }
 
     @Override
