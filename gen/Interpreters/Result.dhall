@@ -4,6 +4,8 @@ let Algebra = ./Algebra/package.dhall
 
 let ResultRows = ./ResultRows.dhall
 
+let StatementModuleSub = ../Templates/StatementModule/package.dhall
+
 let Input = Deps.Sdk.Project.Result
 
 let ExtraCtx = { sqlExp : Text, paramBindCode : Text }
@@ -26,47 +28,10 @@ let run =
                 \(typeNameBase : Text) ->
                   { typeDecls = ""
                   , statementImpl =
-                      ''
-                      @Override
-                      public String sql() {
-                          return """
-                                 ${Deps.Lude.Extensions.Text.indentNonEmpty
-                                     11
-                                     ctx.sqlExp}
-                                 """;
-                      }
-
-                      @Override
-                      public void bindParams(PreparedStatement ps) throws SQLException {
-                          ${Deps.Lude.Extensions.Text.indentNonEmpty
-                              4
-                              ctx.paramBindCode}
-                      }
-
-                      /**
-                       * Returns the number of rows affected by the statement.
-                       */
-                      @Override
-                      public boolean returnsRows() {
-                          return false;
-                      }
-
-                      /**
-                       * Returns the number of rows affected by the statement.
-                       *
-                       * <p>
-                       * Uses {@code affectedRows} forwarded from
-                       * {@link java.sql.PreparedStatement#executeUpdate()}.
-                       */
-                      @Override
-                      public Long decodeAffectedRows(long affectedRows) throws SQLException {
-                          return affectedRows;
-                      }
-
-                      @Override
-                      public Long decodeResultSet(ResultSet rs) {
-                          throw new UnsupportedOperationException();
-                      }''
+                      StatementModuleSub.StatementImplNoResult.run
+                        { sqlExp = ctx.sqlExp
+                        , paramBindCode = ctx.paramBindCode
+                        }
                   }
               )
           )

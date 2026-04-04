@@ -90,20 +90,19 @@ let run =
                           columns
 
                   let decodeBody =
-                        if    hasCodecDecode
-                        then  ''
-                              try {
-                                  ${Deps.Lude.Extensions.Text.indentNonEmpty
-                                      4
-                                      decodeLines}
+                        StatementModuleSub.DecodeBody.run
+                          { hasCodecDecode
+                          , decodeLines
+                          , finalStatement =
+                              "output.add(new OutputRow(${varRefs}));"
+                          }
 
-                                  output.add(new OutputRow(${varRefs}));
-                              } catch (io.codemine.java.postgresql.codecs.Codec.DecodingException e) {
-                                  throw new IllegalStateException(e);
-                              }''
-                        else  ''
-                              ${decodeLines}
-                              output.add(new OutputRow(${varRefs}));''
+                  let returnBody =
+                        StatementModuleSub.DecodeBody.run
+                          { hasCodecDecode
+                          , decodeLines
+                          , finalStatement = "return new Output(${varRefs});"
+                          }
 
                   in  Deps.Sdk.Compiled.ok
                         Output
@@ -111,107 +110,31 @@ let run =
                           \(typeNameBase : Text) ->
                             let multipleResult =
                                   { typeDecls =
-                                      ''
-                                      /**
-                                       * Result of the statement parameterised by {@link ${typeNameBase}}.
-                                       */
-                                      public static final class Output extends ArrayList<OutputRow> {
-                                          Output() {}
-                                      }
-
-                                      /**
-                                       * Row of {@link Output}.
-                                       */
-                                      public record OutputRow(
-                                              ${Deps.Lude.Extensions.Text.indentNonEmpty
-                                                  8
-                                                  columnFieldList}) {}''
+                                      StatementModuleSub.MultipleResultTypeDecls.run
+                                        { typeNameBase, columnFieldList }
                                   , decodeMethod =
-                                      ''
-                                      @Override
-                                      public Output decodeResultSet(ResultSet rs) throws SQLException {
-                                          Output output = new Output();
-                                          while (rs.next()) {
-                                              ${Deps.Lude.Extensions.Text.indentNonEmpty
-                                                  8
-                                                  decodeBody}
-                                          }
-                                          return output;
-                                      }''
+                                      StatementModuleSub.MultipleDecodeMethod.run
+                                        { decodeBody }
                                   , resultTypeName = "${typeNameBase}.Output"
                                   }
 
                             let singleResult =
-                                  let singleDecodeBody =
-                                        if    hasCodecDecode
-                                        then  ''
-                                              try {
-                                                  ${Deps.Lude.Extensions.Text.indentNonEmpty
-                                                      4
-                                                      decodeLines}
-
-                                                  return new Output(${varRefs});
-                                              } catch (io.codemine.java.postgresql.codecs.Codec.DecodingException e) {
-                                                  throw new IllegalStateException(e);
-                                              }''
-                                        else  ''
-                                              ${decodeLines}
-                                              return new Output(${varRefs});''
-
-                                  in  { typeDecls =
-                                          ''
-                                          /**
-                                           * Result of the statement parameterised by {@link ${typeNameBase}}.
-                                           */
-                                          public record Output(
-                                                  ${Deps.Lude.Extensions.Text.indentNonEmpty
-                                                      8
-                                                      columnFieldList}) {}''
-                                      , decodeMethod =
-                                          ''
-                                          @Override
-                                          public Output decodeResultSet(ResultSet rs) throws SQLException {
-                                              rs.next();
-                                              ${Deps.Lude.Extensions.Text.indentNonEmpty
-                                                  4
-                                                  singleDecodeBody}
-                                          }''
-                                      , resultTypeName =
-                                          "${typeNameBase}.Output"
-                                      }
+                                  { typeDecls =
+                                      StatementModuleSub.SingleResultTypeDecls.run
+                                        { typeNameBase, columnFieldList }
+                                  , decodeMethod =
+                                      StatementModuleSub.SingleDecodeMethod.run
+                                        { decodeBody = returnBody }
+                                  , resultTypeName = "${typeNameBase}.Output"
+                                  }
 
                             let optionalResult =
-                                  let optDecodeBody =
-                                        if    hasCodecDecode
-                                        then  ''
-                                              try {
-                                                  ${Deps.Lude.Extensions.Text.indentNonEmpty
-                                                      4
-                                                      decodeLines}
-
-                                                  return new Output(${varRefs});
-                                              } catch (io.codemine.java.postgresql.codecs.Codec.DecodingException e) {
-                                                  throw new IllegalStateException(e);
-                                              }''
-                                        else  ''
-                                              ${decodeLines}
-                                              return new Output(${varRefs});''
-
-                                  in  { typeDecls = singleResult.typeDecls
-                                      , decodeMethod =
-                                          ''
-                                          @Override
-                                          public Output decodeResultSet(ResultSet rs) throws SQLException {
-                                              if (!rs.next()) {
-                                                  return null;
-                                              }
-                                              ${Deps.Lude.Extensions.Text.indentNonEmpty
-                                                  4
-                                                  optDecodeBody}
-                                          }''
-                                      , resultTypeName =
-                                          "${typeNameBase}.Output"
-                                      }
+                                  { typeDecls = singleResult.typeDecls
+                                  , decodeMethod =
+                                      StatementModuleSub.OptionalDecodeMethod.run
+                                        { decodeBody = returnBody }
+                                  , resultTypeName = "${typeNameBase}.Output"
+                                  }
 
                             let resolved =
                                   merge
@@ -222,34 +145,12 @@ let run =
                                     input.cardinality
 
                             in  { statementImpl =
-                                    ''
-                                    @Override
-                                    public String sql() {
-                                        return """
-                                               ${Deps.Lude.Extensions.Text.indentNonEmpty
-                                                   11
-                                                   ctx.sqlExp}
-                                               """;
-                                    }
-
-                                    @Override
-                                    public void bindParams(PreparedStatement ps) throws SQLException {
-                                        ${Deps.Lude.Extensions.Text.indentNonEmpty
-                                            4
-                                            ctx.paramBindCode}
-                                    }
-
-                                    @Override
-                                    public boolean returnsRows() {
-                                        return true;
-                                    }
-
-                                    ${resolved.decodeMethod}
-
-                                    @Override
-                                    public ${resolved.resultTypeName} decodeAffectedRows(long affectedRows) {
-                                        throw new UnsupportedOperationException();
-                                    }''
+                                    StatementModuleSub.StatementImplWithResult.run
+                                      { sqlExp = ctx.sqlExp
+                                      , paramBindCode = ctx.paramBindCode
+                                      , decodeMethod = resolved.decodeMethod
+                                      , resultTypeName = resolved.resultTypeName
+                                      }
                                 , typeDecls = resolved.typeDecls
                                 }
                         )
