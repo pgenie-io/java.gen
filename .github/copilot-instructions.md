@@ -51,6 +51,12 @@ When the repository content conflicts with outside examples, prefer the structur
 - Skip any statements that depend on unsupported composite types.
 - Do not silently generate partial bindings for unsupported inputs.
 
+## Design rules
+
+- `gen/Templates/` must not depend on `gen/Interpreters/` or the Project model from `Deps.Sdk`.
+- Textual templates should be extracted into `gen/Templates/` as much as possible. `gen/Interpreters/` should primarily be responsible for interpreting the Project model and orchestrating the generation process, not for containing large string literals.
+- Templates may depend on other templates and their parameter structures may contain parameter structures of other templates. This may be especially useful for lists and optionals.
+
 ## Dhall Code Style Rules
 
 ### No pointless string concatenations
