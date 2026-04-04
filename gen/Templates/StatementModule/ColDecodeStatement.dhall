@@ -29,22 +29,46 @@ in  Algebra.module
 
                 in  if    p.isOptional
                     then  ''
-                          String ${p.fieldName}Str = rs.getString(${p.colIdx});
-                          ${p.fieldType} ${p.fieldName} = Optional.ofNullable(${p.fieldName}Str != null ? ${p.codecRef}.decodeInTextFromString(${p.fieldName}Str)${elemSuffix} : null);''
+                          ${p.fieldType} ${p.fieldName};
+                          {
+                              String ${p.fieldName}Str = rs.getString(${p.colIdx});
+                              if (${p.fieldName}Str != null) {
+                                  ${p.fieldName} = Optional.of(${p.codecRef}.decodeInTextFromString(${p.fieldName}Str)${elemSuffix});
+                              } else {
+                                  ${p.fieldName} = Optional.empty();
+                              }
+                          }''
                     else  if p.isNullable
                     then  ''
-                          String ${p.fieldName}Str = rs.getString(${p.colIdx});
-                          ${p.fieldType} ${p.fieldName} = ${p.fieldName}Str != null ? ${p.codecRef}.decodeInTextFromString(${p.fieldName}Str)${elemSuffix} : null;''
+                          ${p.fieldType} ${p.fieldName};
+                          {
+                              String ${p.fieldName}Str = rs.getString(${p.colIdx});
+                              if (${p.fieldName}Str != null) {
+                                  ${p.fieldName} = ${p.codecRef}.decodeInTextFromString(${p.fieldName}Str)${elemSuffix};
+                              }
+                          }''
                     else  "${p.fieldType} ${p.fieldName} = ${p.codecRef}.decodeInTextFromString(rs.getString(${p.colIdx}))${elemSuffix};"
           else  if p.isDateType
           then  if    p.isOptional
                 then  ''
-                      Date ${p.fieldName}Sql = rs.getDate(${p.colIdx});
-                      ${p.fieldType} ${p.fieldName} = Optional.ofNullable(${p.fieldName}Sql != null ? ${p.fieldName}Sql.toLocalDate() : null);''
+                      ${p.fieldType} ${p.fieldName};
+                      {
+                          Date ${p.fieldName}Sql = rs.getDate(${p.colIdx});
+                          if (${p.fieldName}Sql != null) {
+                              ${p.fieldName} = Optional.of(${p.fieldName}Sql.toLocalDate());
+                          } else {
+                              ${p.fieldName} = Optional.empty();
+                          }
+                      }''
                 else  if p.isNullable
                 then  ''
-                      Date ${p.fieldName}Sql = rs.getDate(${p.colIdx});
-                      LocalDate ${p.fieldName} = ${p.fieldName}Sql != null ? ${p.fieldName}Sql.toLocalDate() : null;''
+                      LocalDate ${p.fieldName};
+                      {
+                          Date ${p.fieldName}Sql = rs.getDate(${p.colIdx});
+                          if (${p.fieldName}Sql != null) {
+                              ${p.fieldName} = ${p.fieldName}Sql.toLocalDate();
+                          }
+                      }''
                 else  "LocalDate ${p.fieldName} = rs.getDate(${p.colIdx}).toLocalDate();"
           else  if p.isOptional
           then  if    p.isJdbcPrimitive

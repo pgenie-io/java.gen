@@ -118,16 +118,51 @@ public record UpdateAlbumRecordingReturning(
             try {
                 long id = rs.getLong(1);
                 String name = rs.getString(2);
-                Date releasedSql = rs.getDate(3);
-                Optional<LocalDate> released = Optional.ofNullable(releasedSql != null ? releasedSql.toLocalDate() : null);
-                String formatStr = rs.getString(4);
-                Optional<AlbumFormat> format = Optional.ofNullable(formatStr != null ? AlbumFormat.CODEC.decodeInTextFromString(formatStr) : null);
-                String recordingStr = rs.getString(5);
-                Optional<RecordingInfo> recording = Optional.ofNullable(recordingStr != null ? RecordingInfo.CODEC.decodeInTextFromString(recordingStr) : null);
-                String tracksStr = rs.getString(6);
-                Optional<List<TrackInfo>> tracks = Optional.ofNullable(tracksStr != null ? TrackInfo.CODEC.inDim().decodeInTextFromString(tracksStr) : null);
-                String discStr = rs.getString(7);
-                Optional<DiscInfo> disc = Optional.ofNullable(discStr != null ? DiscInfo.CODEC.decodeInTextFromString(discStr) : null);
+                Optional<LocalDate> released;
+                {
+                    Date releasedSql = rs.getDate(3);
+                    if (releasedSql != null) {
+                        released = Optional.of(releasedSql.toLocalDate());
+                    } else {
+                        released = Optional.empty();
+                    }
+                }
+                Optional<AlbumFormat> format;
+                {
+                    String formatStr = rs.getString(4);
+                    if (formatStr != null) {
+                        format = Optional.of(AlbumFormat.CODEC.decodeInTextFromString(formatStr));
+                    } else {
+                        format = Optional.empty();
+                    }
+                }
+                Optional<RecordingInfo> recording;
+                {
+                    String recordingStr = rs.getString(5);
+                    if (recordingStr != null) {
+                        recording = Optional.of(RecordingInfo.CODEC.decodeInTextFromString(recordingStr));
+                    } else {
+                        recording = Optional.empty();
+                    }
+                }
+                Optional<List<TrackInfo>> tracks;
+                {
+                    String tracksStr = rs.getString(6);
+                    if (tracksStr != null) {
+                        tracks = Optional.of(TrackInfo.CODEC.inDim().decodeInTextFromString(tracksStr));
+                    } else {
+                        tracks = Optional.empty();
+                    }
+                }
+                Optional<DiscInfo> disc;
+                {
+                    String discStr = rs.getString(7);
+                    if (discStr != null) {
+                        disc = Optional.of(DiscInfo.CODEC.decodeInTextFromString(discStr));
+                    } else {
+                        disc = Optional.empty();
+                    }
+                }
 
                 output.add(new OutputRow(id, name, released, format, recording, tracks, disc));
             } catch (io.codemine.java.postgresql.codecs.Codec.DecodingException e) {

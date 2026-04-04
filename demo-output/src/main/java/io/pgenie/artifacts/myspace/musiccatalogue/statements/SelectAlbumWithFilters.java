@@ -189,10 +189,24 @@ public record SelectAlbumWithFilters(
             try {
                 long id = rs.getLong(1);
                 String name = rs.getString(2);
-                Date releasedSql = rs.getDate(3);
-                Optional<LocalDate> released = Optional.ofNullable(releasedSql != null ? releasedSql.toLocalDate() : null);
-                String formatStr = rs.getString(4);
-                Optional<AlbumFormat> format = Optional.ofNullable(formatStr != null ? AlbumFormat.CODEC.decodeInTextFromString(formatStr) : null);
+                Optional<LocalDate> released;
+                {
+                    Date releasedSql = rs.getDate(3);
+                    if (releasedSql != null) {
+                        released = Optional.of(releasedSql.toLocalDate());
+                    } else {
+                        released = Optional.empty();
+                    }
+                }
+                Optional<AlbumFormat> format;
+                {
+                    String formatStr = rs.getString(4);
+                    if (formatStr != null) {
+                        format = Optional.of(AlbumFormat.CODEC.decodeInTextFromString(formatStr));
+                    } else {
+                        format = Optional.empty();
+                    }
+                }
 
                 output.add(new OutputRow(id, name, released, format));
             } catch (io.codemine.java.postgresql.codecs.Codec.DecodingException e) {

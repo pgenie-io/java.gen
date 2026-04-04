@@ -97,8 +97,15 @@ public record SelectAlbumWithTracks(
                 long id = rs.getLong(1);
                 String name = rs.getString(2);
                 List<TrackInfo> tracks = TrackInfo.CODEC.inDim().decodeInTextFromString(rs.getString(3));
-                String discStr = rs.getString(4);
-                Optional<DiscInfo> disc = Optional.ofNullable(discStr != null ? DiscInfo.CODEC.decodeInTextFromString(discStr) : null);
+                Optional<DiscInfo> disc;
+                {
+                    String discStr = rs.getString(4);
+                    if (discStr != null) {
+                        disc = Optional.of(DiscInfo.CODEC.decodeInTextFromString(discStr));
+                    } else {
+                        disc = Optional.empty();
+                    }
+                }
 
                 output.add(new OutputRow(id, name, tracks, disc));
             } catch (io.codemine.java.postgresql.codecs.Codec.DecodingException e) {
