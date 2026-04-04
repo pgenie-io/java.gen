@@ -143,6 +143,7 @@ public record SelectAlbumByName(
                 throw new IllegalStateException(e);
             }
         }
+
         return output;
     }
 

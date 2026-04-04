@@ -89,14 +89,6 @@ let run =
                           (\(col : Member.Output) -> col.fieldName)
                           columns
 
-                  let decodeBody =
-                        StatementModuleSub.DecodeBody.run
-                          { hasCodecDecode
-                          , decodeLines
-                          , finalStatement =
-                              "output.add(new OutputRow(${varRefs}));"
-                          }
-
                   let returnBody =
                         StatementModuleSub.DecodeBody.run
                           { hasCodecDecode
@@ -114,7 +106,7 @@ let run =
                                         { typeNameBase, columnFieldList }
                                   , decodeMethod =
                                       StatementModuleSub.MultipleDecodeMethod.run
-                                        { decodeBody }
+                                        { hasCodecDecode, decodeLines, varRefs }
                                   , resultTypeName = "${typeNameBase}.Output"
                                   }
 

@@ -144,6 +144,7 @@ public record SelectAlbumByFormat(
                 throw new IllegalStateException(e);
             }
         }
+
         return output;
     }
 

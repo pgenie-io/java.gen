@@ -169,6 +169,7 @@ public record UpdateAlbumRecordingReturning(
                 throw new IllegalStateException(e);
             }
         }
+
         return output;
     }
 

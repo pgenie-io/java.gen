@@ -112,6 +112,7 @@ public record SelectAlbumWithTracks(
                 throw new IllegalStateException(e);
             }
         }
+
         return output;
     }
 

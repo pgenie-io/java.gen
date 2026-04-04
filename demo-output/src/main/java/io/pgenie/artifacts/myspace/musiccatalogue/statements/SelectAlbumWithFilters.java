@@ -213,6 +213,7 @@ public record SelectAlbumWithFilters(
                 throw new IllegalStateException(e);
             }
         }
+
         return output;
     }
 
