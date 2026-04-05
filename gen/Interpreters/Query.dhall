@@ -28,62 +28,6 @@ let Output =
       , testModuleContents : Text
       }
 
-let mkParamBindCode =
-      \(params : List MemberModule.Output) ->
-      \(fragments : Deps.Sdk.Project.QueryFragments) ->
-        let paramOccurrences =
-              Deps.Prelude.List.filterMap
-                Deps.Sdk.Project.QueryFragment
-                Natural
-                ( \(fragment : Deps.Sdk.Project.QueryFragment) ->
-                    merge
-                      { Sql = \(_ : Text) -> None Natural
-                      , Var = \(v : Deps.Sdk.Project.Var) -> Some v.paramIndex
-                      }
-                      fragment
-                )
-                fragments
-
-        let indexedOccurrences =
-              Deps.Prelude.List.indexed Natural paramOccurrences
-
-        in  Deps.Prelude.Text.concatSep
-              "\n"
-              ( Deps.Prelude.List.filterMap
-                  { index : Natural, value : Natural }
-                  Text
-                  ( \(ip : { index : Natural, value : Natural }) ->
-                      let idx = Natural/show (ip.index + 1)
-
-                      let mParam =
-                            Deps.Prelude.List.index
-                              ip.value
-                              MemberModule.Output
-                              params
-
-                      in  merge
-                            { None = None Text
-                            , Some =
-                                \(p : MemberModule.Output) ->
-                                  Some
-                                    ( StatementModuleSub.ParamBindStatement.run
-                                        { idx
-                                        , fieldName = p.fieldName
-                                        , useCodec = p.useCodec
-                                        , codecRef = p.codecRef
-                                        , isDateType = p.isDateType
-                                        , isOptional = p.isOptional
-                                        , isNullable = p.isNullable
-                                        , jdbcSetter = p.jdbcSetter
-                                        , sqlTypesConstant = p.sqlTypesConstant
-                                        }
-                                    )
-                            }
-                            mParam
-                  )
-                  indexedOccurrences
-              )
-
 let render =
       \(config : Algebra.Config) ->
       \(input : Input) ->
@@ -104,7 +48,61 @@ let render =
 
         let sqlExp = fragments.mkSqlExp paramCastSuffixes
 
-        let paramBindCode = mkParamBindCode params input.fragments
+        let paramBindCode =
+              let paramOccurrences =
+                    Deps.Prelude.List.filterMap
+                      Deps.Sdk.Project.QueryFragment
+                      Natural
+                      ( \(fragment : Deps.Sdk.Project.QueryFragment) ->
+                          merge
+                            { Sql = \(_ : Text) -> None Natural
+                            , Var =
+                                \(v : Deps.Sdk.Project.Var) -> Some v.paramIndex
+                            }
+                            fragment
+                      )
+                      input.fragments
+
+              let indexedOccurrences =
+                    Deps.Prelude.List.indexed Natural paramOccurrences
+
+              in  Deps.Prelude.Text.concatSep
+                    "\n"
+                    ( Deps.Prelude.List.filterMap
+                        { index : Natural, value : Natural }
+                        Text
+                        ( \(ip : { index : Natural, value : Natural }) ->
+                            let idx = Natural/show (ip.index + 1)
+
+                            let mParam =
+                                  Deps.Prelude.List.index
+                                    ip.value
+                                    MemberModule.Output
+                                    params
+
+                            in  merge
+                                  { None = None Text
+                                  , Some =
+                                      \(p : MemberModule.Output) ->
+                                        Some
+                                          ( StatementModuleSub.ParamBindStatement.run
+                                              { idx
+                                              , fieldName = p.fieldName
+                                              , useCodec = p.useCodec
+                                              , codecRef = p.codecRef
+                                              , isDateType = p.isDateType
+                                              , isOptional = p.isOptional
+                                              , isNullable = p.isNullable
+                                              , jdbcSetter = p.jdbcSetter
+                                              , sqlTypesConstant =
+                                                  p.sqlTypesConstant
+                                              }
+                                          )
+                                  }
+                                  mParam
+                        )
+                        indexedOccurrences
+                    )
 
         let hasResult =
               Deps.Prelude.Optional.fold
