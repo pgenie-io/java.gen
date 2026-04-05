@@ -1,4 +1,4 @@
--- Renders the Output and OutputRow type declarations for a multiple-row result.
+-- Renders the Result and ResultRow type declarations for a multiple-row result.
 -- Produces the declarations without any surrounding indentation; splice site must indent.
 let Algebra = ../Algebras/Template.dhall
 
@@ -15,13 +15,13 @@ in  Algebra.module
           /**
            * Result of the statement parameterised by {@link ${p.typeNameBase}}.
            */
-          public static final class Output extends ArrayList<OutputRow> {
-              Output() {}
+          public static final class Result extends ArrayList<ResultRow> {
+              Result() {}
           }
 
           /**
-           * Row of {@link Output}.
+           * Row of {@link Result}.
            */
-          public record OutputRow(
+          public record ResultRow(
                   ${indent 8 p.columnFieldList}) {}''
       )

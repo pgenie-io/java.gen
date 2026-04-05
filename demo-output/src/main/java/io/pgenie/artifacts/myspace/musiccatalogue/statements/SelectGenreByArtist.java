@@ -35,7 +35,7 @@ public record SelectGenreByArtist(
          * Maps to {@code $artist} in the template.
          */
         int artist)
-        implements Statement<SelectGenreByArtist.Output> {
+        implements Statement<SelectGenreByArtist.Result> {
     
     // -------------------------------------------------------------------------
     // Result type
@@ -43,14 +43,14 @@ public record SelectGenreByArtist(
     /**
      * Result of the statement parameterised by {@link SelectGenreByArtist}.
      */
-    public static final class Output extends ArrayList<OutputRow> {
-        Output() {}
+    public static final class Result extends ArrayList<ResultRow> {
+        Result() {}
     }
 
     /**
-     * Row of {@link Output}.
+     * Row of {@link Result}.
      */
-    public record OutputRow(
+    public record ResultRow(
             /**
              * Maps to the {@code id} result-set column.
              */
@@ -85,15 +85,15 @@ public record SelectGenreByArtist(
     }
 
     @Override
-    public Output decodeResultSet(ResultSet rs) throws SQLException {
-        Output output = new Output();
+    public Result decodeResultSet(ResultSet rs) throws SQLException {
+        Result output = new Result();
         int row = 0;
         
         while (rs.next()) {
             int idCol = rs.getInt(1);
             String nameCol = rs.getString(2);
 
-            output.add(new OutputRow(idCol, nameCol));
+            output.add(new ResultRow(idCol, nameCol));
             row++;
         }
 
@@ -101,7 +101,7 @@ public record SelectGenreByArtist(
     }
 
     @Override
-    public SelectGenreByArtist.Output decodeAffectedRows(long affectedRows) {
+    public SelectGenreByArtist.Result decodeAffectedRows(long affectedRows) {
         throw new UnsupportedOperationException();
     }
 }

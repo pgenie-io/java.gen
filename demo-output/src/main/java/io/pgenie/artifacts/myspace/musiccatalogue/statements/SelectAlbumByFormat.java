@@ -40,7 +40,7 @@ public record SelectAlbumByFormat(
          * Maps to {@code $format} in the template.
          */
         AlbumFormat format)
-        implements Statement<SelectAlbumByFormat.Output> {
+        implements Statement<SelectAlbumByFormat.Result> {
     
     // -------------------------------------------------------------------------
     // Result type
@@ -48,14 +48,14 @@ public record SelectAlbumByFormat(
     /**
      * Result of the statement parameterised by {@link SelectAlbumByFormat}.
      */
-    public static final class Output extends ArrayList<OutputRow> {
-        Output() {}
+    public static final class Result extends ArrayList<ResultRow> {
+        Result() {}
     }
 
     /**
-     * Row of {@link Output}.
+     * Row of {@link Result}.
      */
-    public record OutputRow(
+    public record ResultRow(
             /**
              * Maps to the {@code id} result-set column.
              */
@@ -105,8 +105,8 @@ public record SelectAlbumByFormat(
     }
 
     @Override
-    public Output decodeResultSet(ResultSet rs) throws SQLException {
-        Output output = new Output();
+    public Result decodeResultSet(ResultSet rs) throws SQLException {
+        Result output = new Result();
         int row = 0;
         
         while (rs.next()) {
@@ -124,7 +124,7 @@ public record SelectAlbumByFormat(
             Optional<AlbumFormat> formatCol = Optional.ofNullable(new JdbcCodec<>(AlbumFormat.CODEC).decodeNullable(rs, row, 4));
             Optional<RecordingInfo> recordingCol = Optional.ofNullable(new JdbcCodec<>(RecordingInfo.CODEC).decodeNullable(rs, row, 5));
 
-            output.add(new OutputRow(idCol, nameCol, releasedCol, formatCol, recordingCol));
+            output.add(new ResultRow(idCol, nameCol, releasedCol, formatCol, recordingCol));
             row++;
         }
 
@@ -132,7 +132,7 @@ public record SelectAlbumByFormat(
     }
 
     @Override
-    public SelectAlbumByFormat.Output decodeAffectedRows(long affectedRows) {
+    public SelectAlbumByFormat.Result decodeAffectedRows(long affectedRows) {
         throw new UnsupportedOperationException();
     }
 }

@@ -39,7 +39,7 @@ let run =
                               { decodeLines = cols.decodeLinesWithRowVar
                               , columnNames = cols.columnNames
                               }
-                        , resultTypeName = "${typeNameBase}.Output"
+                        , resultTypeName = "${typeNameBase}.Result"
                         }
 
                   let singleResult =
@@ -47,14 +47,14 @@ let run =
                             Templates.SingleResultTypeDecls.run
                               { typeNameBase
                               , columnFieldList = cols.columnFieldList
-                              , rowTypeName = "Output"
+                              , rowTypeName = "Result"
                               }
                         , decodeMethod =
                             Templates.SingleDecodeMethod.run
                               { decodeLines = cols.decodeLinesWithoutRowVar
                               , columnNames = cols.columnNames
                               }
-                        , resultTypeName = "${typeNameBase}.Output"
+                        , resultTypeName = "${typeNameBase}.Result"
                         }
 
                   let optionalResult =
@@ -63,7 +63,7 @@ let run =
                                   Templates.SingleResultTypeDecls.run
                                     { typeNameBase
                                     , columnFieldList = cols.columnFieldList
-                                    , rowTypeName = "OutputRow"
+                                    , rowTypeName = "ResultRow"
                                     }
                               , decodeMethod =
                                   Templates.OptionalDecodeMethod.run
@@ -73,13 +73,13 @@ let run =
                                     , useOptional = True
                                     }
                               , resultTypeName =
-                                  "Optional<${typeNameBase}.OutputRow>"
+                                  "Optional<${typeNameBase}.ResultRow>"
                               }
                         else  { typeDecls =
                                   Templates.SingleResultTypeDecls.run
                                     { typeNameBase
                                     , columnFieldList = cols.columnFieldList
-                                    , rowTypeName = "Output"
+                                    , rowTypeName = "Result"
                                     }
                               , decodeMethod =
                                   Templates.OptionalDecodeMethod.run
@@ -88,7 +88,7 @@ let run =
                                     , columnNames = cols.columnNames
                                     , useOptional = False
                                     }
-                              , resultTypeName = "${typeNameBase}.Output"
+                              , resultTypeName = "${typeNameBase}.Result"
                               }
 
                   let resolved =

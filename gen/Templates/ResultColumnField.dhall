@@ -1,4 +1,4 @@
--- Renders a single result-set column field entry for the OutputRow record.
+-- Renders a single result-set column field entry for the ResultRow record.
 -- Produces the field without any surrounding indentation; splice site must indent.
 let Algebra = ../Algebras/Template.dhall
 

@@ -46,7 +46,7 @@ public record InsertAlbum(
          * Maps to {@code $recording} in the template.
          */
         RecordingInfo recording)
-        implements Statement<InsertAlbum.Output> {
+        implements Statement<InsertAlbum.Result> {
     
     // -------------------------------------------------------------------------
     // Result type
@@ -54,7 +54,7 @@ public record InsertAlbum(
     /**
      * Result of the statement parameterised by {@link InsertAlbum}.
      */
-    public record Output(
+    public record Result(
             /**
              * Maps to the {@code id} result-set column.
              */
@@ -86,16 +86,16 @@ public record InsertAlbum(
     }
 
     @Override
-    public Output decodeResultSet(ResultSet rs) throws SQLException {
+    public Result decodeResultSet(ResultSet rs) throws SQLException {
         rs.next();
 
         long idCol = rs.getLong(1);
 
-        return new Output(idCol);
+        return new Result(idCol);
     }
 
     @Override
-    public InsertAlbum.Output decodeAffectedRows(long affectedRows) {
+    public InsertAlbum.Result decodeAffectedRows(long affectedRows) {
         throw new UnsupportedOperationException();
     }
 }

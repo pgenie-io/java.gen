@@ -11,12 +11,12 @@ in  Algebra.module
       ( \(p : Params) ->
           ''
           @Override
-          public Output decodeResultSet(ResultSet rs) throws SQLException {
+          public Result decodeResultSet(ResultSet rs) throws SQLException {
               rs.next();
 
               ${indent 4 p.decodeLines}
 
-              return new Output(${Deps.Prelude.Text.concatMapSep
+              return new Result(${Deps.Prelude.Text.concatMapSep
                                     ", "
                                     Text
                                     (\(col : Text) -> "${col}Col")

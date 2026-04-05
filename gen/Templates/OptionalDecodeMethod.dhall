@@ -14,13 +14,13 @@ in  Algebra.module
           if    p.useOptional
           then  ''
                 @Override
-                public Optional<OutputRow> decodeResultSet(ResultSet rs) throws SQLException {
+                public Optional<ResultRow> decodeResultSet(ResultSet rs) throws SQLException {
                     if (!rs.next()) {
                         return Optional.empty();
                     }
                     ${indent 4 p.decodeLines}
 
-                    return Optional.of(new OutputRow(${Deps.Prelude.Text.concatMapSep
+                    return Optional.of(new ResultRow(${Deps.Prelude.Text.concatMapSep
                                                          ", "
                                                          Text
                                                          ( \(col : Text) ->
@@ -30,13 +30,13 @@ in  Algebra.module
                 }''
           else  ''
                 @Override
-                public Output decodeResultSet(ResultSet rs) throws SQLException {
+                public Result decodeResultSet(ResultSet rs) throws SQLException {
                     if (!rs.next()) {
                         return null;
                     }
                     ${indent 4 p.decodeLines}
 
-                    return new Output(${Deps.Prelude.Text.concatMapSep
+                    return new Result(${Deps.Prelude.Text.concatMapSep
                                           ", "
                                           Text
                                           (\(col : Text) -> "${col}Col")

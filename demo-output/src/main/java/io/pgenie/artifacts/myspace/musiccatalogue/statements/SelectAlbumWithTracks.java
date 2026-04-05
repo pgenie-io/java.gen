@@ -34,7 +34,7 @@ public record SelectAlbumWithTracks(
          * Maps to {@code $id} in the template.
          */
         long id)
-        implements Statement<SelectAlbumWithTracks.Output> {
+        implements Statement<SelectAlbumWithTracks.Result> {
     
     // -------------------------------------------------------------------------
     // Result type
@@ -42,14 +42,14 @@ public record SelectAlbumWithTracks(
     /**
      * Result of the statement parameterised by {@link SelectAlbumWithTracks}.
      */
-    public static final class Output extends ArrayList<OutputRow> {
-        Output() {}
+    public static final class Result extends ArrayList<ResultRow> {
+        Result() {}
     }
 
     /**
-     * Row of {@link Output}.
+     * Row of {@link Result}.
      */
-    public record OutputRow(
+    public record ResultRow(
             /**
              * Maps to the {@code id} result-set column.
              */
@@ -90,8 +90,8 @@ public record SelectAlbumWithTracks(
     }
 
     @Override
-    public Output decodeResultSet(ResultSet rs) throws SQLException {
-        Output output = new Output();
+    public Result decodeResultSet(ResultSet rs) throws SQLException {
+        Result output = new Result();
         int row = 0;
         
         while (rs.next()) {
@@ -100,7 +100,7 @@ public record SelectAlbumWithTracks(
             List<TrackInfo> tracksCol = new JdbcCodec<>(TrackInfo.CODEC.inDim()).decodeNonNullable(rs, row, 3);
             Optional<DiscInfo> discCol = Optional.ofNullable(new JdbcCodec<>(DiscInfo.CODEC).decodeNullable(rs, row, 4));
 
-            output.add(new OutputRow(idCol, nameCol, tracksCol, discCol));
+            output.add(new ResultRow(idCol, nameCol, tracksCol, discCol));
             row++;
         }
 
@@ -108,7 +108,7 @@ public record SelectAlbumWithTracks(
     }
 
     @Override
-    public SelectAlbumWithTracks.Output decodeAffectedRows(long affectedRows) {
+    public SelectAlbumWithTracks.Result decodeAffectedRows(long affectedRows) {
         throw new UnsupportedOperationException();
     }
 }

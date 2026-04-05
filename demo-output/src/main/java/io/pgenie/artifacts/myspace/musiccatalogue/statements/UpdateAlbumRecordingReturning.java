@@ -41,7 +41,7 @@ public record UpdateAlbumRecordingReturning(
          * Maps to {@code $id} in the template.
          */
         long id)
-        implements Statement<UpdateAlbumRecordingReturning.Output> {
+        implements Statement<UpdateAlbumRecordingReturning.Result> {
     
     // -------------------------------------------------------------------------
     // Result type
@@ -49,14 +49,14 @@ public record UpdateAlbumRecordingReturning(
     /**
      * Result of the statement parameterised by {@link UpdateAlbumRecordingReturning}.
      */
-    public static final class Output extends ArrayList<OutputRow> {
-        Output() {}
+    public static final class Result extends ArrayList<ResultRow> {
+        Result() {}
     }
 
     /**
-     * Row of {@link Output}.
+     * Row of {@link Result}.
      */
-    public record OutputRow(
+    public record ResultRow(
             /**
              * Maps to the {@code id} result-set column.
              */
@@ -112,8 +112,8 @@ public record UpdateAlbumRecordingReturning(
     }
 
     @Override
-    public Output decodeResultSet(ResultSet rs) throws SQLException {
-        Output output = new Output();
+    public Result decodeResultSet(ResultSet rs) throws SQLException {
+        Result output = new Result();
         int row = 0;
         
         while (rs.next()) {
@@ -133,7 +133,7 @@ public record UpdateAlbumRecordingReturning(
             Optional<List<TrackInfo>> tracksCol = Optional.ofNullable(new JdbcCodec<>(TrackInfo.CODEC.inDim()).decodeNullable(rs, row, 6));
             Optional<DiscInfo> discCol = Optional.ofNullable(new JdbcCodec<>(DiscInfo.CODEC).decodeNullable(rs, row, 7));
 
-            output.add(new OutputRow(idCol, nameCol, releasedCol, formatCol, recordingCol, tracksCol, discCol));
+            output.add(new ResultRow(idCol, nameCol, releasedCol, formatCol, recordingCol, tracksCol, discCol));
             row++;
         }
 
@@ -141,7 +141,7 @@ public record UpdateAlbumRecordingReturning(
     }
 
     @Override
-    public UpdateAlbumRecordingReturning.Output decodeAffectedRows(long affectedRows) {
+    public UpdateAlbumRecordingReturning.Result decodeAffectedRows(long affectedRows) {
         throw new UnsupportedOperationException();
     }
 }

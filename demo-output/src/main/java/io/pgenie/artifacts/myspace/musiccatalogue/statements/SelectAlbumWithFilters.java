@@ -76,7 +76,7 @@ public record SelectAlbumWithFilters(
          * Maps to {@code $order_by_released} in the template.
          */
         boolean orderByReleased)
-        implements Statement<SelectAlbumWithFilters.Output> {
+        implements Statement<SelectAlbumWithFilters.Result> {
     
     // -------------------------------------------------------------------------
     // Result type
@@ -84,14 +84,14 @@ public record SelectAlbumWithFilters(
     /**
      * Result of the statement parameterised by {@link SelectAlbumWithFilters}.
      */
-    public static final class Output extends ArrayList<OutputRow> {
-        Output() {}
+    public static final class Result extends ArrayList<ResultRow> {
+        Result() {}
     }
 
     /**
-     * Row of {@link Output}.
+     * Row of {@link Result}.
      */
-    public record OutputRow(
+    public record ResultRow(
             /**
              * Maps to the {@code id} result-set column.
              */
@@ -183,8 +183,8 @@ public record SelectAlbumWithFilters(
     }
 
     @Override
-    public Output decodeResultSet(ResultSet rs) throws SQLException {
-        Output output = new Output();
+    public Result decodeResultSet(ResultSet rs) throws SQLException {
+        Result output = new Result();
         int row = 0;
         
         while (rs.next()) {
@@ -201,7 +201,7 @@ public record SelectAlbumWithFilters(
             }
             Optional<AlbumFormat> formatCol = Optional.ofNullable(new JdbcCodec<>(AlbumFormat.CODEC).decodeNullable(rs, row, 4));
 
-            output.add(new OutputRow(idCol, nameCol, releasedCol, formatCol));
+            output.add(new ResultRow(idCol, nameCol, releasedCol, formatCol));
             row++;
         }
 
@@ -209,7 +209,7 @@ public record SelectAlbumWithFilters(
     }
 
     @Override
-    public SelectAlbumWithFilters.Output decodeAffectedRows(long affectedRows) {
+    public SelectAlbumWithFilters.Result decodeAffectedRows(long affectedRows) {
         throw new UnsupportedOperationException();
     }
 }

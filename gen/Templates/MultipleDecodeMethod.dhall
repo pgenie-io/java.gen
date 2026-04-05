@@ -13,14 +13,14 @@ in  Algebra.module
       ( \(p : Params) ->
           ''
           @Override
-          public Output decodeResultSet(ResultSet rs) throws SQLException {
-              Output output = new Output();
+          public Result decodeResultSet(ResultSet rs) throws SQLException {
+              Result output = new Result();
               int row = 0;
               
               while (rs.next()) {
                   ${indent 8 p.decodeLines}
 
-                  output.add(new OutputRow(${Deps.Prelude.Text.concatMapSep
+                  output.add(new ResultRow(${Deps.Prelude.Text.concatMapSep
                                                ", "
                                                Text
                                                (\(col : Text) -> "${col}Col")
