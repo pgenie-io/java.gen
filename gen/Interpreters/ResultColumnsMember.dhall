@@ -46,12 +46,12 @@ let run =
                     else  value.javaType
 
               in  { columnField =
-                        StatementModuleSub.ResultColumnField.run
-                          { pgName = input.pgName
-                          , fieldType
-                          , fieldName
-                          , isNullable = input.isNullable
-                          }
+                      StatementModuleSub.ResultColumnField.run
+                        { pgName = input.pgName
+                        , fieldType
+                        , fieldName
+                        , isNullable = input.isNullable
+                        }
                   , fieldName
                   , fieldType
                   , boxedJavaType = value.boxedJavaType
