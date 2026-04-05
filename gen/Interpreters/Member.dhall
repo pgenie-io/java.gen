@@ -13,16 +13,11 @@ let Input = Model.Member
 let Output =
       { fieldName : Text
       , fieldType : Text
-      , boxedJavaType : Text
-      , rawCodecType : Text
-      , elementIsOptional : Bool
       , pgName : Text
       , pgCastSuffix : Text
       , useCodec : Bool
       , isDateType : Bool
-      , isJdbcPrimitive : Bool
       , jdbcSetter : Text
-      , jdbcGetter : Text
       , sqlTypesConstant : Text
       , codecRef : Text
       , isNullable : Bool
@@ -33,7 +28,7 @@ let Output =
 let run =
       \(config : Algebra.Config) ->
       \(input : Input) ->
-        Sdk.Compiled.flatMap
+        Sdk.Compiled.map
           Value.Output
           Output
           ( \(value : Value.Output) ->
@@ -48,31 +43,24 @@ let run =
                     then  value.boxedJavaType
                     else  value.javaType
 
-              in  Sdk.Compiled.ok
-                    Output
-                    { fieldName
-                    , fieldType
-                    , boxedJavaType = value.boxedJavaType
-                    , rawCodecType = value.rawCodecType
-                    , elementIsOptional = value.elementIsOptional
-                    , pgName = input.pgName
-                    , pgCastSuffix = value.pgCastSuffix
-                    , useCodec = value.useCodec
-                    , isDateType = value.isDateType
-                    , isJdbcPrimitive = value.isJdbcPrimitive
-                    , jdbcSetter = value.jdbcSetter
-                    , jdbcGetter = value.jdbcGetter
-                    , sqlTypesConstant = value.sqlTypesConstant
-                    , codecRef = value.codecRef
-                    , isNullable = input.isNullable
-                    , isOptional
-                    , testDefaultLiteral =
-                        if    isOptional
-                        then  "Optional.empty()"
-                        else  if input.isNullable
-                        then  "null"
-                        else  value.testDefaultLiteral
-                    }
+              in  { fieldName
+                  , fieldType
+                  , pgName = input.pgName
+                  , pgCastSuffix = value.pgCastSuffix
+                  , useCodec = value.useCodec
+                  , isDateType = value.isDateType
+                  , jdbcSetter = value.jdbcSetter
+                  , sqlTypesConstant = value.sqlTypesConstant
+                  , codecRef = value.codecRef
+                  , isNullable = input.isNullable
+                  , isOptional
+                  , testDefaultLiteral =
+                      if    isOptional
+                      then  "Optional.empty()"
+                      else  if input.isNullable
+                      then  "null"
+                      else  value.testDefaultLiteral
+                  }
           )
           ( Sdk.Compiled.nest
               Value.Output

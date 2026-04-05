@@ -26,7 +26,7 @@ let Output =
 let run =
       \(config : Algebra.Config) ->
       \(input : Input) ->
-        Sdk.Compiled.flatMap
+        Sdk.Compiled.map
           Value.Output
           Output
           ( \(value : Value.Output) ->
@@ -41,19 +41,17 @@ let run =
                     then  value.boxedJavaType
                     else  value.javaType
 
-              in  Sdk.Compiled.ok
-                    Output
-                    { fieldName
-                    , fieldType
-                    , boxedJavaType = value.boxedJavaType
-                    , rawCodecType = value.rawCodecType
-                    , elementIsOptional = value.elementIsOptional
-                    , pgName = input.pgName
-                    , useCodec = value.useCodec
-                    , isDateType = value.isDateType
-                    , codecRef = value.codecRef
-                    , isOptional
-                    }
+              in  { fieldName
+                  , fieldType
+                  , boxedJavaType = value.boxedJavaType
+                  , rawCodecType = value.rawCodecType
+                  , elementIsOptional = value.elementIsOptional
+                  , pgName = input.pgName
+                  , useCodec = value.useCodec
+                  , isDateType = value.isDateType
+                  , codecRef = value.codecRef
+                  , isOptional
+                  }
           )
           ( Sdk.Compiled.nest
               Value.Output
