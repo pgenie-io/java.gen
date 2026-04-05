@@ -4,7 +4,7 @@ let Algebra = ../Algebras/Interpreter.dhall
 
 let ResultColumns = ./ResultColumns.dhall
 
-let StatementModuleSub = ../Templates/StatementModule/package.dhall
+let Templates = ../Templates/package.dhall
 
 let Input = Deps.Sdk.Project.ResultRows
 
@@ -34,12 +34,12 @@ let run =
                 \(typeNameBase : Text) ->
                   let multipleResult =
                         { typeDecls =
-                            StatementModuleSub.MultipleResultTypeDecls.run
+                            Templates.MultipleResultTypeDecls.run
                               { typeNameBase
                               , columnFieldList = cols.columnFieldList
                               }
                         , decodeMethod =
-                            StatementModuleSub.MultipleDecodeMethod.run
+                            Templates.MultipleDecodeMethod.run
                               { decodeLines = cols.decodeLinesWithRowVar
                               , columnNames = cols.columnNames
                               }
@@ -48,13 +48,13 @@ let run =
 
                   let singleResult =
                         { typeDecls =
-                            StatementModuleSub.SingleResultTypeDecls.run
+                            Templates.SingleResultTypeDecls.run
                               { typeNameBase
                               , columnFieldList = cols.columnFieldList
                               , rowTypeName = "Output"
                               }
                         , decodeMethod =
-                            StatementModuleSub.SingleDecodeMethod.run
+                            Templates.SingleDecodeMethod.run
                               { decodeLines = cols.decodeLinesWithoutRowVar
                               , columnNames = cols.columnNames
                               }
@@ -64,13 +64,13 @@ let run =
                   let optionalResult =
                         if    config.useOptional
                         then  { typeDecls =
-                                  StatementModuleSub.SingleResultTypeDecls.run
+                                  Templates.SingleResultTypeDecls.run
                                     { typeNameBase
                                     , columnFieldList = cols.columnFieldList
                                     , rowTypeName = "OutputRow"
                                     }
                               , decodeMethod =
-                                  StatementModuleSub.OptionalDecodeMethod.run
+                                  Templates.OptionalDecodeMethod.run
                                     { decodeLines =
                                         cols.decodeLinesWithoutRowVar
                                     , columnNames = cols.columnNames
@@ -80,13 +80,13 @@ let run =
                                   "Optional<${typeNameBase}.OutputRow>"
                               }
                         else  { typeDecls =
-                                  StatementModuleSub.SingleResultTypeDecls.run
+                                  Templates.SingleResultTypeDecls.run
                                     { typeNameBase
                                     , columnFieldList = cols.columnFieldList
                                     , rowTypeName = "Output"
                                     }
                               , decodeMethod =
-                                  StatementModuleSub.OptionalDecodeMethod.run
+                                  Templates.OptionalDecodeMethod.run
                                     { decodeLines =
                                         cols.decodeLinesWithoutRowVar
                                     , columnNames = cols.columnNames
@@ -104,7 +104,7 @@ let run =
                           input.cardinality
 
                   in  { statementImpl =
-                          StatementModuleSub.StatementImplWithResult.run
+                          Templates.StatementImplWithResult.run
                             { sqlExp = ctx.sqlExp
                             , paramBindCode = ctx.paramBindCode
                             , decodeMethod = resolved.decodeMethod

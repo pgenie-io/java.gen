@@ -2,7 +2,7 @@ let Algebra = ../Algebras/Template.dhall
 
 let Deps = ../Deps/package.dhall
 
-let Sub = ./StatementModule/package.dhall
+let ParamField = ./ParamField.dhall
 
 let indent = Deps.Lude.Extensions.Text.indentNonEmpty
 
@@ -12,7 +12,7 @@ let Params =
       , queryName : Text
       , sqlDoc : Text
       , srcPath : Text
-      , paramFields : List Sub.ParamField.Params
+      , paramFields : List ParamField.Params
       , typeDecls : Text
       , statementImpl : Text
       , statementTypeArg : Text
@@ -84,8 +84,8 @@ in  Algebra.module
                   ''
                   ,
                   ''
-                  Sub.ParamField.Params
-                  (\(f : Sub.ParamField.Params) -> Sub.ParamField.run f)
+                  ParamField.Params
+                  (\(f : ParamField.Params) -> ParamField.run f)
                   params.paramFields
 
           let resultTypeSection =

@@ -4,7 +4,7 @@ let Algebra = ../Algebras/Interpreter.dhall
 
 let Member = ./ResultColumnsMember.dhall
 
-let StatementModuleSub = ../Templates/StatementModule/package.dhall
+let Templates = ../Templates/package.dhall
 
 let Input = List Deps.Sdk.Project.Member
 
@@ -57,7 +57,7 @@ in  Algebra.module
                               ( \ ( ic
                                   : { index : Natural, value : Member.Output }
                                   ) ->
-                                  StatementModuleSub.ColDecodeStatement.run
+                                  Templates.ColDecodeStatement.run
                                     { colIdx = Natural/show (ic.index + 1)
                                     , fieldName = ic.value.fieldName
                                     , fieldType = ic.value.fieldType

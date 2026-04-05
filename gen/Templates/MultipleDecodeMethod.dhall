@@ -1,8 +1,8 @@
 -- Renders the decodeResultSet method for a statement with multiple-row results.
 -- Produces the method without any surrounding indentation; splice site must indent.
-let Algebra = ../../Algebras/Template.dhall
+let Algebra = ../Algebras/Template.dhall
 
-let Deps = ../../Deps/package.dhall
+let Deps = ../Deps/package.dhall
 
 let indent = Deps.Lude.Extensions.Text.indentNonEmpty
 

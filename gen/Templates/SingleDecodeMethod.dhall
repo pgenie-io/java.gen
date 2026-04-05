@@ -1,6 +1,6 @@
-let Algebra = ../../Algebras/Template.dhall
+let Algebra = ../Algebras/Template.dhall
 
-let Deps = ../../Deps/package.dhall
+let Deps = ../Deps/package.dhall
 
 let indent = Deps.Lude.Extensions.Text.indentNonEmpty
 

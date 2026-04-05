@@ -10,8 +10,6 @@ let Sdk = Deps.Sdk
 
 let Templates = ../Templates/package.dhall
 
-let StatementModuleSub = ../Templates/StatementModule/package.dhall
-
 let ResultModule = ./Result.dhall
 
 let QueryFragmentsModule = ./QueryFragments.dhall
@@ -85,7 +83,7 @@ let render =
                                   , Some =
                                       \(p : ParamsMemberModule.Output) ->
                                         Some
-                                          ( StatementModuleSub.ParamBindStatement.run
+                                          ( Templates.ParamBindStatement.run
                                               { idx
                                               , fieldName = p.fieldName
                                               , useCodec = p.useCodec

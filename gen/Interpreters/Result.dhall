@@ -4,7 +4,7 @@ let Algebra = ../Algebras/Interpreter.dhall
 
 let ResultRows = ./ResultRows.dhall
 
-let StatementModuleSub = ../Templates/StatementModule/package.dhall
+let Templates = ../Templates/package.dhall
 
 let Input = Deps.Sdk.Project.Result
 
@@ -31,7 +31,7 @@ let run =
                 \(typeNameBase : Text) ->
                   { typeDecls = ""
                   , statementImpl =
-                      StatementModuleSub.StatementImplNoResult.run
+                      Templates.StatementImplNoResult.run
                         { sqlExp = ctx.sqlExp
                         , paramBindCode = ctx.paramBindCode
                         }

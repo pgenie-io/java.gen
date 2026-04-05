@@ -8,7 +8,7 @@ let Model = Deps.Sdk.Project
 
 let Value = ./Value.dhall
 
-let StatementModuleSub = ../Templates/StatementModule/package.dhall
+let Templates = ../Templates/package.dhall
 
 let Input = Model.Member
 
@@ -46,7 +46,7 @@ let run =
                     else  value.javaType
 
               in  { columnField =
-                      StatementModuleSub.ResultColumnField.run
+                      Templates.ResultColumnField.run
                         { pgName = input.pgName
                         , fieldType
                         , fieldName
