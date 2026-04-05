@@ -2,7 +2,7 @@ let Deps = ../Deps/package.dhall
 
 let Algebra = ./Algebra/package.dhall
 
-let Member = ./ResultColumnsMember.dhall
+let ResultColumns = ./ResultColumns.dhall
 
 let StatementModuleSub = ../Templates/StatementModule/package.dhall
 
@@ -19,159 +19,100 @@ let run =
       \(config : Algebra.Config) ->
       \(input : Input) ->
         let compiledColumns =
-              Deps.Typeclasses.Classes.Applicative.traverseList
-                Deps.Sdk.Compiled.Type
-                Deps.Sdk.Compiled.applicative
-                Deps.Sdk.Project.Member
-                Member.Output
-                (Member.run config)
+              ResultColumns.run
+                config
                 ( Deps.Prelude.NonEmpty.toList
                     Deps.Sdk.Project.Member
                     input.columns
                 )
 
-        in  Deps.Sdk.Compiled.flatMap
-              (List Member.Output)
+        in  Deps.Sdk.Compiled.map
+              ResultColumns.Output
               Output
-              ( \(columns : List Member.Output) ->
-                  let indexedColumns =
-                        Deps.Prelude.List.indexed Member.Output columns
+              ( \(cols : ResultColumns.Output) ->
+                \(ctx : ExtraCtx) ->
+                \(typeNameBase : Text) ->
+                  let multipleResult =
+                        { typeDecls =
+                            StatementModuleSub.MultipleResultTypeDecls.run
+                              { typeNameBase
+                              , columnFieldList = cols.columnFieldList
+                              }
+                        , decodeMethod =
+                            StatementModuleSub.MultipleDecodeMethod.run
+                              { decodeLines = cols.decodeLinesWithRowVar
+                              , columnNames = cols.columnNames
+                              }
+                        , resultTypeName = "${typeNameBase}.Output"
+                        }
 
-                  let columnFieldList =
-                        Deps.Prelude.Text.concatMapSep
-                          ''
-                          ,
-                          ''
-                          { index : Natural, value : Member.Output }
-                          ( \ ( ic
-                              : { index : Natural, value : Member.Output }
-                              ) ->
-                              StatementModuleSub.ResultColumnField.run
-                                { pgName = ic.value.pgName
-                                , fieldType = ic.value.fieldType
-                                , fieldName = ic.value.fieldName
-                                , isNullable = ic.value.isNullable
-                                }
-                          )
-                          indexedColumns
+                  let singleResult =
+                        { typeDecls =
+                            StatementModuleSub.SingleResultTypeDecls.run
+                              { typeNameBase
+                              , columnFieldList = cols.columnFieldList
+                              , rowTypeName = "Output"
+                              }
+                        , decodeMethod =
+                            StatementModuleSub.SingleDecodeMethod.run
+                              { decodeLines = cols.decodeLinesWithoutRowVar
+                              , columnNames = cols.columnNames
+                              }
+                        , resultTypeName = "${typeNameBase}.Output"
+                        }
 
-                  let decodeLines =
-                        \(rowVarPresent : Bool) ->
-                          Deps.Prelude.Text.concatMapSep
-                            "\n"
-                            { index : Natural, value : Member.Output }
-                            ( \ ( ic
-                                : { index : Natural, value : Member.Output }
-                                ) ->
-                                StatementModuleSub.ColDecodeStatement.run
-                                  { colIdx = Natural/show (ic.index + 1)
-                                  , fieldName = ic.value.fieldName
-                                  , fieldType = ic.value.fieldType
-                                  , boxedJavaType = ic.value.boxedJavaType
-                                  , useCodec = ic.value.useCodec
-                                  , codecRef = ic.value.codecRef
-                                  , elementIsOptional =
-                                      ic.value.elementIsOptional
-                                  , isOptional = ic.value.isOptional
-                                  , isNullable = ic.value.isNullable
-                                  , isDateType = ic.value.isDateType
-                                  , isJdbcPrimitive = ic.value.isJdbcPrimitive
-                                  , jdbcGetter = ic.value.jdbcGetter
-                                  , rowVarPresent
-                                  }
-                            )
-                            indexedColumns
-
-                  let columnNames =
-                        Deps.Prelude.List.map
-                          Member.Output
-                          Text
-                          (\(col : Member.Output) -> col.fieldName)
-                          columns
-
-                  in  Deps.Sdk.Compiled.ok
-                        Output
-                        ( \(ctx : ExtraCtx) ->
-                          \(typeNameBase : Text) ->
-                            let multipleResult =
-                                  { typeDecls =
-                                      StatementModuleSub.MultipleResultTypeDecls.run
-                                        { typeNameBase, columnFieldList }
-                                  , decodeMethod =
-                                      StatementModuleSub.MultipleDecodeMethod.run
-                                        { decodeLines = decodeLines True
-                                        , columnNames
-                                        }
-                                  , resultTypeName = "${typeNameBase}.Output"
-                                  }
-
-                            let singleResult =
-                                  { typeDecls =
-                                      StatementModuleSub.SingleResultTypeDecls.run
-                                        { typeNameBase
-                                        , columnFieldList
-                                        , rowTypeName = "Output"
-                                        }
-                                  , decodeMethod =
-                                      StatementModuleSub.SingleDecodeMethod.run
-                                        { decodeLines = decodeLines False
-                                        , columnNames
-                                        }
-                                  , resultTypeName = "${typeNameBase}.Output"
-                                  }
-
-                            let optionalResult =
-                                  if    config.useOptional
-                                  then  { typeDecls =
-                                            StatementModuleSub.SingleResultTypeDecls.run
-                                              { typeNameBase
-                                              , columnFieldList
-                                              , rowTypeName = "OutputRow"
-                                              }
-                                        , decodeMethod =
-                                            StatementModuleSub.OptionalDecodeMethod.run
-                                              { decodeLines = decodeLines False
-                                              , columnNames
-                                              , useOptional = True
-                                              }
-                                        , resultTypeName =
-                                            "Optional<${typeNameBase}.OutputRow>"
-                                        }
-                                  else  { typeDecls =
-                                            StatementModuleSub.SingleResultTypeDecls.run
-                                              { typeNameBase
-                                              , columnFieldList
-                                              , rowTypeName = "Output"
-                                              }
-                                        , decodeMethod =
-                                            StatementModuleSub.OptionalDecodeMethod.run
-                                              { decodeLines = decodeLines False
-                                              , columnNames
-                                              , useOptional = False
-                                              }
-                                        , resultTypeName =
-                                            "${typeNameBase}.Output"
-                                        }
-
-                            let resolved =
-                                  merge
-                                    { Optional = optionalResult
-                                    , Single = singleResult
-                                    , Multiple = multipleResult
+                  let optionalResult =
+                        if    config.useOptional
+                        then  { typeDecls =
+                                  StatementModuleSub.SingleResultTypeDecls.run
+                                    { typeNameBase
+                                    , columnFieldList = cols.columnFieldList
+                                    , rowTypeName = "OutputRow"
                                     }
-                                    input.cardinality
+                              , decodeMethod =
+                                  StatementModuleSub.OptionalDecodeMethod.run
+                                    { decodeLines =
+                                        cols.decodeLinesWithoutRowVar
+                                    , columnNames = cols.columnNames
+                                    , useOptional = True
+                                    }
+                              , resultTypeName =
+                                  "Optional<${typeNameBase}.OutputRow>"
+                              }
+                        else  { typeDecls =
+                                  StatementModuleSub.SingleResultTypeDecls.run
+                                    { typeNameBase
+                                    , columnFieldList = cols.columnFieldList
+                                    , rowTypeName = "Output"
+                                    }
+                              , decodeMethod =
+                                  StatementModuleSub.OptionalDecodeMethod.run
+                                    { decodeLines =
+                                        cols.decodeLinesWithoutRowVar
+                                    , columnNames = cols.columnNames
+                                    , useOptional = False
+                                    }
+                              , resultTypeName = "${typeNameBase}.Output"
+                              }
 
-                            in  { statementImpl =
-                                    StatementModuleSub.StatementImplWithResult.run
-                                      { sqlExp = ctx.sqlExp
-                                      , paramBindCode = ctx.paramBindCode
-                                      , decodeMethod = resolved.decodeMethod
-                                      , resultTypeName = resolved.resultTypeName
-                                      }
-                                , typeDecls = resolved.typeDecls
-                                , statementTypeArg = resolved.resultTypeName
-                                }
-                        )
+                  let resolved =
+                        merge
+                          { Optional = optionalResult
+                          , Single = singleResult
+                          , Multiple = multipleResult
+                          }
+                          input.cardinality
+
+                  in  { statementImpl =
+                          StatementModuleSub.StatementImplWithResult.run
+                            { sqlExp = ctx.sqlExp
+                            , paramBindCode = ctx.paramBindCode
+                            , decodeMethod = resolved.decodeMethod
+                            , resultTypeName = resolved.resultTypeName
+                            }
+                      , typeDecls = resolved.typeDecls
+                      , statementTypeArg = resolved.resultTypeName
+                      }
               )
               compiledColumns
 
