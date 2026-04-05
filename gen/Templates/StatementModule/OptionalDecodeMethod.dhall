@@ -1,6 +1,6 @@
 -- Renders the decodeResultSet method for a statement with an optional result.
 -- Produces the method without any surrounding indentation; splice site must indent.
-let Algebra = ../Algebra/package.dhall
+let Algebra = ../../Algebras/Template.dhall
 
 let Deps = ../../Deps/package.dhall
 

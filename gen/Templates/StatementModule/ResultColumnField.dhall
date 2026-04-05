@@ -1,6 +1,6 @@
 -- Renders a single result-set column field entry for the OutputRow record.
 -- Produces the field without any surrounding indentation; splice site must indent.
-let Algebra = ../Algebra/package.dhall
+let Algebra = ../../Algebras/Template.dhall
 
 let Params =
       { pgName : Text, fieldType : Text, fieldName : Text, isNullable : Bool }

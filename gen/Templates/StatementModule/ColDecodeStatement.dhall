@@ -1,7 +1,7 @@
 -- Renders a single result-set column decode statement.
 -- colIdx: 1-based column index as a string (e.g. "1", "2").
 -- Produces the statement(s) without any surrounding indentation; splice site must indent.
-let Algebra = ../Algebra/package.dhall
+let Algebra = ../../Algebras/Template.dhall
 
 let Params =
       { colIdx : Text

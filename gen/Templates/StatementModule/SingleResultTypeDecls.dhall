@@ -1,7 +1,7 @@
 -- Renders the row type declaration for a single-row or optional result.
 -- `rowTypeName` is "Output" for single-cardinality and "OutputRow" for optional-cardinality.
 -- Produces the declaration without any surrounding indentation; splice site must indent.
-let Algebra = ../Algebra/package.dhall
+let Algebra = ../../Algebras/Template.dhall
 
 let Deps = ../../Deps/package.dhall
 
