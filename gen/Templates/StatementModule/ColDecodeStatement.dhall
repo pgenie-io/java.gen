@@ -54,6 +54,8 @@ in  Algebra.module
                               Date ${p.fieldName}ColBase = rs.getDate(${p.colIdx});
                               if (${p.fieldName}ColBase != null) {
                                   ${p.fieldName}Col = ${p.fieldName}ColBase.toLocalDate();
+                              } else {
+                                  ${p.fieldName}Col = null;
                               }
                           }''
                     else  "LocalDate ${p.fieldName}Col = rs.getDate(${p.colIdx}).toLocalDate();"

@@ -7,6 +7,7 @@ let Params =
       , typeName : Text
       , defaultArgs : List Text
       , hasResult : Bool
+      , resultNullable : Bool
       }
 
 in  Algebra.module
@@ -32,9 +33,13 @@ in  Algebra.module
                                                                   ", "
                                                                   params.defaultArgs}));
                   ${if    params.hasResult
-                    then  ''
-                          assertNotNull(result);
-                          ''
+                    then  if params.resultNullable
+                          then  ''
+                                assertNull(result);
+                                ''
+                          else  ''
+                                assertNotNull(result);
+                                ''
                     else  ''
                           assertTrue(result >= 0L);
                           ''}

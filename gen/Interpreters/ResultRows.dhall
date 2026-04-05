@@ -10,7 +10,7 @@ let Input = Deps.Sdk.Project.ResultRows
 
 let ExtraCtx = { sqlExp : Text, paramBindCode : Text }
 
-let Output = ExtraCtx -> Text -> { statementImpl : Text, typeDecls : Text }
+let Output = ExtraCtx -> Text -> { statementImpl : Text, typeDecls : Text, statementTypeArg : Text }
 
 let run =
       \(config : Algebra.Config) ->
@@ -105,7 +105,10 @@ let run =
                             let singleResult =
                                   { typeDecls =
                                       StatementModuleSub.SingleResultTypeDecls.run
-                                        { typeNameBase, columnFieldList }
+                                        { typeNameBase
+                                        , columnFieldList
+                                        , rowTypeName = "Output"
+                                        }
                                   , decodeMethod =
                                       StatementModuleSub.SingleDecodeMethod.run
                                         { decodeLines = decodeLines False
@@ -115,14 +118,37 @@ let run =
                                   }
 
                             let optionalResult =
-                                  { typeDecls = singleResult.typeDecls
-                                  , decodeMethod =
-                                      StatementModuleSub.OptionalDecodeMethod.run
-                                        { decodeLines = decodeLines False
-                                        , columnNames
-                                        }
-                                  , resultTypeName = "${typeNameBase}.Output"
-                                  }
+                                  if config.useOptional
+                                  then
+                                    { typeDecls =
+                                        StatementModuleSub.SingleResultTypeDecls.run
+                                          { typeNameBase
+                                          , columnFieldList
+                                          , rowTypeName = "OutputRow"
+                                          }
+                                    , decodeMethod =
+                                        StatementModuleSub.OptionalDecodeMethod.run
+                                          { decodeLines = decodeLines False
+                                          , columnNames
+                                          , useOptional = True
+                                          }
+                                    , resultTypeName = "Optional<${typeNameBase}.OutputRow>"
+                                    }
+                                  else
+                                    { typeDecls =
+                                        StatementModuleSub.SingleResultTypeDecls.run
+                                          { typeNameBase
+                                          , columnFieldList
+                                          , rowTypeName = "Output"
+                                          }
+                                    , decodeMethod =
+                                        StatementModuleSub.OptionalDecodeMethod.run
+                                          { decodeLines = decodeLines False
+                                          , columnNames
+                                          , useOptional = False
+                                          }
+                                    , resultTypeName = "${typeNameBase}.Output"
+                                    }
 
                             let resolved =
                                   merge
@@ -140,6 +166,7 @@ let run =
                                       , resultTypeName = resolved.resultTypeName
                                       }
                                 , typeDecls = resolved.typeDecls
+                                , statementTypeArg = resolved.resultTypeName
                                 }
                         )
               )

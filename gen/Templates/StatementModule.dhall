@@ -15,6 +15,7 @@ let Params =
       , paramFields : List Sub.ParamField.Params
       , typeDecls : Text
       , statementImpl : Text
+      , statementTypeArg : Text
       , hasCodecParam : Bool
       , hasDateParam : Bool
       , hasNullableJdbcParam : Bool
@@ -119,9 +120,7 @@ in  Algebra.module
                */
               public record ${params.typeName}(
                       ${indent 8 paramFieldList})
-                      implements Statement<${if    params.hasResultType
-                                             then  "${params.typeName}.Output"
-                                             else  "Long"}> {
+                      implements Statement<${params.statementTypeArg}> {
 
                   ${indent
                       4

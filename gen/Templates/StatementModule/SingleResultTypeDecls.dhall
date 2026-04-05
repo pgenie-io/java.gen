@@ -1,4 +1,5 @@
--- Renders the Output type declaration for a single-row or optional result.
+-- Renders the row type declaration for a single-row or optional result.
+-- `rowTypeName` is "Output" for single-cardinality and "OutputRow" for optional-cardinality.
 -- Produces the declaration without any surrounding indentation; splice site must indent.
 let Algebra = ../Algebra/package.dhall
 
@@ -6,7 +7,7 @@ let Deps = ../../Deps/package.dhall
 
 let indent = Deps.Lude.Extensions.Text.indentNonEmpty
 
-let Params = { typeNameBase : Text, columnFieldList : Text }
+let Params = { typeNameBase : Text, columnFieldList : Text, rowTypeName : Text }
 
 in  Algebra.module
       Params
@@ -15,6 +16,6 @@ in  Algebra.module
           /**
            * Result of the statement parameterised by {@link ${p.typeNameBase}}.
            */
-          public record Output(
+          public record ${p.rowTypeName}(
                   ${indent 8 p.columnFieldList}) {}''
       )

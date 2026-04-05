@@ -186,6 +186,21 @@ let render =
                 )
                 False
 
+        let isOptionalCardinality =
+              Deps.Prelude.Optional.fold
+                Deps.Sdk.Project.ResultRows
+                input.result
+                Bool
+                ( \(rows : Deps.Sdk.Project.ResultRows) ->
+                    merge
+                      { Optional = True, Single = False, Multiple = False }
+                      rows.cardinality
+                )
+                False
+
+        let hasOptionalResultType =
+              config.useOptional && isOptionalCardinality
+
         let hasCodecResult =
               Deps.Prelude.Optional.fold
                 Deps.Sdk.Project.ResultRows
@@ -216,6 +231,7 @@ let render =
                 , paramFields
                 , typeDecls = resultInfo.typeDecls
                 , statementImpl = resultInfo.statementImpl
+                , statementTypeArg = resultInfo.statementTypeArg
                 , hasCodecParam
                 , hasDateParam
                 , hasNullableJdbcParam
@@ -223,7 +239,7 @@ let render =
                 , hasResultType = hasResult
                 , hasDateResult = hasResult
                 , hasCodecResult = hasResult
-                , hasOptionalFields = hasOptionalParam || hasOptionalResult
+                , hasOptionalFields = hasOptionalParam || hasOptionalResult || hasOptionalResultType
                 }
 
         let defaultArgs =
@@ -242,6 +258,7 @@ let render =
                 , typeName = statementModuleName
                 , defaultArgs
                 , hasResult
+                , resultNullable = isOptionalCardinality && Deps.Prelude.Bool.not config.useOptional
                 }
 
         in  { statementModuleName
