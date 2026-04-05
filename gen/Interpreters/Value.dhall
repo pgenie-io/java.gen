@@ -26,19 +26,17 @@ let Output =
       , testDefaultLiteral : Text
       }
 
-let Result = Sdk.Compiled.Type Output
-
 let run =
       \(config : Algebra.Config) ->
       \(input : Input) ->
-        Sdk.Compiled.flatMap
+        Sdk.Compiled.map
           Scalar.Output
           Output
           ( \(scalar : Scalar.Output) ->
               Deps.Prelude.Optional.fold
                 Model.ArraySettings
                 input.arraySettings
-                Result
+                Output
                 ( \(arraySettings : Model.ArraySettings) ->
                     let elementIsOptional =
                           config.useOptional && arraySettings.elementIsNullable
@@ -69,40 +67,35 @@ let run =
                             (\(inner : Text) -> "${inner}.inDim()")
                             scalar.codecRef
 
-                    in  Sdk.Compiled.ok
-                          Output
-                          { javaType = arrayType
-                          , boxedJavaType = arrayType
-                          , rawCodecType = rawArrayType
-                          , elementIsOptional
-                          , codecRef = inDimSuffix
-                          , useCodec = True
-                          , isDateType = False
-                          , isJdbcPrimitive = False
-                          , jdbcSetter = ""
-                          , jdbcGetter = ""
-                          , sqlTypesConstant = ""
-                          , pgCastSuffix = scalar.pgCastSuffix
-                          , testDefaultLiteral = "null"
-                          }
+                    in  { javaType = arrayType
+                        , boxedJavaType = arrayType
+                        , rawCodecType = rawArrayType
+                        , elementIsOptional
+                        , codecRef = inDimSuffix
+                        , useCodec = True
+                        , isDateType = False
+                        , isJdbcPrimitive = False
+                        , jdbcSetter = ""
+                        , jdbcGetter = ""
+                        , sqlTypesConstant = ""
+                        , pgCastSuffix = scalar.pgCastSuffix
+                        , testDefaultLiteral = "null"
+                        }
                 )
-                ( Sdk.Compiled.ok
-                    Output
-                    { javaType = scalar.javaType
-                    , boxedJavaType = scalar.boxedJavaType
-                    , rawCodecType = scalar.boxedJavaType
-                    , elementIsOptional = False
-                    , codecRef = scalar.codecRef
-                    , useCodec = scalar.useCodec
-                    , isDateType = scalar.isDateType
-                    , isJdbcPrimitive = scalar.isJdbcPrimitive
-                    , jdbcSetter = scalar.jdbcSetter
-                    , jdbcGetter = scalar.jdbcGetter
-                    , sqlTypesConstant = scalar.sqlTypesConstant
-                    , pgCastSuffix = scalar.pgCastSuffix
-                    , testDefaultLiteral = scalar.testDefaultLiteral
-                    }
-                )
+                { javaType = scalar.javaType
+                , boxedJavaType = scalar.boxedJavaType
+                , rawCodecType = scalar.boxedJavaType
+                , elementIsOptional = False
+                , codecRef = scalar.codecRef
+                , useCodec = scalar.useCodec
+                , isDateType = scalar.isDateType
+                , isJdbcPrimitive = scalar.isJdbcPrimitive
+                , jdbcSetter = scalar.jdbcSetter
+                , jdbcGetter = scalar.jdbcGetter
+                , sqlTypesConstant = scalar.sqlTypesConstant
+                , pgCastSuffix = scalar.pgCastSuffix
+                , testDefaultLiteral = scalar.testDefaultLiteral
+                }
           )
           (Scalar.run config input.scalar)
 

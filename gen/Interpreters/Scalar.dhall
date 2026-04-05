@@ -10,44 +10,13 @@ let Primitive = ./Primitive.dhall
 
 let Input = Model.Scalar
 
-let Output =
-      { javaType : Text
-      , boxedJavaType : Text
-      , codecRef : Text
-      , useCodec : Bool
-      , isDateType : Bool
-      , isJdbcPrimitive : Bool
-      , jdbcSetter : Text
-      , jdbcGetter : Text
-      , sqlTypesConstant : Text
-      , pgCastSuffix : Text
-      , testDefaultLiteral : Text
-      }
+let Output = Primitive.Output
 
 let run =
       \(config : Algebra.Config) ->
       \(input : Input) ->
         merge
-          { Primitive =
-              \(primitive : Model.Primitive) ->
-                Sdk.Compiled.map
-                  Primitive.Output
-                  Output
-                  ( \(p : Primitive.Output) ->
-                      { javaType = p.javaType
-                      , boxedJavaType = p.boxedJavaType
-                      , codecRef = p.codecRef
-                      , useCodec = p.useCodec
-                      , isDateType = p.isDateType
-                      , isJdbcPrimitive = p.isJdbcPrimitive
-                      , jdbcSetter = p.jdbcSetter
-                      , jdbcGetter = p.jdbcGetter
-                      , sqlTypesConstant = p.sqlTypesConstant
-                      , pgCastSuffix = ""
-                      , testDefaultLiteral = p.testDefaultLiteral
-                      }
-                  )
-                  (Primitive.run config primitive)
+          { Primitive = Primitive.run config
           , Custom =
               \(name : Model.Name) ->
                 let typeName = Deps.CodegenKit.Name.toTextInPascal name
