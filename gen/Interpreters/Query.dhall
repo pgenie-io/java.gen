@@ -115,17 +115,14 @@ let render =
         let paramFields =
               Deps.Prelude.List.map
                 ParamsMemberModule.Output
-                { pgName : Text
-                , fieldType : Text
-                , fieldName : Text
-                , isNullable : Bool
-                }
+                Text
                 ( \(member : ParamsMemberModule.Output) ->
-                    { pgName = member.pgName
-                    , fieldType = member.fieldType
-                    , fieldName = member.fieldName
-                    , isNullable = member.isNullable
-                    }
+                    Templates.ParamField.run
+                      { pgName = member.pgName
+                      , fieldType = member.fieldType
+                      , fieldName = member.fieldName
+                      , isNullable = member.isNullable
+                      }
                 )
                 params
 
