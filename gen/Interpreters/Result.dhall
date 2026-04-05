@@ -10,7 +10,10 @@ let Input = Deps.Sdk.Project.Result
 
 let ExtraCtx = { sqlExp : Text, paramBindCode : Text }
 
-let Output = ExtraCtx -> Text -> { typeDecls : Text, statementImpl : Text, statementTypeArg : Text }
+let Output =
+      ExtraCtx ->
+      Text ->
+        { typeDecls : Text, statementImpl : Text, statementTypeArg : Text }
 
 let Result = Deps.Sdk.Compiled.Type Output
 

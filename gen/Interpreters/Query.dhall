@@ -198,8 +198,7 @@ let render =
                 )
                 False
 
-        let hasOptionalResultType =
-              config.useOptional && isOptionalCardinality
+        let hasOptionalResultType = config.useOptional && isOptionalCardinality
 
         let hasCodecResult =
               Deps.Prelude.Optional.fold
@@ -239,7 +238,10 @@ let render =
                 , hasResultType = hasResult
                 , hasDateResult = hasResult
                 , hasCodecResult = hasResult
-                , hasOptionalFields = hasOptionalParam || hasOptionalResult || hasOptionalResultType
+                , hasOptionalFields =
+                        hasOptionalParam
+                    ||  hasOptionalResult
+                    ||  hasOptionalResultType
                 }
 
         let defaultArgs =
@@ -258,7 +260,9 @@ let render =
                 , typeName = statementModuleName
                 , defaultArgs
                 , hasResult
-                , resultNullable = isOptionalCardinality && Deps.Prelude.Bool.not config.useOptional
+                , resultNullable =
+                        isOptionalCardinality
+                    &&  Deps.Prelude.Bool.not config.useOptional
                 }
 
         in  { statementModuleName

@@ -33,7 +33,7 @@ in  Algebra.module
                                                                   ", "
                                                                   params.defaultArgs}));
                   ${if    params.hasResult
-                    then  if params.resultNullable
+                    then  if    params.resultNullable
                           then  ''
                                 assertNull(result);
                                 ''

@@ -10,7 +10,10 @@ let Input = Deps.Sdk.Project.ResultRows
 
 let ExtraCtx = { sqlExp : Text, paramBindCode : Text }
 
-let Output = ExtraCtx -> Text -> { statementImpl : Text, typeDecls : Text, statementTypeArg : Text }
+let Output =
+      ExtraCtx ->
+      Text ->
+        { statementImpl : Text, typeDecls : Text, statementTypeArg : Text }
 
 let run =
       \(config : Algebra.Config) ->
@@ -118,37 +121,37 @@ let run =
                                   }
 
                             let optionalResult =
-                                  if config.useOptional
-                                  then
-                                    { typeDecls =
-                                        StatementModuleSub.SingleResultTypeDecls.run
-                                          { typeNameBase
-                                          , columnFieldList
-                                          , rowTypeName = "OutputRow"
-                                          }
-                                    , decodeMethod =
-                                        StatementModuleSub.OptionalDecodeMethod.run
-                                          { decodeLines = decodeLines False
-                                          , columnNames
-                                          , useOptional = True
-                                          }
-                                    , resultTypeName = "Optional<${typeNameBase}.OutputRow>"
-                                    }
-                                  else
-                                    { typeDecls =
-                                        StatementModuleSub.SingleResultTypeDecls.run
-                                          { typeNameBase
-                                          , columnFieldList
-                                          , rowTypeName = "Output"
-                                          }
-                                    , decodeMethod =
-                                        StatementModuleSub.OptionalDecodeMethod.run
-                                          { decodeLines = decodeLines False
-                                          , columnNames
-                                          , useOptional = False
-                                          }
-                                    , resultTypeName = "${typeNameBase}.Output"
-                                    }
+                                  if    config.useOptional
+                                  then  { typeDecls =
+                                            StatementModuleSub.SingleResultTypeDecls.run
+                                              { typeNameBase
+                                              , columnFieldList
+                                              , rowTypeName = "OutputRow"
+                                              }
+                                        , decodeMethod =
+                                            StatementModuleSub.OptionalDecodeMethod.run
+                                              { decodeLines = decodeLines False
+                                              , columnNames
+                                              , useOptional = True
+                                              }
+                                        , resultTypeName =
+                                            "Optional<${typeNameBase}.OutputRow>"
+                                        }
+                                  else  { typeDecls =
+                                            StatementModuleSub.SingleResultTypeDecls.run
+                                              { typeNameBase
+                                              , columnFieldList
+                                              , rowTypeName = "Output"
+                                              }
+                                        , decodeMethod =
+                                            StatementModuleSub.OptionalDecodeMethod.run
+                                              { decodeLines = decodeLines False
+                                              , columnNames
+                                              , useOptional = False
+                                              }
+                                        , resultTypeName =
+                                            "${typeNameBase}.Output"
+                                        }
 
                             let resolved =
                                   merge
