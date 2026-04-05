@@ -2,7 +2,7 @@ let Deps = ../Deps/package.dhall
 
 let Algebra = ./Algebra/package.dhall
 
-let Member = ./Member.dhall
+let Member = ./ResultColumnsMember.dhall
 
 let StatementModuleSub = ../Templates/StatementModule/package.dhall
 

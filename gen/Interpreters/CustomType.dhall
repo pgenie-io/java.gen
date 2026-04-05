@@ -8,7 +8,7 @@ let Model = Deps.Sdk.Project
 
 let Templates = ../Templates/package.dhall
 
-let MemberGen = ./Member.dhall
+let MemberGen = ./CustomTypeMember.dhall
 
 let Input = Model.CustomType
 
