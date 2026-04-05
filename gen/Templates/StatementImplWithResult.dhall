@@ -6,29 +6,12 @@ let Deps = ../Deps/package.dhall
 
 let indent = Deps.Lude.Extensions.Text.indentNonEmpty
 
-let Params =
-      { sqlExp : Text
-      , paramBindCode : Text
-      , decodeMethod : Text
-      , resultTypeName : Text
-      }
+let Params = { decodeMethod : Text, resultTypeName : Text }
 
 in  Algebra.module
       Params
       ( \(p : Params) ->
           ''
-          @Override
-          public String sql() {
-              return """
-                     ${indent 11 p.sqlExp}
-                     """;
-          }
-
-          @Override
-          public void bindParams(PreparedStatement ps) throws SQLException {
-              ${indent 4 p.paramBindCode}
-          }
-
           @Override
           public boolean returnsRows() {
               return true;

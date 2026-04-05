@@ -69,7 +69,7 @@ public record SelectAlbumFields(
          */
         long id)
         implements Statement<SelectAlbumFields.Output> {
-
+    
     // -------------------------------------------------------------------------
     // Result type
     // -------------------------------------------------------------------------
@@ -112,7 +112,7 @@ public record SelectAlbumFields(
              * Maps to the {@code disc} result-set column. Nullable.
              */
             Optional<DiscInfo> disc) {}
-
+    
     // -------------------------------------------------------------------------
     // Statement implementation
     // -------------------------------------------------------------------------

@@ -37,7 +37,7 @@ public record SelectAlbumById(
          */
         Optional<Long> id)
         implements Statement<Optional<SelectAlbumById.OutputRow>> {
-
+    
     // -------------------------------------------------------------------------
     // Result type
     // -------------------------------------------------------------------------
@@ -73,7 +73,7 @@ public record SelectAlbumById(
              * Maps to the {@code disc} result-set column. Nullable.
              */
             Optional<DiscInfo> disc) {}
-
+    
     // -------------------------------------------------------------------------
     // Statement implementation
     // -------------------------------------------------------------------------

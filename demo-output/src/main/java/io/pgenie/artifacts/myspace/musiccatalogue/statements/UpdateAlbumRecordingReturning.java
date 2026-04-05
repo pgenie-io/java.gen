@@ -42,7 +42,7 @@ public record UpdateAlbumRecordingReturning(
          */
         long id)
         implements Statement<UpdateAlbumRecordingReturning.Output> {
-
+    
     // -------------------------------------------------------------------------
     // Result type
     // -------------------------------------------------------------------------
@@ -85,7 +85,7 @@ public record UpdateAlbumRecordingReturning(
              * Maps to the {@code disc} result-set column. Nullable.
              */
             Optional<DiscInfo> disc) {}
-
+    
     // -------------------------------------------------------------------------
     // Statement implementation
     // -------------------------------------------------------------------------

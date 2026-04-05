@@ -40,7 +40,7 @@ public record SelectAlbumByName(
          */
         String name)
         implements Statement<SelectAlbumByName.Output> {
-
+    
     // -------------------------------------------------------------------------
     // Result type
     // -------------------------------------------------------------------------
@@ -75,7 +75,7 @@ public record SelectAlbumByName(
              * Maps to the {@code recording} result-set column. Nullable.
              */
             Optional<RecordingInfo> recording) {}
-
+    
     // -------------------------------------------------------------------------
     // Statement implementation
     // -------------------------------------------------------------------------

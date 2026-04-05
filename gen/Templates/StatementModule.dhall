@@ -11,7 +11,9 @@ let Params =
       , typeName : Text
       , queryName : Text
       , sqlDoc : Text
+      , sqlExp : Text
       , srcPath : Text
+      , paramBindCode : Text
       , paramFields : List ParamField.Params
       , typeDecls : Text
       , statementImpl : Text
@@ -91,11 +93,11 @@ in  Algebra.module
           let resultTypeSection =
                 if    params.hasResultType
                 then  ''
+
                       // -------------------------------------------------------------------------
                       // Result type
                       // -------------------------------------------------------------------------
                       ${params.typeDecls}
-
                       ''
                 else  ""
 
@@ -121,12 +123,22 @@ in  Algebra.module
               public record ${params.typeName}(
                       ${indent 8 paramFieldList})
                       implements Statement<${params.statementTypeArg}> {
-
-                  ${indent
-                      4
-                      resultTypeSection}// -------------------------------------------------------------------------
+                  ${indent 4 resultTypeSection}
+                  // -------------------------------------------------------------------------
                   // Statement implementation
                   // -------------------------------------------------------------------------
+                  @Override
+                  public String sql() {
+                      return """
+                             ${indent 15 params.sqlExp}
+                             """;
+                  }
+
+                  @Override
+                  public void bindParams(PreparedStatement ps) throws SQLException {
+                      ${indent 8 params.paramBindCode}
+                  }
+
                   ${indent 4 params.statementImpl}
               }
               ''

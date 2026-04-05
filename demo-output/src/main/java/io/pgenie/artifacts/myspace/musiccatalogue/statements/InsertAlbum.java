@@ -47,7 +47,7 @@ public record InsertAlbum(
          */
         RecordingInfo recording)
         implements Statement<InsertAlbum.Output> {
-
+    
     // -------------------------------------------------------------------------
     // Result type
     // -------------------------------------------------------------------------
@@ -59,7 +59,7 @@ public record InsertAlbum(
              * Maps to the {@code id} result-set column.
              */
             long id) {}
-
+    
     // -------------------------------------------------------------------------
     // Statement implementation
     // -------------------------------------------------------------------------

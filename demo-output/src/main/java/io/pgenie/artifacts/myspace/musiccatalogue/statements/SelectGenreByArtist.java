@@ -36,7 +36,7 @@ public record SelectGenreByArtist(
          */
         int artist)
         implements Statement<SelectGenreByArtist.Output> {
-
+    
     // -------------------------------------------------------------------------
     // Result type
     // -------------------------------------------------------------------------
@@ -59,7 +59,7 @@ public record SelectGenreByArtist(
              * Maps to the {@code name} result-set column.
              */
             String name) {}
-
+    
     // -------------------------------------------------------------------------
     // Statement implementation
     // -------------------------------------------------------------------------

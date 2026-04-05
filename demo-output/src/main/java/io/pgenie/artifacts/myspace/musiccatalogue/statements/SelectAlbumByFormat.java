@@ -41,7 +41,7 @@ public record SelectAlbumByFormat(
          */
         AlbumFormat format)
         implements Statement<SelectAlbumByFormat.Output> {
-
+    
     // -------------------------------------------------------------------------
     // Result type
     // -------------------------------------------------------------------------
@@ -76,7 +76,7 @@ public record SelectAlbumByFormat(
              * Maps to the {@code recording} result-set column. Nullable.
              */
             Optional<RecordingInfo> recording) {}
-
+    
     // -------------------------------------------------------------------------
     // Statement implementation
     // -------------------------------------------------------------------------

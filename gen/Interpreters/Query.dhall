@@ -110,7 +110,7 @@ let render =
                 (\(_ : Deps.Sdk.Project.ResultRows) -> True)
                 False
 
-        let resultInfo = result { sqlExp, paramBindCode } statementModuleName
+        let resultInfo = result statementModuleName
 
         let paramFields =
               Deps.Prelude.List.map
@@ -222,6 +222,8 @@ let render =
                 , typeName = statementModuleName
                 , queryName = Deps.CodegenKit.Name.toTextInSnake input.name
                 , sqlDoc = fragments.docComment
+                , sqlExp
+                , paramBindCode
                 , srcPath = input.srcPath
                 , paramFields
                 , typeDecls = resultInfo.typeDecls

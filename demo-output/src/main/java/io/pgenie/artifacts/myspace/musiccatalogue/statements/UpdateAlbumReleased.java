@@ -38,7 +38,7 @@ public record UpdateAlbumReleased(
          */
         long id)
         implements Statement<Long> {
-
+    
     // -------------------------------------------------------------------------
     // Statement implementation
     // -------------------------------------------------------------------------

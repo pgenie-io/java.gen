@@ -35,7 +35,7 @@ public record SelectAlbumWithTracks(
          */
         long id)
         implements Statement<SelectAlbumWithTracks.Output> {
-
+    
     // -------------------------------------------------------------------------
     // Result type
     // -------------------------------------------------------------------------
@@ -66,7 +66,7 @@ public record SelectAlbumWithTracks(
              * Maps to the {@code disc} result-set column. Nullable.
              */
             Optional<DiscInfo> disc) {}
-
+    
     // -------------------------------------------------------------------------
     // Statement implementation
     // -------------------------------------------------------------------------

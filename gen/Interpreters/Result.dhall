@@ -8,36 +8,25 @@ let Templates = ../Templates/package.dhall
 
 let Input = Deps.Sdk.Project.Result
 
-let ExtraCtx = { sqlExp : Text, paramBindCode : Text }
-
 let Output =
-      ExtraCtx ->
       Text ->
-        { typeDecls : Text, statementImpl : Text, statementTypeArg : Text }
-
-let Result = Deps.Sdk.Compiled.Type Output
+        { statementImpl : Text, typeDecls : Text, statementTypeArg : Text }
 
 let run =
       \(config : Algebra.Config) ->
       \(input : Input) ->
-        Deps.Prelude.Optional.fold
-          ResultRows.Input
+        merge
+          { None =
+              Deps.Sdk.Compiled.ok
+                Output
+                ( \(_ : Text) ->
+                    { typeDecls = ""
+                    , statementImpl = Templates.StatementImplNoResult.run {=}
+                    , statementTypeArg = "Long"
+                    }
+                )
+          , Some = ResultRows.run config
+          }
           input
-          Result
-          (ResultRows.run config)
-          ( Deps.Sdk.Compiled.ok
-              Output
-              ( \(ctx : ExtraCtx) ->
-                \(typeNameBase : Text) ->
-                  { typeDecls = ""
-                  , statementImpl =
-                      Templates.StatementImplNoResult.run
-                        { sqlExp = ctx.sqlExp
-                        , paramBindCode = ctx.paramBindCode
-                        }
-                  , statementTypeArg = "Long"
-                  }
-              )
-          )
 
 in  Algebra.module Input Output run

@@ -77,7 +77,7 @@ public record SelectAlbumWithFilters(
          */
         boolean orderByReleased)
         implements Statement<SelectAlbumWithFilters.Output> {
-
+    
     // -------------------------------------------------------------------------
     // Result type
     // -------------------------------------------------------------------------
@@ -108,7 +108,7 @@ public record SelectAlbumWithFilters(
              * Maps to the {@code format} result-set column. Nullable.
              */
             Optional<AlbumFormat> format) {}
-
+    
     // -------------------------------------------------------------------------
     // Statement implementation
     // -------------------------------------------------------------------------

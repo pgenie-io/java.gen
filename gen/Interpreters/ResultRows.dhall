@@ -8,10 +8,7 @@ let Templates = ../Templates/package.dhall
 
 let Input = Deps.Sdk.Project.ResultRows
 
-let ExtraCtx = { sqlExp : Text, paramBindCode : Text }
-
 let Output =
-      ExtraCtx ->
       Text ->
         { statementImpl : Text, typeDecls : Text, statementTypeArg : Text }
 
@@ -30,7 +27,6 @@ let run =
               ResultColumns.Output
               Output
               ( \(cols : ResultColumns.Output) ->
-                \(ctx : ExtraCtx) ->
                 \(typeNameBase : Text) ->
                   let multipleResult =
                         { typeDecls =
@@ -105,9 +101,7 @@ let run =
 
                   in  { statementImpl =
                           Templates.StatementImplWithResult.run
-                            { sqlExp = ctx.sqlExp
-                            , paramBindCode = ctx.paramBindCode
-                            , decodeMethod = resolved.decodeMethod
+                            { decodeMethod = resolved.decodeMethod
                             , resultTypeName = resolved.resultTypeName
                             }
                       , typeDecls = resolved.typeDecls
