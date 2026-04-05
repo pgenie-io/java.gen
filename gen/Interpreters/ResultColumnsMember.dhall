@@ -8,14 +8,16 @@ let Model = Deps.Sdk.Project
 
 let Value = ./Value.dhall
 
+let StatementModuleSub = ../Templates/StatementModule/package.dhall
+
 let Input = Model.Member
 
 let Output =
-      { fieldName : Text
+      { columnField : Text
+      , fieldName : Text
       , fieldType : Text
       , boxedJavaType : Text
       , elementIsOptional : Bool
-      , pgName : Text
       , useCodec : Bool
       , isDateType : Bool
       , isJdbcPrimitive : Bool
@@ -45,11 +47,17 @@ let run =
 
               in  Sdk.Compiled.ok
                     Output
-                    { fieldName
+                    { columnField =
+                        StatementModuleSub.ResultColumnField.run
+                          { pgName = input.pgName
+                          , fieldType
+                          , fieldName
+                          , isNullable = input.isNullable
+                          }
+                    , fieldName
                     , fieldType
                     , boxedJavaType = value.boxedJavaType
                     , elementIsOptional = value.elementIsOptional
-                    , pgName = input.pgName
                     , useCodec = value.useCodec
                     , isDateType = value.isDateType
                     , isJdbcPrimitive = value.isJdbcPrimitive

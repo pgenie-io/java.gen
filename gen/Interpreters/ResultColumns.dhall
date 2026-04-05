@@ -45,12 +45,7 @@ in  Algebra.module
                             ( \ ( ic
                                 : { index : Natural, value : Member.Output }
                                 ) ->
-                                StatementModuleSub.ResultColumnField.run
-                                  { pgName = ic.value.pgName
-                                  , fieldType = ic.value.fieldType
-                                  , fieldName = ic.value.fieldName
-                                  , isNullable = ic.value.isNullable
-                                  }
+                                ic.value.columnField
                             )
                             indexedColumns
 
