@@ -16,7 +16,7 @@ let ResultModule = ./Result.dhall
 
 let QueryFragmentsModule = ./QueryFragments.dhall
 
-let MemberModule = ./Member.dhall
+let ParamsMemberModule = ./ParamsMember.dhall
 
 let Input = Deps.Sdk.Project.Query
 
@@ -33,7 +33,7 @@ let render =
       \(input : Input) ->
       \(result : ResultModule.Output) ->
       \(fragments : QueryFragmentsModule.Output) ->
-      \(params : List MemberModule.Output) ->
+      \(params : List ParamsMemberModule.Output) ->
         let statementModuleName = Deps.CodegenKit.Name.toTextInPascal input.name
 
         let statementModulePath =
@@ -41,9 +41,9 @@ let render =
 
         let paramCastSuffixes =
               Deps.Prelude.List.map
-                MemberModule.Output
+                ParamsMemberModule.Output
                 Text
-                (\(member : MemberModule.Output) -> member.pgCastSuffix)
+                (\(member : ParamsMemberModule.Output) -> member.pgCastSuffix)
                 params
 
         let sqlExp = fragments.mkSqlExp paramCastSuffixes
@@ -77,13 +77,13 @@ let render =
                             let mParam =
                                   Deps.Prelude.List.index
                                     ip.value
-                                    MemberModule.Output
+                                    ParamsMemberModule.Output
                                     params
 
                             in  merge
                                   { None = None Text
                                   , Some =
-                                      \(p : MemberModule.Output) ->
+                                      \(p : ParamsMemberModule.Output) ->
                                         Some
                                           ( StatementModuleSub.ParamBindStatement.run
                                               { idx
@@ -116,13 +116,13 @@ let render =
 
         let paramFields =
               Deps.Prelude.List.map
-                MemberModule.Output
+                ParamsMemberModule.Output
                 { pgName : Text
                 , fieldType : Text
                 , fieldName : Text
                 , isNullable : Bool
                 }
-                ( \(member : MemberModule.Output) ->
+                ( \(member : ParamsMemberModule.Output) ->
                     { pgName = member.pgName
                     , fieldType = member.fieldType
                     , fieldName = member.fieldName
@@ -133,28 +133,28 @@ let render =
 
         let hasCodecParam =
               Deps.Prelude.List.any
-                MemberModule.Output
-                (\(m : MemberModule.Output) -> m.useCodec)
+                ParamsMemberModule.Output
+                (\(m : ParamsMemberModule.Output) -> m.useCodec)
                 params
 
         let hasDateParam =
               Deps.Prelude.List.any
-                MemberModule.Output
-                (\(m : MemberModule.Output) -> m.isDateType)
+                ParamsMemberModule.Output
+                (\(m : ParamsMemberModule.Output) -> m.isDateType)
                 params
 
         let hasNullableJdbcParam =
               Deps.Prelude.List.any
-                MemberModule.Output
-                ( \(m : MemberModule.Output) ->
+                ParamsMemberModule.Output
+                ( \(m : ParamsMemberModule.Output) ->
                     m.isNullable && m.useCodec == False
                 )
                 params
 
         let hasOptionalParam =
               Deps.Prelude.List.any
-                MemberModule.Output
-                (\(m : MemberModule.Output) -> m.isOptional)
+                ParamsMemberModule.Output
+                (\(m : ParamsMemberModule.Output) -> m.isOptional)
                 params
 
         let hasOptionalResult =
@@ -244,9 +244,9 @@ let render =
 
         let defaultArgs =
               Deps.Prelude.List.map
-                MemberModule.Output
+                ParamsMemberModule.Output
                 Text
-                (\(m : MemberModule.Output) -> m.testDefaultLiteral)
+                (\(m : ParamsMemberModule.Output) -> m.testDefaultLiteral)
                 params
 
         let testModulePath =
@@ -281,7 +281,7 @@ let run =
               Sdk.Compiled.applicative
               ResultModule.Output
               QueryFragmentsModule.Output
-              (List MemberModule.Output)
+              (List ParamsMemberModule.Output)
               Output
               (render config input)
               ( Sdk.Compiled.nest
@@ -295,14 +295,14 @@ let run =
                   (QueryFragmentsModule.run config input.fragments)
               )
               ( Sdk.Compiled.nest
-                  (List MemberModule.Output)
+                  (List ParamsMemberModule.Output)
                   "params"
                   ( Typeclasses.Classes.Applicative.traverseList
                       Sdk.Compiled.Type
                       Sdk.Compiled.applicative
                       Deps.Sdk.Project.Member
-                      MemberModule.Output
-                      (MemberModule.run config)
+                      ParamsMemberModule.Output
+                      (ParamsMemberModule.run config)
                       input.params
                   )
               )
