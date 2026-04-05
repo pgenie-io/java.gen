@@ -2,8 +2,6 @@ let Algebra = ../Algebras/Template.dhall
 
 let Deps = ../Deps/package.dhall
 
-let ParamField = ./ParamField.dhall
-
 let indent = Deps.Lude.Extensions.Text.indentNonEmpty
 
 let Params =
@@ -14,7 +12,7 @@ let Params =
       , sqlExp : Text
       , srcPath : Text
       , paramBindCode : Text
-      , paramFields : List ParamField.Params
+      , paramFields : List Text
       , typeDecls : Text
       , statementImpl : Text
       , statementTypeArg : Text
@@ -82,12 +80,10 @@ in  Algebra.module
                   )
 
           let paramFieldList =
-                Deps.Prelude.Text.concatMapSep
+                Deps.Prelude.Text.concatSep
                   ''
                   ,
                   ''
-                  ParamField.Params
-                  (\(f : ParamField.Params) -> ParamField.run f)
                   params.paramFields
 
           let resultTypeSection =
