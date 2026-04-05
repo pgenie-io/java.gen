@@ -37,6 +37,14 @@ When the repository content conflicts with outside examples, prefer the structur
 - Keep the Maven set up idiomatic, simple and up to date with the latest releases.
 - Extract templates producing strings into `gen/Templates/`. Avoid inlining them in `gen/Interpreters/` as much as possible.
 
+### Interpreters
+
+The interpeters should be structured as a tree resembling structured after the input model. The outer layers compose the outputs from the inner layers and collapse the data structures by evaluating the templates once the data is available.
+
+The purpose of the Output data structure is to contain all uses of the input data structure for evaluating templates.
+
+The Output types should not be declared as functions with extra parameters. That would signal that the interpreter is overstretching and trying to reach a context outside of its scope. Instead, it should just export the building blocks for what the calling interpreter (outer context) may need from it. At the same time, the interpreter should always strive to simplify (collapse) the output structure by evaluating the templates as soon as the data is available.
+
 ## Type Mapping Rules
 
 - Derive PostgreSQL-to-Java type mapping from the PostgreSQL codec library.
@@ -54,8 +62,10 @@ When the repository content conflicts with outside examples, prefer the structur
 ## Design rules
 
 - `gen/Templates/` must not depend on `gen/Interpreters/` or the Project model from `Deps.Sdk`.
-- Textual templates should be extracted into `gen/Templates/` as much as possible. `gen/Interpreters/` should primarily be responsible for interpreting the Project model and orchestrating the generation process, not for containing large string literals.
+- Textual templates should be extracted into `gen/Templates/` as much as possible. `gen/Interpreters/` should primarily be responsible for interpreting the Project model and orchestrating the generation process.
 - Templates may depend on other templates and their parameter structures may contain parameter structures of other templates. This may be especially useful for lists and optionals.
+  - However a final design decision has not been made on this and it may be simpler to just have the templates be simple and independent, with the interpreters responsible for composing them together as needed by calling them and thus interpreting into structures over chunks of text.
+    - Pick either approach, just be consistent within the boundaries of a module.
 
 ## Dhall Code Style Rules
 
