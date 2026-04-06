@@ -4,53 +4,12 @@
 let Algebra = ../Algebras/Template.dhall
 
 let Params =
-      { idx : Text
-      , fieldName : Text
-      , useCodec : Bool
-      , codecRef : Text
-      , isDateType : Bool
-      , isOptional : Bool
-      , isNullable : Bool
-      , jdbcSetter : Text
-      , sqlTypesConstant : Text
-      }
+      { idx : Text, fieldName : Text, codecRef : Text, isOptional : Bool }
 
 in  Algebra.module
       Params
       ( \(p : Params) ->
-          if    p.useCodec
-          then  if    p.isOptional
-                then  "${p.codecRef}.bind(ps, ${p.idx}, this.${p.fieldName}().orElse(null));"
-                else  "${p.codecRef}.bind(ps, ${p.idx}, this.${p.fieldName}());"
-          else  if p.isDateType
-          then  if    p.isOptional
-                then  ''
-                      if (this.${p.fieldName}().isPresent()) {
-                          ps.setDate(${p.idx}, Date.valueOf(this.${p.fieldName}().get()));
-                      } else {
-                          ps.setNull(${p.idx}, Types.DATE);
-                      }''
-                else  if p.isNullable
-                then  ''
-                      if (this.${p.fieldName}() != null) {
-                          ps.setDate(${p.idx}, Date.valueOf(this.${p.fieldName}()));
-                      } else {
-                          ps.setNull(${p.idx}, Types.DATE);
-                      }''
-                else  "ps.setDate(${p.idx}, Date.valueOf(this.${p.fieldName}()));"
-          else  if p.isOptional
-          then  ''
-                if (this.${p.fieldName}().isPresent()) {
-                    ps.${p.jdbcSetter}(${p.idx}, this.${p.fieldName}().get());
-                } else {
-                    ps.setNull(${p.idx}, Types.${p.sqlTypesConstant});
-                }''
-          else  if p.isNullable
-          then  ''
-                if (this.${p.fieldName}() != null) {
-                    ps.${p.jdbcSetter}(${p.idx}, this.${p.fieldName}());
-                } else {
-                    ps.setNull(${p.idx}, Types.${p.sqlTypesConstant});
-                }''
-          else  "ps.${p.jdbcSetter}(${p.idx}, this.${p.fieldName}());"
+          if    p.isOptional
+          then  "${p.codecRef}.bind(ps, ${p.idx}, this.${p.fieldName}().orElse(null));"
+          else  "${p.codecRef}.bind(ps, ${p.idx}, this.${p.fieldName}());"
       )

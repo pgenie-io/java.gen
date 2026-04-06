@@ -28,7 +28,6 @@ let run =
                       { javaType = typeName
                       , boxedJavaType = typeName
                       , codecRef = "${typeName}.CODEC"
-                      , useCodec = True
                       , isDateType = False
                       , jdbcSetter = ""
                       , sqlTypesConstant = ""

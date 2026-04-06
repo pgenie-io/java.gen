@@ -2,8 +2,6 @@ let Deps = ../Deps/package.dhall
 
 let Algebra = ../Algebras/Interpreter.dhall
 
-let Lude = Deps.Lude
-
 let Typeclasses = Deps.Typeclasses
 
 let Sdk = Deps.Sdk
@@ -86,14 +84,8 @@ let render =
                                           ( Templates.ParamBindStatement.run
                                               { idx
                                               , fieldName = p.fieldName
-                                              , useCodec = p.useCodec
                                               , codecRef = p.codecRef
-                                              , isDateType = p.isDateType
                                               , isOptional = p.isOptional
-                                              , isNullable = p.isNullable
-                                              , jdbcSetter = p.jdbcSetter
-                                              , sqlTypesConstant =
-                                                  p.sqlTypesConstant
                                               }
                                           )
                                   }
@@ -123,26 +115,6 @@ let render =
                       , fieldName = member.fieldName
                       , isNullable = member.isNullable
                       }
-                )
-                params
-
-        let hasCodecParam =
-              Deps.Prelude.List.any
-                ParamsMemberModule.Output
-                (\(m : ParamsMemberModule.Output) -> m.useCodec)
-                params
-
-        let hasDateParam =
-              Deps.Prelude.List.any
-                ParamsMemberModule.Output
-                (\(m : ParamsMemberModule.Output) -> m.isDateType)
-                params
-
-        let hasNullableJdbcParam =
-              Deps.Prelude.List.any
-                ParamsMemberModule.Output
-                ( \(m : ParamsMemberModule.Output) ->
-                    m.isNullable && m.useCodec == False
                 )
                 params
 
@@ -193,14 +165,6 @@ let render =
 
         let hasOptionalResultType = config.useOptional && isOptionalCardinality
 
-        let hasCodecResult =
-              Deps.Prelude.Optional.fold
-                Deps.Sdk.Project.ResultRows
-                input.result
-                Bool
-                (\(rows : Deps.Sdk.Project.ResultRows) -> True)
-                False
-
         let needsArrayListImport =
               Deps.Prelude.Optional.fold
                 Deps.Sdk.Project.ResultRows
@@ -226,13 +190,8 @@ let render =
                 , typeDecls = resultInfo.typeDecls
                 , statementImpl = resultInfo.statementImpl
                 , statementTypeArg = resultInfo.statementTypeArg
-                , hasCodecParam
-                , hasDateParam
-                , hasNullableJdbcParam
                 , needsArrayListImport
                 , hasResultType = hasResult
-                , hasDateResult = hasResult
-                , hasCodecResult = hasResult
                 , hasOptionalFields =
                         hasOptionalParam
                     ||  hasOptionalResult

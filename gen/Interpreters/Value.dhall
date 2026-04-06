@@ -16,7 +16,6 @@ let Output =
       , rawCodecType : Text
       , elementIsOptional : Bool
       , codecRef : Text
-      , useCodec : Bool
       , isDateType : Bool
       , jdbcSetter : Text
       , sqlTypesConstant : Text
@@ -70,7 +69,6 @@ let run =
                         , rawCodecType = rawArrayType
                         , elementIsOptional
                         , codecRef = "${inDimSuffix}"
-                        , useCodec = True
                         , isDateType = False
                         , jdbcSetter = ""
                         , sqlTypesConstant = ""
@@ -83,7 +81,6 @@ let run =
                 , rawCodecType = scalar.boxedJavaType
                 , elementIsOptional = False
                 , codecRef = scalar.codecRef
-                , useCodec = scalar.useCodec
                 , isDateType = scalar.isDateType
                 , jdbcSetter = scalar.jdbcSetter
                 , sqlTypesConstant = scalar.sqlTypesConstant

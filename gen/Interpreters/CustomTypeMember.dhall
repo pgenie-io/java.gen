@@ -17,7 +17,6 @@ let Output =
       , rawCodecType : Text
       , elementIsOptional : Bool
       , pgName : Text
-      , useCodec : Bool
       , isDateType : Bool
       , codecRef : Text
       , isOptional : Bool
@@ -47,7 +46,6 @@ let run =
                   , rawCodecType = value.rawCodecType
                   , elementIsOptional = value.elementIsOptional
                   , pgName = input.pgName
-                  , useCodec = value.useCodec
                   , isDateType = value.isDateType
                   , codecRef = value.codecRef
                   , isOptional

@@ -1,5 +1,3 @@
-let Algebra = ../Algebras/Template.dhall
-
 let Deps = ../Deps/package.dhall
 
 let Field =
@@ -9,7 +7,6 @@ let Field =
       , rawCodecType : Text
       , elementIsOptional : Bool
       , codecRef : Text
-      , useCodec : Bool
       , isDateType : Bool
       , isOptional : Bool
       }
@@ -46,13 +43,6 @@ let run =
                 ''
                 Field
                 ( \(field : Field) ->
-                    let codecExpr =
-                          if    field.useCodec
-                          then  field.codecRef
-                          else  if field.isDateType
-                          then  "Codec.DATE"
-                          else  field.codecRef
-
                     let getterExpr =
                           if    field.isOptional
                           then  if    field.elementIsOptional
@@ -62,7 +52,7 @@ let run =
                           then  "row -> row.${field.fieldName}().stream().map(o -> o.orElse(null)).toList()"
                           else  "${params.typeName}::${field.fieldName}"
 
-                    in  "Codec.<${params.typeName}, ${field.rawCodecType}>field(\"${field.pgName}\", ${codecExpr}, ${getterExpr})"
+                    in  "Codec.<${params.typeName}, ${field.rawCodecType}>field(\"${field.pgName}\", ${field.codecRef}, ${getterExpr})"
                 )
                 params.fields
 

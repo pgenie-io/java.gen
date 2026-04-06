@@ -8,7 +8,6 @@ let Output =
       { javaType : Text
       , boxedJavaType : Text
       , codecRef : Text
-      , useCodec : Bool
       , isDateType : Bool
       , jdbcSetter : Text
       , sqlTypesConstant : Text
@@ -32,7 +31,6 @@ let jdbcPrimitive =
           { javaType
           , boxedJavaType
           , codecRef = "Codec.${codecName}"
-          , useCodec = False
           , isDateType = False
           , jdbcSetter
           , sqlTypesConstant
@@ -48,7 +46,6 @@ let jdbcString =
           { javaType = "String"
           , boxedJavaType = "String"
           , codecRef = "Codec.${codecName}"
-          , useCodec = False
           , isDateType = False
           , jdbcSetter = "setString"
           , sqlTypesConstant
@@ -62,7 +59,6 @@ let dateType =
         { javaType = "LocalDate"
         , boxedJavaType = "LocalDate"
         , codecRef = "Codec.DATE"
-        , useCodec = False
         , isDateType = True
         , jdbcSetter = ""
         , sqlTypesConstant = "DATE"
@@ -78,7 +74,6 @@ let codec =
           { javaType
           , boxedJavaType = javaType
           , codecRef = "Codec.${codecName}"
-          , useCodec = True
           , isDateType = False
           , jdbcSetter = ""
           , sqlTypesConstant = ""

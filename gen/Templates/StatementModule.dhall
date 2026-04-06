@@ -16,13 +16,8 @@ let Params =
       , typeDecls : Text
       , statementImpl : Text
       , statementTypeArg : Text
-      , hasCodecParam : Bool
-      , hasDateParam : Bool
-      , hasNullableJdbcParam : Bool
       , needsArrayListImport : Bool
       , hasResultType : Bool
-      , hasDateResult : Bool
-      , hasCodecResult : Bool
       , hasOptionalFields : Bool
       }
 
@@ -45,21 +40,11 @@ in  Algebra.module
                   )
                   ( Deps.Prelude.List.unpackOptionals
                       Text
-                      [ Some "java.sql.PreparedStatement"
+                      [ Some "java.sql.Date"
+                      , Some "java.sql.PreparedStatement"
                       , Some "java.sql.ResultSet"
                       , Some "java.sql.SQLException"
-                      , someIf
-                          Text
-                          (params.hasDateParam || params.hasDateResult)
-                          "java.sql.Date"
-                      , someIf
-                          Text
-                          (params.hasNullableJdbcParam || params.hasDateParam)
-                          "java.sql.Types"
-                      , someIf
-                          Text
-                          (params.hasDateParam || params.hasDateResult)
-                          "java.time.*"
+                      , Some "java.time.*"
                       , someIf
                           Text
                           params.needsArrayListImport
@@ -69,10 +54,7 @@ in  Algebra.module
                           Text
                           params.hasOptionalFields
                           "java.util.Optional"
-                      , someIf
-                          Text
-                          (params.hasCodecParam || params.hasCodecResult)
-                          "io.codemine.java.postgresql.jdbc.Codec"
+                      , Some "io.codemine.java.postgresql.jdbc.Codec"
                       , Some "io.codemine.java.postgresql.jdbc.Statement"
                       , Some "${params.packageName}.types.*"
                       ]
