@@ -64,8 +64,6 @@ in  Algebra.module
                                                   { pgName = member.pgName
                                                   , fieldName = member.fieldName
                                                   , fieldType = member.fieldType
-                                                  , boxedJavaType =
-                                                      member.boxedJavaType
                                                   , rawCodecType =
                                                       member.rawCodecType
                                                   , elementIsOptional =

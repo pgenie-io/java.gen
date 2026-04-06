@@ -17,14 +17,10 @@ let Output =
       , fieldName : Text
       , fieldType : Text
       , boxedJavaType : Text
-      , elementIsOptional : Bool
-      , useCodec : Bool
-      , isDateType : Bool
-      , isJdbcPrimitive : Bool
-      , jdbcGetter : Text
       , codecRef : Text
+      , dims : Natural
       , isNullable : Bool
-      , isOptional : Bool
+      , elementIsNullable : Bool
       }
 
 let run =
@@ -36,13 +32,11 @@ let run =
           ( \(value : Value.Output) ->
               let fieldName = Deps.CodegenKit.Name.toTextInCamel input.name
 
-              let isOptional = config.useOptional && input.isNullable
-
               let fieldType =
-                    if    isOptional
-                    then  "Optional<${value.boxedJavaType}>"
-                    else  if input.isNullable
-                    then  value.boxedJavaType
+                    if    input.isNullable
+                    then  if    config.useOptional
+                          then  "Optional<${value.boxedJavaType}>"
+                          else  value.javaType
                     else  value.javaType
 
               in  { columnField =
@@ -55,14 +49,26 @@ let run =
                   , fieldName
                   , fieldType
                   , boxedJavaType = value.boxedJavaType
-                  , elementIsOptional = value.elementIsOptional
-                  , useCodec = value.useCodec
-                  , isDateType = value.isDateType
-                  , isJdbcPrimitive = value.isJdbcPrimitive
-                  , jdbcGetter = value.jdbcGetter
                   , codecRef = value.codecRef
+                  , dims =
+                      Deps.Prelude.Optional.fold
+                        Deps.Sdk.Project.ArraySettings
+                        input.value.arraySettings
+                        Natural
+                        ( \(arr : Deps.Sdk.Project.ArraySettings) ->
+                            arr.dimensionality
+                        )
+                        0
                   , isNullable = input.isNullable
-                  , isOptional
+                  , elementIsNullable =
+                      Deps.Prelude.Optional.fold
+                        Deps.Sdk.Project.ArraySettings
+                        input.value.arraySettings
+                        Bool
+                        ( \(arr : Deps.Sdk.Project.ArraySettings) ->
+                            arr.elementIsNullable
+                        )
+                        False
                   }
           )
           ( Sdk.Compiled.nest

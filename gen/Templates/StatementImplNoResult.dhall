@@ -2,10 +2,6 @@
 -- Produces the methods without any surrounding indentation; splice site must indent.
 let Algebra = ../Algebras/Template.dhall
 
-let Deps = ../Deps/package.dhall
-
-let indent = Deps.Lude.Extensions.Text.indentNonEmpty
-
 let Params = {}
 
 in  Algebra.module

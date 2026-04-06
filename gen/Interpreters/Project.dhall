@@ -24,7 +24,6 @@ let toFlatLower =
           (Deps.CodegenKit.Name.toTextInSnake name)
 
 let combineOutputs =
-      \(config : Algebra.Config) ->
       \(input : Input) ->
       \(queries : List QueryGen.Output) ->
       \(customTypes : List CustomTypeGen.Output) ->
@@ -76,18 +75,6 @@ let combineOutputs =
                     }
                 )
                 queries
-
-        let statementJava
-            : Sdk.File.Type
-            = { path = srcPrefix ++ "Statement.java"
-              , content = Templates.StatementInterface.run { packageName }
-              }
-
-        let jdbcCodecJava
-            : Sdk.File.Type
-            = { path = srcPrefix ++ "JdbcCodec.java"
-              , content = Templates.JdbcCodecModule.run { packageName }
-              }
 
         let artifactId = Deps.CodegenKit.Name.toTextInKebab input.name
 
@@ -171,12 +158,7 @@ let combineOutputs =
                     }
               }
 
-        in      [ pomXml
-                , readmeMd
-                , statementJava
-                , jdbcCodecJava
-                , abstractDatabaseIT
-                ]
+        in      [ pomXml, readmeMd, abstractDatabaseIT ]
               # customTypeFiles
               # statementFiles
               # testStatementFiles
@@ -235,7 +217,7 @@ let run =
                 (List QueryGen.Output)
                 (List CustomTypeGen.Output)
                 (List Sdk.File.Type)
-                (combineOutputs config input)
+                (combineOutputs input)
                 compiledQueries
                 compiledTypes
 

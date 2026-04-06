@@ -8,8 +8,8 @@ import java.time.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import io.pgenie.artifacts.myspace.musiccatalogue.JdbcCodec;
-import io.pgenie.artifacts.myspace.musiccatalogue.Statement;
+import io.codemine.java.postgresql.jdbc.Codec;
+import io.codemine.java.postgresql.jdbc.Statement;
 import io.pgenie.artifacts.myspace.musiccatalogue.types.*;
 
 /**
@@ -109,19 +109,11 @@ public record SelectAlbumByName(
         int row = 0;
         
         while (rs.next()) {
-            long idCol = rs.getLong(1);
-            String nameCol = rs.getString(2);
-            Optional<LocalDate> releasedCol;
-            {
-                Date releasedColBase = rs.getDate(3);
-                if (releasedColBase != null) {
-                    releasedCol = Optional.of(releasedColBase.toLocalDate());
-                } else {
-                    releasedCol = Optional.empty();
-                }
-            }
-            Optional<AlbumFormat> formatCol = Optional.ofNullable(new JdbcCodec<>(AlbumFormat.CODEC).decodeNullable(rs, row, 4));
-            Optional<RecordingInfo> recordingCol = Optional.ofNullable(new JdbcCodec<>(RecordingInfo.CODEC).decodeNullable(rs, row, 5));
+            long idCol = Codec.INT8.decodeNonNullable(rs, row, 1);
+            String nameCol = Codec.TEXT.decodeNonNullable(rs, row, 2);
+            Optional<LocalDate> releasedCol = Codec.DATE.decodeOptional(rs, row, 3);
+            Optional<AlbumFormat> formatCol = AlbumFormat.CODEC.decodeOptional(rs, row, 4);
+            Optional<RecordingInfo> recordingCol = RecordingInfo.CODEC.decodeOptional(rs, row, 5);
 
             output.add(new ResultRow(idCol, nameCol, releasedCol, formatCol, recordingCol));
             row++;

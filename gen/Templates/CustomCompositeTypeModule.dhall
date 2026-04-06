@@ -6,7 +6,6 @@ let Field =
       { pgName : Text
       , fieldName : Text
       , fieldType : Text
-      , boxedJavaType : Text
       , rawCodecType : Text
       , elementIsOptional : Bool
       , codecRef : Text
@@ -63,44 +62,24 @@ let run =
                           then  "row -> row.${field.fieldName}().stream().map(o -> o.orElse(null)).toList()"
                           else  "${params.typeName}::${field.fieldName}"
 
-                    in  "new CompositeCodec.Field<>(\"${field.pgName}\", ${getterExpr}, ${codecExpr})"
+                    in  "Codec.<${params.typeName}, ${field.rawCodecType}>field(\"${field.pgName}\", ${codecExpr}, ${getterExpr})"
                 )
                 params.fields
 
-        let curriedConstructor =
-              let paramDecls =
-                    Deps.Prelude.Text.concatMap
-                      Field
-                      ( \(field : Field) ->
-                          let paramType =
-                                if    field.elementIsOptional
-                                then  field.rawCodecType
-                                else  if field.isOptional
-                                then  field.boxedJavaType
-                                else  field.fieldType
+        let indexedFields = Deps.Prelude.List.indexed Field params.fields
 
-                          in  "(${paramType} ${field.fieldName}) -> "
-                      )
-                      params.fields
+        let constructorArgs =
+              Deps.Prelude.Text.concatMapSep
+                ", "
+                { index : Natural, value : Field }
+                ( \(field : { index : Natural, value : Field }) ->
+                    "(( ${field.value.fieldType} ) objects[${Natural/show
+                                                               field.index}])"
+                )
+                indexedFields
 
-              let constructorArgs =
-                    Deps.Prelude.Text.concatMapSep
-                      ", "
-                      Field
-                      ( \(field : Field) ->
-                          if    field.isOptional
-                          then  if    field.elementIsOptional
-                                then  "Optional.ofNullable(${field.fieldName}).map(list -> list.stream().map(Optional::ofNullable).toList())"
-                                else  "Optional.ofNullable(${field.fieldName})"
-                          else  if field.elementIsOptional
-                          then  "${field.fieldName}.stream().map(Optional::ofNullable).toList()"
-                          else  field.fieldName
-                      )
-                      params.fields
-
-              in  ''
-                  ${paramDecls}new ${params.typeName}(
-                                      ${constructorArgs})''
+        let constructorExpr =
+              "objects -> new ${params.typeName}(${constructorArgs})"
 
         let hasOptionalFields =
               Deps.Prelude.List.any
@@ -116,15 +95,12 @@ let run =
 
         let javaImports =
                 [ "import java.time.*;", "import java.util.List;" ]
-              # ( if    hasOptionalFields
+              # ( if    hasOptionalFields || hasElementOptionalFields
                   then  [ "import java.util.Optional;" ]
                   else  [] : List Text
                 )
 
-        let codecImports =
-              [ "import io.codemine.java.postgresql.codecs.Codec;"
-              , "import io.codemine.java.postgresql.codecs.CompositeCodec;"
-              ]
+        let codecImports = [ "import io.codemine.java.postgresql.jdbc.Codec;" ]
 
         let importSection =
                   Deps.Prelude.Text.concatSep "\n" javaImports
@@ -150,9 +126,9 @@ let run =
             public record ${params.typeName}(
                     ${Deps.Lude.Extensions.Text.indentNonEmpty 8 fieldDecls}) {
 
-                public static final CompositeCodec<${params.typeName}> CODEC = new CompositeCodec<>(
+                public static final Codec<${params.typeName}> CODEC = Codec.<${params.typeName}>composite(
                         "${params.pgSchema}", "${params.pgTypeName}",
-                        ${curriedConstructor},
+                        ${constructorExpr},
                         ${Deps.Lude.Extensions.Text.indentNonEmpty
                             12
                             codecFieldEntries});

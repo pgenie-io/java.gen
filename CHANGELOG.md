@@ -3,6 +3,7 @@
 ## Breaking changes
 
 - Renamed generated result classes: the generated `Output` and `OutputRow` classes were renamed to `Result` and `ResultRow` respectively for better clarity.
+- Migrated to the `io.codemine.java.postgresql:jdbc` library for the `Codec` and `Statement` abstractions.
 
 # v0.2.0
 

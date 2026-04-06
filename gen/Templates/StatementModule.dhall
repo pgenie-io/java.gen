@@ -71,10 +71,9 @@ in  Algebra.module
                           "java.util.Optional"
                       , someIf
                           Text
-                          params.hasCodecParam
-                          "io.codemine.java.postgresql.codecs.Codec"
-                      , Some "${params.packageName}.JdbcCodec"
-                      , Some "${params.packageName}.Statement"
+                          (params.hasCodecParam || params.hasCodecResult)
+                          "io.codemine.java.postgresql.jdbc.Codec"
+                      , Some "io.codemine.java.postgresql.jdbc.Statement"
                       , Some "${params.packageName}.types.*"
                       ]
                   )

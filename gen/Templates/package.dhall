@@ -1,6 +1,4 @@
 { PomXml = ./PomXml.dhall
-, StatementInterface = ./StatementInterface.dhall
-, JdbcCodecModule = ./JdbcCodecModule.dhall
 , ParamBindStatement = ./ParamBindStatement.dhall
 , ParamField = ./ParamField.dhall
 , ResultColumnField = ./ResultColumnField.dhall

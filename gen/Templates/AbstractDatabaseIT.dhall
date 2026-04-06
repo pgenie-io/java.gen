@@ -18,6 +18,7 @@ in  Algebra.module
           import java.sql.ResultSet;
           import java.sql.SQLException;
           import javax.sql.DataSource;
+          import io.codemine.java.postgresql.jdbc.Statement;
           import org.junit.jupiter.api.AfterEach;
           import org.junit.jupiter.api.BeforeEach;
           import org.testcontainers.containers.PostgreSQLContainer;

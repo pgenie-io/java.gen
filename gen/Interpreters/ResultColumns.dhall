@@ -2,7 +2,7 @@ let Deps = ../Deps/package.dhall
 
 let Algebra = ../Algebras/Interpreter.dhall
 
-let Member = ./ResultColumnsMember.dhall
+let ResultColumnsMember = ./ResultColumnsMember.dhall
 
 let Templates = ../Templates/package.dhall
 
@@ -25,25 +25,31 @@ in  Algebra.module
                   Deps.Sdk.Compiled.Type
                   Deps.Sdk.Compiled.applicative
                   Deps.Sdk.Project.Member
-                  Member.Output
-                  (Member.run config)
+                  ResultColumnsMember.Output
+                  (ResultColumnsMember.run config)
                   input
 
           in  Deps.Sdk.Compiled.map
-                (List Member.Output)
+                (List ResultColumnsMember.Output)
                 Output
-                ( \(columns : List Member.Output) ->
+                ( \(columns : List ResultColumnsMember.Output) ->
                     let indexedColumns =
-                          Deps.Prelude.List.indexed Member.Output columns
+                          Deps.Prelude.List.indexed
+                            ResultColumnsMember.Output
+                            columns
 
                     let columnFieldList =
                           Deps.Prelude.Text.concatMapSep
                             ''
                             ,
                             ''
-                            { index : Natural, value : Member.Output }
+                            { index : Natural
+                            , value : ResultColumnsMember.Output
+                            }
                             ( \ ( ic
-                                : { index : Natural, value : Member.Output }
+                                : { index : Natural
+                                  , value : ResultColumnsMember.Output
+                                  }
                                 ) ->
                                 ic.value.columnField
                             )
@@ -53,24 +59,24 @@ in  Algebra.module
                           \(rowVarPresent : Bool) ->
                             Deps.Prelude.Text.concatMapSep
                               "\n"
-                              { index : Natural, value : Member.Output }
+                              { index : Natural
+                              , value : ResultColumnsMember.Output
+                              }
                               ( \ ( ic
-                                  : { index : Natural, value : Member.Output }
+                                  : { index : Natural
+                                    , value : ResultColumnsMember.Output
+                                    }
                                   ) ->
                                   Templates.ColDecodeStatement.run
                                     { colIdx = Natural/show (ic.index + 1)
-                                    , fieldName = ic.value.fieldName
+                                    , varName = "${ic.value.fieldName}Col"
                                     , fieldType = ic.value.fieldType
-                                    , boxedJavaType = ic.value.boxedJavaType
-                                    , useCodec = ic.value.useCodec
                                     , codecRef = ic.value.codecRef
-                                    , elementIsOptional =
-                                        ic.value.elementIsOptional
-                                    , isOptional = ic.value.isOptional
+                                    , dims = ic.value.dims
+                                    , useOptional = config.useOptional
                                     , isNullable = ic.value.isNullable
-                                    , isDateType = ic.value.isDateType
-                                    , isJdbcPrimitive = ic.value.isJdbcPrimitive
-                                    , jdbcGetter = ic.value.jdbcGetter
+                                    , elementIsNullable =
+                                        ic.value.elementIsNullable
                                     , rowVarPresent
                                     }
                               )
@@ -78,9 +84,11 @@ in  Algebra.module
 
                     let columnNames =
                           Deps.Prelude.List.map
-                            Member.Output
+                            ResultColumnsMember.Output
                             Text
-                            (\(col : Member.Output) -> col.fieldName)
+                            ( \(col : ResultColumnsMember.Output) ->
+                                col.fieldName
+                            )
                             columns
 
                     in  { columnFieldList

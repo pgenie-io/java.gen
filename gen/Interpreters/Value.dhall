@@ -18,9 +18,7 @@ let Output =
       , codecRef : Text
       , useCodec : Bool
       , isDateType : Bool
-      , isJdbcPrimitive : Bool
       , jdbcSetter : Text
-      , jdbcGetter : Text
       , sqlTypesConstant : Text
       , pgCastSuffix : Text
       , testDefaultLiteral : Text
@@ -65,18 +63,16 @@ let run =
                             arraySettings.dimensionality
                             Text
                             (\(inner : Text) -> "${inner}.inDim()")
-                            scalar.codecRef
+                            "${scalar.codecRef}"
 
                     in  { javaType = arrayType
                         , boxedJavaType = arrayType
                         , rawCodecType = rawArrayType
                         , elementIsOptional
-                        , codecRef = inDimSuffix
+                        , codecRef = "${inDimSuffix}"
                         , useCodec = True
                         , isDateType = False
-                        , isJdbcPrimitive = False
                         , jdbcSetter = ""
-                        , jdbcGetter = ""
                         , sqlTypesConstant = ""
                         , pgCastSuffix = scalar.pgCastSuffix
                         , testDefaultLiteral = "null"
@@ -89,9 +85,7 @@ let run =
                 , codecRef = scalar.codecRef
                 , useCodec = scalar.useCodec
                 , isDateType = scalar.isDateType
-                , isJdbcPrimitive = scalar.isJdbcPrimitive
                 , jdbcSetter = scalar.jdbcSetter
-                , jdbcGetter = scalar.jdbcGetter
                 , sqlTypesConstant = scalar.sqlTypesConstant
                 , pgCastSuffix = scalar.pgCastSuffix
                 , testDefaultLiteral = scalar.testDefaultLiteral

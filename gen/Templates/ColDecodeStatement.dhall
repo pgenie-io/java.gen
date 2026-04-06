@@ -1,22 +1,20 @@
 -- Renders a single result-set column decode statement.
 -- colIdx: 1-based column index as a string (e.g. "1", "2").
 -- Produces the statement(s) without any surrounding indentation; splice site must indent.
+let Deps = ../Deps/package.dhall
+
 let Algebra = ../Algebras/Template.dhall
 
 let Params =
       { colIdx : Text
-      , fieldName : Text
+      , varName : Text
       , fieldType : Text
-      , boxedJavaType : Text
-      , useCodec : Bool
       , codecRef : Text
-      , elementIsOptional : Bool
-      , isOptional : Bool
+      , dims : Natural
+      , useOptional : Bool
       , isNullable : Bool
-      , isDateType : Bool
-      , isJdbcPrimitive : Bool
+      , elementIsNullable : Bool
       , rowVarPresent : Bool
-      , jdbcGetter : Text
       }
 
 in  Algebra.module
@@ -24,46 +22,41 @@ in  Algebra.module
       ( \(p : Params) ->
           let rowExpr = if p.rowVarPresent then "row" else "0"
 
-          in  if    p.useCodec
-              then  let elemSuffix =
-                          if    p.elementIsOptional
-                          then  ".stream().map(Optional::ofNullable).toList()"
-                          else  ""
+          let expression =
+                if    p.isNullable
+                then  if    p.useOptional
+                      then  let suffix =
+                                  if    p.elementIsNullable
+                                  then  if    Deps.Prelude.Natural.equal
+                                                p.dims
+                                                0
+                                        then  ""
+                                        else  if Deps.Prelude.Natural.equal
+                                                   p.dims
+                                                   1
+                                        then  ".map(list1 -> list1.stream().map(Optional::ofNullable).toList())"
+                                        else  if Deps.Prelude.Natural.equal
+                                                   p.dims
+                                                   2
+                                        then  ".map(list1 -> list1.stream().map(list2 -> list2.stream().map(Optional::ofNullable).toList()).toList())"
+                                        else  if Deps.Prelude.Natural.equal
+                                                   p.dims
+                                                   3
+                                        then  ".map(list1 -> list1.stream().map(list2 -> list2.stream().map(list3 -> list3.stream().map(Optional::ofNullable).toList()).toList()).toList())"
+                                        else  if Deps.Prelude.Natural.equal
+                                                   p.dims
+                                                   4
+                                        then  ".map(list1 -> list1.stream().map(list2 -> list2.stream().map(list3 -> list3.stream().map(list4 -> list4.stream().map(Optional::ofNullable).toList()).toList()).toList()).toList())"
+                                        else  if Deps.Prelude.Natural.equal
+                                                   p.dims
+                                                   5
+                                        then  ".map(list1 -> list1.stream().map(list2 -> list2.stream().map(list3 -> list3.stream().map(list4 -> list4.stream().map(list5 -> list5.stream().map(Optional::ofNullable).toList()).toList()).toList()).toList()).toList())"
+                                        else  ".map(list1 -> list1.stream().map(list2 -> list2.stream().map(list3 -> list3.stream().map(list4 -> list4.stream().map(list5 -> list5.stream().map(list6 -> list6.stream().map(Optional::ofNullable).toList()).toList()).toList()).toList()).toList()).toList())"
+                                  else  ""
 
-                    in  if    p.isOptional
-                        then  "${p.fieldType} ${p.fieldName}Col = Optional.ofNullable(new JdbcCodec<>(${p.codecRef}).decodeNullable(rs, ${rowExpr}, ${p.colIdx})${elemSuffix});"
-                        else  if p.isNullable
-                        then  "${p.fieldType} ${p.fieldName}Col = new JdbcCodec<>(${p.codecRef}).decodeNullable(rs, ${rowExpr}, ${p.colIdx})${elemSuffix};"
-                        else  "${p.fieldType} ${p.fieldName}Col = new JdbcCodec<>(${p.codecRef}).decodeNonNullable(rs, ${rowExpr}, ${p.colIdx})${elemSuffix};"
-              else  if p.isDateType
-              then  if    p.isOptional
-                    then  ''
-                          ${p.fieldType} ${p.fieldName}Col;
-                          {
-                              Date ${p.fieldName}ColBase = rs.getDate(${p.colIdx});
-                              if (${p.fieldName}ColBase != null) {
-                                  ${p.fieldName}Col = Optional.of(${p.fieldName}ColBase.toLocalDate());
-                              } else {
-                                  ${p.fieldName}Col = Optional.empty();
-                              }
-                          }''
-                    else  if p.isNullable
-                    then  ''
-                          LocalDate ${p.fieldName}Col;
-                          {
-                              Date ${p.fieldName}ColBase = rs.getDate(${p.colIdx});
-                              if (${p.fieldName}ColBase != null) {
-                                  ${p.fieldName}Col = ${p.fieldName}ColBase.toLocalDate();
-                              } else {
-                                  ${p.fieldName}Col = null;
-                              }
-                          }''
-                    else  "LocalDate ${p.fieldName}Col = rs.getDate(${p.colIdx}).toLocalDate();"
-              else  if p.isOptional
-              then  if    p.isJdbcPrimitive
-                    then  "${p.fieldType} ${p.fieldName}Col = Optional.ofNullable((${p.boxedJavaType}) rs.getObject(${p.colIdx}));"
-                    else  "${p.fieldType} ${p.fieldName}Col = Optional.ofNullable(rs.${p.jdbcGetter}(${p.colIdx}));"
-              else  if p.isNullable && p.isJdbcPrimitive
-              then  "${p.fieldType} ${p.fieldName}Col = (${p.fieldType}) rs.getObject(${p.colIdx});"
-              else  "${p.fieldType} ${p.fieldName}Col = rs.${p.jdbcGetter}(${p.colIdx});"
+                            in  "${p.codecRef}.decodeOptional(rs, ${rowExpr}, ${p.colIdx})${suffix}"
+                      else  "${p.codecRef}.decodeNullable(rs, ${rowExpr}, ${p.colIdx})"
+                else  "${p.codecRef}.decodeNonNullable(rs, ${rowExpr}, ${p.colIdx})"
+
+          in  "${p.fieldType} ${p.varName} = ${expression};"
       )

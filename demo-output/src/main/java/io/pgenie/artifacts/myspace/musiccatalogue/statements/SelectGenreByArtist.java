@@ -7,8 +7,8 @@ import java.sql.Date;
 import java.time.*;
 import java.util.ArrayList;
 import java.util.List;
-import io.pgenie.artifacts.myspace.musiccatalogue.JdbcCodec;
-import io.pgenie.artifacts.myspace.musiccatalogue.Statement;
+import io.codemine.java.postgresql.jdbc.Codec;
+import io.codemine.java.postgresql.jdbc.Statement;
 import io.pgenie.artifacts.myspace.musiccatalogue.types.*;
 
 /**
@@ -90,8 +90,8 @@ public record SelectGenreByArtist(
         int row = 0;
         
         while (rs.next()) {
-            int idCol = rs.getInt(1);
-            String nameCol = rs.getString(2);
+            int idCol = Codec.INT4.decodeNonNullable(rs, row, 1);
+            String nameCol = Codec.TEXT.decodeNonNullable(rs, row, 2);
 
             output.add(new ResultRow(idCol, nameCol));
             row++;

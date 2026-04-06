@@ -10,9 +10,7 @@ let Output =
       , codecRef : Text
       , useCodec : Bool
       , isDateType : Bool
-      , isJdbcPrimitive : Bool
       , jdbcSetter : Text
-      , jdbcGetter : Text
       , sqlTypesConstant : Text
       , pgCastSuffix : Text
       , testDefaultLiteral : Text
@@ -27,7 +25,6 @@ let jdbcPrimitive =
       \(boxedJavaType : Text) ->
       \(codecName : Text) ->
       \(jdbcSetter : Text) ->
-      \(jdbcGetter : Text) ->
       \(sqlTypesConstant : Text) ->
       \(testDefaultLiteral : Text) ->
         Deps.Sdk.Compiled.ok
@@ -37,9 +34,7 @@ let jdbcPrimitive =
           , codecRef = "Codec.${codecName}"
           , useCodec = False
           , isDateType = False
-          , isJdbcPrimitive = True
           , jdbcSetter
-          , jdbcGetter
           , sqlTypesConstant
           , pgCastSuffix = ""
           , testDefaultLiteral
@@ -55,9 +50,7 @@ let jdbcString =
           , codecRef = "Codec.${codecName}"
           , useCodec = False
           , isDateType = False
-          , isJdbcPrimitive = False
           , jdbcSetter = "setString"
-          , jdbcGetter = "getString"
           , sqlTypesConstant
           , pgCastSuffix = ""
           , testDefaultLiteral = "\"\""
@@ -71,9 +64,7 @@ let dateType =
         , codecRef = "Codec.DATE"
         , useCodec = False
         , isDateType = True
-        , isJdbcPrimitive = False
         , jdbcSetter = ""
-        , jdbcGetter = ""
         , sqlTypesConstant = "DATE"
         , pgCastSuffix = ""
         , testDefaultLiteral = "LocalDate.of(2000, 1, 1)"
@@ -89,9 +80,7 @@ let codec =
           , codecRef = "Codec.${codecName}"
           , useCodec = True
           , isDateType = False
-          , isJdbcPrimitive = False
           , jdbcSetter = ""
-          , jdbcGetter = ""
           , sqlTypesConstant = ""
           , pgCastSuffix = ""
           , testDefaultLiteral = "null"
@@ -108,7 +97,6 @@ let run =
                 "Boolean"
                 "BOOL"
                 "setBoolean"
-                "getBoolean"
                 "BOOLEAN"
                 "false"
           , Box = codec "Box" "BOX"
@@ -122,21 +110,13 @@ let run =
           , Datemultirange = codec "Multirange<LocalDate>" "DATEMULTIRANGE"
           , Daterange = codec "Range<LocalDate>" "DATERANGE"
           , Float4 =
-              jdbcPrimitive
-                "float"
-                "Float"
-                "FLOAT4"
-                "setFloat"
-                "getFloat"
-                "REAL"
-                "0.0f"
+              jdbcPrimitive "float" "Float" "FLOAT4" "setFloat" "REAL" "0.0f"
           , Float8 =
               jdbcPrimitive
                 "double"
                 "Double"
                 "FLOAT8"
                 "setDouble"
-                "getDouble"
                 "DOUBLE"
                 "0.0"
           , Hstore = codec "Hstore" "HSTORE"
@@ -147,29 +127,12 @@ let run =
                 "Short"
                 "INT2"
                 "setShort"
-                "getShort"
                 "SMALLINT"
                 "(short) 0"
-          , Int4 =
-              jdbcPrimitive
-                "int"
-                "Integer"
-                "INT4"
-                "setInt"
-                "getInt"
-                "INTEGER"
-                "0"
+          , Int4 = jdbcPrimitive "int" "Integer" "INT4" "setInt" "INTEGER" "0"
           , Int4multirange = codec "Multirange<Integer>" "INT4MULTIRANGE"
           , Int4range = codec "Range<Integer>" "INT4RANGE"
-          , Int8 =
-              jdbcPrimitive
-                "long"
-                "Long"
-                "INT8"
-                "setLong"
-                "getLong"
-                "BIGINT"
-                "0L"
+          , Int8 = jdbcPrimitive "long" "Long" "INT8" "setLong" "BIGINT" "0L"
           , Int8multirange = codec "Multirange<Long>" "INT8MULTIRANGE"
           , Int8range = codec "Range<Long>" "INT8RANGE"
           , Interval = codec "Interval" "INTERVAL"

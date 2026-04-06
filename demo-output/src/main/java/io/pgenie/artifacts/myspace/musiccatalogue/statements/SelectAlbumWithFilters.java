@@ -9,9 +9,8 @@ import java.time.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import io.codemine.java.postgresql.codecs.Codec;
-import io.pgenie.artifacts.myspace.musiccatalogue.JdbcCodec;
-import io.pgenie.artifacts.myspace.musiccatalogue.Statement;
+import io.codemine.java.postgresql.jdbc.Codec;
+import io.codemine.java.postgresql.jdbc.Statement;
 import io.pgenie.artifacts.myspace.musiccatalogue.types.*;
 
 /**
@@ -159,10 +158,10 @@ public record SelectAlbumWithFilters(
         } else {
             ps.setNull(4, Types.VARCHAR);
         }
-        new JdbcCodec<>(AlbumFormat.CODEC).bind(ps, 5, this.format().orElse(null));
-        new JdbcCodec<>(AlbumFormat.CODEC).bind(ps, 6, this.format().orElse(null));
-        new JdbcCodec<>(Codec.TIMESTAMP).bind(ps, 7, this.releasedAfter().orElse(null));
-        new JdbcCodec<>(Codec.TIMESTAMP).bind(ps, 8, this.releasedAfter().orElse(null));
+        AlbumFormat.CODEC.bind(ps, 5, this.format().orElse(null));
+        AlbumFormat.CODEC.bind(ps, 6, this.format().orElse(null));
+        Codec.TIMESTAMP.bind(ps, 7, this.releasedAfter().orElse(null));
+        Codec.TIMESTAMP.bind(ps, 8, this.releasedAfter().orElse(null));
         if (this.nameLike().isPresent()) {
             ps.setString(9, this.nameLike().get());
         } else {
@@ -188,18 +187,10 @@ public record SelectAlbumWithFilters(
         int row = 0;
         
         while (rs.next()) {
-            long idCol = rs.getLong(1);
-            String nameCol = rs.getString(2);
-            Optional<LocalDate> releasedCol;
-            {
-                Date releasedColBase = rs.getDate(3);
-                if (releasedColBase != null) {
-                    releasedCol = Optional.of(releasedColBase.toLocalDate());
-                } else {
-                    releasedCol = Optional.empty();
-                }
-            }
-            Optional<AlbumFormat> formatCol = Optional.ofNullable(new JdbcCodec<>(AlbumFormat.CODEC).decodeNullable(rs, row, 4));
+            long idCol = Codec.INT8.decodeNonNullable(rs, row, 1);
+            String nameCol = Codec.TEXT.decodeNonNullable(rs, row, 2);
+            Optional<LocalDate> releasedCol = Codec.DATE.decodeOptional(rs, row, 3);
+            Optional<AlbumFormat> formatCol = AlbumFormat.CODEC.decodeOptional(rs, row, 4);
 
             output.add(new ResultRow(idCol, nameCol, releasedCol, formatCol));
             row++;

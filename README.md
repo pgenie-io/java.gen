@@ -115,7 +115,7 @@ Scalar types can appear as plain values, as nullable values
 Types labeled **postgresql-codecs** use the
 [`postgresql-codecs`](https://github.com/codemine-io/postgresql-codecs.java) library for
 their Java representation and are sent to pgjdbc as text-format `PGobject` values via
-the generated `Jdbc` helper.
+the generated codec-based decode and bind methods.
 
 ### Unsupported types
 

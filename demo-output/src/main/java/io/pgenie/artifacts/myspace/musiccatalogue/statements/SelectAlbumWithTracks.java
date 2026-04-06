@@ -8,8 +8,8 @@ import java.time.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import io.pgenie.artifacts.myspace.musiccatalogue.JdbcCodec;
-import io.pgenie.artifacts.myspace.musiccatalogue.Statement;
+import io.codemine.java.postgresql.jdbc.Codec;
+import io.codemine.java.postgresql.jdbc.Statement;
 import io.pgenie.artifacts.myspace.musiccatalogue.types.*;
 
 /**
@@ -95,10 +95,10 @@ public record SelectAlbumWithTracks(
         int row = 0;
         
         while (rs.next()) {
-            long idCol = rs.getLong(1);
-            String nameCol = rs.getString(2);
-            List<TrackInfo> tracksCol = new JdbcCodec<>(TrackInfo.CODEC.inDim()).decodeNonNullable(rs, row, 3);
-            Optional<DiscInfo> discCol = Optional.ofNullable(new JdbcCodec<>(DiscInfo.CODEC).decodeNullable(rs, row, 4));
+            long idCol = Codec.INT8.decodeNonNullable(rs, row, 1);
+            String nameCol = Codec.TEXT.decodeNonNullable(rs, row, 2);
+            List<TrackInfo> tracksCol = TrackInfo.CODEC.inDim().decodeNonNullable(rs, row, 3);
+            Optional<DiscInfo> discCol = DiscInfo.CODEC.decodeOptional(rs, row, 4);
 
             output.add(new ResultRow(idCol, nameCol, tracksCol, discCol));
             row++;

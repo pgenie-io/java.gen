@@ -20,8 +20,8 @@ in  Algebra.module
       ( \(p : Params) ->
           if    p.useCodec
           then  if    p.isOptional
-                then  "new JdbcCodec<>(${p.codecRef}).bind(ps, ${p.idx}, this.${p.fieldName}().orElse(null));"
-                else  "new JdbcCodec<>(${p.codecRef}).bind(ps, ${p.idx}, this.${p.fieldName}());"
+                then  "${p.codecRef}.bind(ps, ${p.idx}, this.${p.fieldName}().orElse(null));"
+                else  "${p.codecRef}.bind(ps, ${p.idx}, this.${p.fieldName}());"
           else  if p.isDateType
           then  if    p.isOptional
                 then  ''

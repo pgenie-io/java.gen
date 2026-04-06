@@ -45,7 +45,7 @@ let run =
 
             import java.util.Map;
 
-            import io.codemine.java.postgresql.codecs.EnumCodec;
+            import io.codemine.java.postgresql.jdbc.Codec;
 
             /**
              * Representation of the {@code ${params.pgTypeName}} user-declared PostgreSQL
@@ -59,7 +59,7 @@ let run =
 
                 ${Deps.Lude.Extensions.Text.indentNonEmpty 4 variantEntries};
 
-                public static final EnumCodec<${params.typeName}> CODEC = new EnumCodec<>(
+                public static final Codec<${params.typeName}> CODEC = Codec.enumeration(
                         "${params.pgSchema}", "${params.pgTypeName}",
                         Map.ofEntries(
                                 ${Deps.Lude.Extensions.Text.indentNonEmpty
