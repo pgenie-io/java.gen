@@ -11,9 +11,8 @@ The generated code should use JDBC plus the PostgreSQL codec library to provide 
 Use these projects and references when making generator changes:
 
 - pGenie documentation at https://pgenie.io/
-- The reference Java generator design in https://github.com/pgenie-io/java.gen-design/
-- The demo project in https://github.com/pgenie-io/demo/ for SQL of migrations and queries primarily
-- The PostgreSQL codec library in https://github.com/codemine-io/postgresql-codecs.java/
+- The demo project in https://github.com/pgenie-io/demo/ for SQL of migrations and queries primarily. Ignore the `artifacts` in it, as they are only meant to be the output of the generator and not a reference for how the generator should work. The SQL in the migrations and queries is the main reference for how the input SQL should be structured and what features it uses.
+- The PostgreSQL JDBC bridge library in https://github.com/codemine-io/postgresql-jdbc.java/. It is the main reference for how to use the codec library and what features it supports. Pay attention to the supported PostgreSQL types and Java type mappings, as well as how to set up the Maven dependencies.
 - The generator SDK in https://github.com/pgenie-io/gen-sdk, especially the Dhall SDK under https://github.com/pgenie-io/gen-sdk/tree/master/dhall
 - The existing Haskell generator in https://github.com/pgenie-io/haskell.gen/
 - The existing Rust generator in https://github.com/pgenie-io/rust.gen/, which also generates tests
