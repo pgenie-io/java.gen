@@ -45,7 +45,7 @@ artifacts:
 Run the code generator:
 
 ```bash
-pgenie generate
+pgn generate
 ```
 
 The generated library will be placed in `artifacts/java/` as configured in your
