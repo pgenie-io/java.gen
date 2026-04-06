@@ -136,6 +136,12 @@ let combineOutputs =
               Deps.CodegenKit.Name.toTextInPascal
                 (Deps.CodegenKit.Name.concat input.space [ input.name ])
 
+        let version =
+              "${Natural/show
+                   input.version.major}.${Natural/show
+                                            input.version.minor}.${Natural/show
+                                                                     input.version.patch}"
+
         let readmeMd
             : Sdk.File.Type
             = { path = "README.md"
@@ -145,11 +151,7 @@ let combineOutputs =
                     , groupId = "io.pgenie.artifacts.${spacePkg}"
                     , artifactId
                     , packageName
-                    , version =
-                        "${Natural/show
-                             input.version.major}.${Natural/show
-                                                      input.version.minor}.${Natural/show
-                                                                               input.version.patch}"
+                    , version
                     , statementNames = statementNamesSection
                     , typeNames = typeNamesSection
                     , firstStatementName
@@ -163,11 +165,7 @@ let combineOutputs =
                   Templates.PomXml.run
                     { groupId = "io.pgenie.artifacts.${spacePkg}"
                     , artifactId
-                    , version =
-                        "${Natural/show
-                             input.version.major}.${Natural/show
-                                                      input.version.minor}.${Natural/show
-                                                                               input.version.patch}"
+                    , version
                     , projectName
                     , dbName = Deps.CodegenKit.Name.toTextInSnake input.name
                     }
