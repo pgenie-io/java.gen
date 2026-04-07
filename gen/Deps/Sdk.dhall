@@ -1,2 +1,2 @@
-https://raw.githubusercontent.com/pgenie-io/gen-sdk/v0.2.3/dhall/package.dhall
-  sha256:f55886fe89a8f70bc2c9632f827ec2e2031b2fdee263e52acc785d10da25524b
+https://raw.githubusercontent.com/pgenie-io/gen-sdk/v0.2.4/dhall/package.dhall
+  sha256:a44a1e303803682b2e48cb462a86902605c7487d90552f490eda9e3f2b8061d9
