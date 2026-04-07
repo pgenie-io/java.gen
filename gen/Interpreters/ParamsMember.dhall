@@ -21,6 +21,7 @@ let Output =
       , codecRef : Text
       , isNullable : Bool
       , isOptional : Bool
+      , elementIsOptional : Bool
       , testDefaultLiteral : Text
       }
 
@@ -52,6 +53,7 @@ let run =
                   , codecRef = value.codecRef
                   , isNullable = input.isNullable
                   , isOptional
+                  , elementIsOptional = value.elementIsOptional
                   , testDefaultLiteral =
                       if    isOptional
                       then  "Optional.empty()"

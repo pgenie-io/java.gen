@@ -72,7 +72,17 @@ let run =
                         , isDateType = False
                         , jdbcSetter = ""
                         , sqlTypesConstant = ""
-                        , pgCastSuffix = scalar.pgCastSuffix
+                        , pgCastSuffix =
+                            merge
+                              { None = ""
+                              , Some =
+                                  \(suffix : Text) ->
+                                        suffix
+                                    ++  Deps.Prelude.Text.replicate
+                                          arraySettings.dimensionality
+                                          "[]"
+                              }
+                              scalar.pgCastSuffix
                         , testDefaultLiteral = "null"
                         }
                 )
@@ -84,7 +94,10 @@ let run =
                 , isDateType = scalar.isDateType
                 , jdbcSetter = scalar.jdbcSetter
                 , sqlTypesConstant = scalar.sqlTypesConstant
-                , pgCastSuffix = scalar.pgCastSuffix
+                , pgCastSuffix =
+                    merge
+                      { None = "", Some = \(suffix : Text) -> suffix }
+                      scalar.pgCastSuffix
                 , testDefaultLiteral = scalar.testDefaultLiteral
                 }
           )

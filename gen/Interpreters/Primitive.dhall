@@ -11,7 +11,6 @@ let Output =
       , isDateType : Bool
       , jdbcSetter : Text
       , sqlTypesConstant : Text
-      , pgCastSuffix : Text
       , testDefaultLiteral : Text
       }
 
@@ -34,7 +33,6 @@ let jdbcPrimitive =
           , isDateType = False
           , jdbcSetter
           , sqlTypesConstant
-          , pgCastSuffix = ""
           , testDefaultLiteral
           }
 
@@ -49,7 +47,6 @@ let jdbcString =
           , isDateType = False
           , jdbcSetter = "setString"
           , sqlTypesConstant
-          , pgCastSuffix = ""
           , testDefaultLiteral = "\"\""
           }
 
@@ -62,7 +59,6 @@ let dateType =
         , isDateType = True
         , jdbcSetter = ""
         , sqlTypesConstant = "DATE"
-        , pgCastSuffix = ""
         , testDefaultLiteral = "LocalDate.of(2000, 1, 1)"
         }
 
@@ -77,7 +73,6 @@ let codec =
           , isDateType = False
           , jdbcSetter = ""
           , sqlTypesConstant = ""
-          , pgCastSuffix = ""
           , testDefaultLiteral = "null"
           }
 

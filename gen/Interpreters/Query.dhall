@@ -86,6 +86,8 @@ let render =
                                               , fieldName = p.fieldName
                                               , codecRef = p.codecRef
                                               , isOptional = p.isOptional
+                                              , elementIsOptional =
+                                                  p.elementIsOptional
                                               }
                                           )
                                   }

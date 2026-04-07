@@ -1,3 +1,10 @@
+# v0.3.2
+
+## Fixes
+
+- Fixed cast suffixes for array params
+- Fixed rendering of array params with optional elements
+
 # v0.3.1
 
 ## Non-breaking
