@@ -1,3 +1,9 @@
+# v0.3.1
+
+## Non-breaking
+
+- Switch to `Codec` for binds
+
 # v0.3.0
 
 ## Breaking changes
