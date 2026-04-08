@@ -156,9 +156,9 @@ import io.pgenie.artifacts.my_space.music_catalogue.types.RecordingInfo;
 import java.sql.Connection;
 import java.time.LocalDate;
 
-void example(Connection conn) throws SQLException {
+void example(Connection jdbcConn) throws SQLException {
     // Execute an insert that returns the new row id.
-    var result = new InsertAlbum(
+    InsertAlbum.Result result = new InsertAlbum(
         "Space Jazz Vol. 1",
         LocalDate.of(2020, 5, 4),
         AlbumFormat.Vinyl,
@@ -168,12 +168,12 @@ void example(Connection conn) throws SQLException {
             "Moon",
             LocalDate.of(2019, 12, 1)
         )
-    ).execute(conn);
+    ).execute(jdbcConn);
     System.out.println("Inserted album id=" + result.id());
 
     // Query rows back by name.
-    var rows = new SelectAlbumByName("Space Jazz Vol. 1").execute(conn);
-    for (var row : rows) {
+    SelectAlbumByName.Result rows = new SelectAlbumByName("Space Jazz Vol. 1").execute(jdbcConn);
+    for (SelectAlbumByName.ResultRow row : rows) {
         System.out.println("Found album id=" + row.id() + " name=" + row.name());
     }
 }
