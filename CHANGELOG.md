@@ -1,3 +1,9 @@
+# v0.3.3
+
+## Non-breaking
+
+- Updated dependencies to latest versions
+
 # v0.3.2
 
 ## Fixes
