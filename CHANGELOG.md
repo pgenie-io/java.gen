@@ -1,3 +1,10 @@
+# v0.4.0
+
+## Non-breaking
+
+- Ltree type support added
+- Migrated to gen-sdk v0.3.0
+
 # v0.3.3
 
 ## Non-breaking
