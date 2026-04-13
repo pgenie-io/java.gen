@@ -36,7 +36,7 @@ in  Algebra.module
                   <dependency>
                       <groupId>io.codemine.java.postgresql</groupId>
                       <artifactId>jdbc</artifactId>
-                      <version>0.4.0</version>
+                      <version>0.5.0</version>
                   </dependency>
 
                   <!-- Test dependencies -->
