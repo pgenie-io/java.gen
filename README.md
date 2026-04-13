@@ -111,6 +111,7 @@ Scalar types can appear as plain values, as nullable values
 | `tsmultirange` | `Multirange<LocalDateTime>` | postgresql-codecs |
 | `tstzmultirange` | `Multirange<Instant>` | postgresql-codecs |
 | `datemultirange` | `Multirange<LocalDate>` | postgresql-codecs |
+| `ltree` | `Ltree` | postgresql-codecs |
 
 Types labeled **postgresql-codecs** use the
 [`postgresql-codecs`](https://github.com/codemine-io/postgresql-codecs.java) library for
@@ -128,6 +129,10 @@ these types produce warnings during code generation and are skipped entirely.
 | `pg_snapshot` | No codec available in postgresql-codecs |
 | `tsquery` | No codec available in postgresql-codecs |
 | `xml` | No codec available in postgresql-codecs |
+| `box2d` | No codec available in postgresql-codecs |
+| `box3d` | No codec available in postgresql-codecs |
+| `geography` | No codec available in postgresql-codecs |
+| `geometry` | No codec available in postgresql-codecs |
 
 ### Notes
 
