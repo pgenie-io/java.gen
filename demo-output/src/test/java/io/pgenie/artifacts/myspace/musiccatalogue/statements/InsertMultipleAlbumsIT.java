@@ -3,7 +3,6 @@ package io.pgenie.artifacts.myspace.musiccatalogue.statements;
 import static org.junit.jupiter.api.Assertions.*;
 
 import io.pgenie.artifacts.myspace.musiccatalogue.AbstractDatabaseIT;
-import io.pgenie.artifacts.myspace.musiccatalogue.types.*;
 import java.sql.SQLException;
 import java.time.*;
 import java.util.Optional;
@@ -13,7 +12,7 @@ class InsertMultipleAlbumsIT extends AbstractDatabaseIT {
 
     @Test
     void executesWithDefaultValues() throws SQLException {
-        var result = execute(new InsertMultipleAlbums(Optional.empty(), Optional.empty(), Optional.empty()));
+        var result = execute(new InsertMultipleAlbums(null, null, null));
         assertNotNull(result);
 
     }

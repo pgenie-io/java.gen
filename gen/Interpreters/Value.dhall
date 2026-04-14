@@ -16,10 +16,12 @@ let Output =
       , rawCodecType : Text
       , elementIsOptional : Bool
       , codecRef : Text
+      , imports : List Text
       , isDateType : Bool
       , jdbcSetter : Text
       , sqlTypesConstant : Text
       , pgCastSuffix : Text
+      , needsCustomTypeImport : Bool
       , testDefaultLiteral : Text
       }
 
@@ -69,6 +71,7 @@ let run =
                         , rawCodecType = rawArrayType
                         , elementIsOptional
                         , codecRef = "${inDimSuffix}"
+                        , imports = scalar.imports
                         , isDateType = False
                         , jdbcSetter = ""
                         , sqlTypesConstant = ""
@@ -83,6 +86,7 @@ let run =
                                           "[]"
                               }
                               scalar.pgCastSuffix
+                        , needsCustomTypeImport = scalar.needsCustomTypeImport
                         , testDefaultLiteral = "null"
                         }
                 )
@@ -91,6 +95,7 @@ let run =
                 , rawCodecType = scalar.boxedJavaType
                 , elementIsOptional = False
                 , codecRef = scalar.codecRef
+                , imports = scalar.imports
                 , isDateType = scalar.isDateType
                 , jdbcSetter = scalar.jdbcSetter
                 , sqlTypesConstant = scalar.sqlTypesConstant
@@ -98,6 +103,7 @@ let run =
                     merge
                       { None = "", Some = \(suffix : Text) -> suffix }
                       scalar.pgCastSuffix
+                , needsCustomTypeImport = scalar.needsCustomTypeImport
                 , testDefaultLiteral = scalar.testDefaultLiteral
                 }
           )

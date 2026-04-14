@@ -106,6 +106,19 @@ let render =
 
         let resultInfo = result statementModuleName
 
+        let paramImports =
+              List/fold
+                ParamsMemberModule.Output
+                params
+                (List Text)
+                ( \(param : ParamsMemberModule.Output) ->
+                  \(acc : List Text) ->
+                    param.imports # acc
+                )
+                ([] : List Text)
+
+        let extraImports = paramImports # resultInfo.imports
+
         let paramFields =
               Deps.Prelude.List.map
                 ParamsMemberModule.Output
@@ -167,6 +180,15 @@ let render =
 
         let hasOptionalResultType = config.useOptional && isOptionalCardinality
 
+        let needsCustomTypeImport =
+                  Deps.Prelude.List.any
+                    ParamsMemberModule.Output
+                    ( \(m : ParamsMemberModule.Output) ->
+                        m.needsCustomTypeImport
+                    )
+                    params
+              ||  resultInfo.needsCustomTypeImport
+
         let needsArrayListImport =
               Deps.Prelude.Optional.fold
                 Deps.Sdk.Project.ResultRows
@@ -192,12 +214,14 @@ let render =
                 , typeDecls = resultInfo.typeDecls
                 , statementImpl = resultInfo.statementImpl
                 , statementTypeArg = resultInfo.statementTypeArg
+                , extraImports
                 , needsArrayListImport
                 , hasResultType = hasResult
                 , hasOptionalFields =
                         hasOptionalParam
                     ||  hasOptionalResult
                     ||  hasOptionalResultType
+                , needsCustomTypeImport
                 }
 
         let defaultArgs =

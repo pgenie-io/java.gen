@@ -8,11 +8,11 @@ import java.time.*;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
 
-class SelectGenreByArtistIT extends AbstractDatabaseIT {
+class SelectGenreByPathIT extends AbstractDatabaseIT {
 
     @Test
     void executesWithDefaultValues() throws SQLException {
-        var result = execute(new SelectGenreByArtist(0));
+        var result = execute(new SelectGenreByPath(null));
         assertNotNull(result);
 
     }

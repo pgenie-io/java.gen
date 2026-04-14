@@ -14,10 +14,12 @@ let Output =
       { javaType : Text
       , boxedJavaType : Text
       , codecRef : Text
+      , imports : List Text
       , isDateType : Bool
       , jdbcSetter : Text
       , sqlTypesConstant : Text
       , pgCastSuffix : Optional Text
+      , needsCustomTypeImport : Bool
       , testDefaultLiteral : Text
       }
 
@@ -31,7 +33,10 @@ let run =
                   Primitive.Output
                   Output
                   ( \(primitive : Primitive.Output) ->
-                      primitive /\ { pgCastSuffix = None Text }
+                          primitive
+                      /\  { pgCastSuffix = None Text
+                          , needsCustomTypeImport = False
+                          }
                   )
                   (Primitive.run config primitive)
           , Custom =
@@ -45,10 +50,12 @@ let run =
                       { javaType = typeName
                       , boxedJavaType = typeName
                       , codecRef = "${typeName}.CODEC"
+                      , imports = [] : List Text
                       , isDateType = False
                       , jdbcSetter = ""
                       , sqlTypesConstant = ""
                       , pgCastSuffix = Some "::${pgName}"
+                      , needsCustomTypeImport = True
                       , testDefaultLiteral = "null"
                       }
           }

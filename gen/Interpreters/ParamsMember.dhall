@@ -19,9 +19,11 @@ let Output =
       , jdbcSetter : Text
       , sqlTypesConstant : Text
       , codecRef : Text
+      , imports : List Text
       , isNullable : Bool
       , isOptional : Bool
       , elementIsOptional : Bool
+      , needsCustomTypeImport : Bool
       , testDefaultLiteral : Text
       }
 
@@ -51,9 +53,11 @@ let run =
                   , jdbcSetter = value.jdbcSetter
                   , sqlTypesConstant = value.sqlTypesConstant
                   , codecRef = value.codecRef
+                  , imports = value.imports
                   , isNullable = input.isNullable
                   , isOptional
                   , elementIsOptional = value.elementIsOptional
+                  , needsCustomTypeImport = value.needsCustomTypeImport
                   , testDefaultLiteral =
                       if    isOptional
                       then  "Optional.empty()"

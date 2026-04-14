@@ -16,9 +16,11 @@ let Params =
       , typeDecls : Text
       , statementImpl : Text
       , statementTypeArg : Text
+      , extraImports : List Text
       , needsArrayListImport : Bool
       , hasResultType : Bool
       , hasOptionalFields : Bool
+      , needsCustomTypeImport : Bool
       }
 
 let someIf =
@@ -38,26 +40,26 @@ in  Algebra.module
                       import ${import};
                       ''
                   )
-                  ( Deps.Prelude.List.unpackOptionals
-                      Text
-                      [ Some "java.sql.Date"
-                      , Some "java.sql.PreparedStatement"
-                      , Some "java.sql.ResultSet"
-                      , Some "java.sql.SQLException"
-                      , Some "java.time.*"
-                      , someIf
-                          Text
-                          params.needsArrayListImport
-                          "java.util.ArrayList"
-                      , someIf Text params.hasResultType "java.util.List"
-                      , someIf
-                          Text
-                          params.hasOptionalFields
-                          "java.util.Optional"
-                      , Some "io.codemine.java.postgresql.jdbc.Codec"
-                      , Some "io.codemine.java.postgresql.jdbc.Statement"
-                      , Some "${params.packageName}.types.*"
-                      ]
+                  (   Deps.Prelude.List.unpackOptionals
+                        Text
+                        [ Some "java.sql.PreparedStatement"
+                        , Some "java.sql.ResultSet"
+                        , Some "java.sql.SQLException"
+                        , Some "java.time.*"
+                        , Some "java.util.ArrayList"
+                        , Some "java.util.List"
+                        , Some "java.util.Optional"
+                        , Some "io.codemine.java.postgresql.jdbc.Codec"
+                        , Some "io.codemine.java.postgresql.jdbc.Statement"
+                        ]
+                    # params.extraImports
+                    # Deps.Prelude.List.unpackOptionals
+                        Text
+                        [ someIf
+                            Text
+                            params.needsCustomTypeImport
+                            "${params.packageName}.types.*"
+                        ]
                   )
 
           let paramFieldList =

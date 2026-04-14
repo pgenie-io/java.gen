@@ -1,6 +1,5 @@
 package io.pgenie.artifacts.myspace.musiccatalogue.statements;
 
-import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -38,17 +37,17 @@ import io.pgenie.artifacts.myspace.musiccatalogue.types.*;
  */
 public record InsertMultipleAlbums(
         /**
-         * Maps to {@code $name} in the template. Nullable.
+         * Maps to {@code $name} in the template.
          */
-        Optional<List<Optional<String>>> name,
+        List<String> name,
         /**
-         * Maps to {@code $released} in the template. Nullable.
+         * Maps to {@code $released} in the template.
          */
-        Optional<List<Optional<LocalDate>>> released,
+        List<LocalDate> released,
         /**
-         * Maps to {@code $format} in the template. Nullable.
+         * Maps to {@code $format} in the template.
          */
-        Optional<List<Optional<AlbumFormat>>> format)
+        List<AlbumFormat> format)
         implements Statement<InsertMultipleAlbums.Result> {
     
     // -------------------------------------------------------------------------
@@ -91,9 +90,9 @@ public record InsertMultipleAlbums(
 
     @Override
     public void bindParams(PreparedStatement ps) throws SQLException {
-        Codec.TEXT.inDim().bind(ps, 1, this.name().map(list -> list.stream().map(o -> o.orElse(null)).toList()).orElse(null));
-        Codec.DATE.inDim().bind(ps, 2, this.released().map(list -> list.stream().map(o -> o.orElse(null)).toList()).orElse(null));
-        AlbumFormat.CODEC.inDim().bind(ps, 3, this.format().map(list -> list.stream().map(o -> o.orElse(null)).toList()).orElse(null));
+        Codec.TEXT.inDim().bind(ps, 1, this.name());
+        Codec.DATE.inDim().bind(ps, 2, this.released());
+        AlbumFormat.CODEC.inDim().bind(ps, 3, this.format());
     }
 
     @Override

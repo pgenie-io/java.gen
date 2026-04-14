@@ -16,6 +16,7 @@ let Params =
       , typeName : Text
       , pgSchema : Text
       , pgTypeName : Text
+      , extraImports : List Text
       , fields : List Field
       }
 
@@ -83,19 +84,21 @@ let run =
                 (\(field : Field) -> field.elementIsOptional)
                 params.fields
 
-        let javaImports =
-                [ "import java.time.*;", "import java.util.List;" ]
+        let imports =
+                [ "java.time.*", "java.util.List" ]
               # ( if    hasOptionalFields || hasElementOptionalFields
-                  then  [ "import java.util.Optional;" ]
+                  then  [ "java.util.Optional" ]
                   else  [] : List Text
                 )
-
-        let codecImports = [ "import io.codemine.java.postgresql.jdbc.Codec;" ]
+              # params.extraImports
+              # [ "io.codemine.java.postgresql.jdbc.Codec" ]
 
         let importSection =
-                  Deps.Prelude.Text.concatSep "\n" javaImports
-              ++  "\n\n"
-              ++  Deps.Prelude.Text.concatSep "\n" codecImports
+              Deps.Prelude.Text.concatMapSep
+                "\n"
+                Text
+                (\(import : Text) -> "import ${import};")
+                imports
 
         in  ''
             package ${params.packageName}.types;

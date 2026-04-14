@@ -18,9 +18,11 @@ let Output =
       , fieldType : Text
       , boxedJavaType : Text
       , codecRef : Text
+      , imports : List Text
       , dims : Natural
       , isNullable : Bool
       , elementIsNullable : Bool
+      , needsCustomTypeImport : Bool
       }
 
 let run =
@@ -50,6 +52,7 @@ let run =
                   , fieldType
                   , boxedJavaType = value.boxedJavaType
                   , codecRef = value.codecRef
+                  , imports = value.imports
                   , dims =
                       Deps.Prelude.Optional.fold
                         Deps.Sdk.Project.ArraySettings
@@ -69,6 +72,7 @@ let run =
                             arr.elementIsNullable
                         )
                         False
+                  , needsCustomTypeImport = value.needsCustomTypeImport
                   }
           )
           ( Sdk.Compiled.nest

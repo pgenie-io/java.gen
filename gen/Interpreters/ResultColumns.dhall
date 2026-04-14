@@ -13,6 +13,8 @@ let Output =
       , decodeLinesWithRowVar : Text
       , decodeLinesWithoutRowVar : Text
       , columnNames : List Text
+      , imports : List Text
+      , needsCustomTypeImport : Bool
       }
 
 in  Algebra.module
@@ -91,10 +93,31 @@ in  Algebra.module
                             )
                             columns
 
+                    let imports =
+                          List/fold
+                            ResultColumnsMember.Output
+                            columns
+                            (List Text)
+                            ( \(col : ResultColumnsMember.Output) ->
+                              \(acc : List Text) ->
+                                col.imports # acc
+                            )
+                            ([] : List Text)
+
+                    let needsCustomTypeImport =
+                          Deps.Prelude.List.any
+                            ResultColumnsMember.Output
+                            ( \(col : ResultColumnsMember.Output) ->
+                                col.needsCustomTypeImport
+                            )
+                            columns
+
                     in  { columnFieldList
                         , decodeLinesWithRowVar = mkDecodeLines True
                         , decodeLinesWithoutRowVar = mkDecodeLines False
                         , columnNames
+                        , imports
+                        , needsCustomTypeImport
                         }
                 )
                 compiledColumns

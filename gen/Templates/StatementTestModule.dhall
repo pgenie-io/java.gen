@@ -19,7 +19,6 @@ in  Algebra.module
           import static org.junit.jupiter.api.Assertions.*;
 
           import ${params.packageName}.AbstractDatabaseIT;
-          import ${params.packageName}.types.*;
           import java.sql.SQLException;
           import java.time.*;
           import java.util.Optional;

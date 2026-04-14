@@ -10,7 +10,12 @@ let Input = Deps.Sdk.Project.Result
 
 let Output =
       Text ->
-        { statementImpl : Text, typeDecls : Text, statementTypeArg : Text }
+        { statementImpl : Text
+        , typeDecls : Text
+        , statementTypeArg : Text
+        , imports : List Text
+        , needsCustomTypeImport : Bool
+        }
 
 let run =
       \(config : Algebra.Config) ->
@@ -23,6 +28,8 @@ let run =
                     { typeDecls = ""
                     , statementImpl = Templates.StatementImplNoResult.run {=}
                     , statementTypeArg = "Long"
+                    , imports = [] : List Text
+                    , needsCustomTypeImport = False
                     }
                 )
           , Some = ResultRows.run config

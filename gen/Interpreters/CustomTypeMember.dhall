@@ -19,6 +19,7 @@ let Output =
       , pgName : Text
       , isDateType : Bool
       , codecRef : Text
+      , imports : List Text
       , isOptional : Bool
       }
 
@@ -48,6 +49,7 @@ let run =
                   , pgName = input.pgName
                   , isDateType = value.isDateType
                   , codecRef = value.codecRef
+                  , imports = value.imports
                   , isOptional
                   }
           )

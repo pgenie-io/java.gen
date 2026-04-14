@@ -13,7 +13,7 @@ let Sdk = Deps.Sdk
 
 let Gen = ./Gen.dhall
 
-let project = Sdk.Fixtures._2
+let project = Sdk.Fixtures.Demo
 
 let compiledFiles = Gen.compile (Some { useOptional = True }) project
 

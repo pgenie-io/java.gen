@@ -10,7 +10,12 @@ let Input = Deps.Sdk.Project.ResultRows
 
 let Output =
       Text ->
-        { statementImpl : Text, typeDecls : Text, statementTypeArg : Text }
+        { statementImpl : Text
+        , typeDecls : Text
+        , statementTypeArg : Text
+        , imports : List Text
+        , needsCustomTypeImport : Bool
+        }
 
 let run =
       \(config : Algebra.Config) ->
@@ -106,6 +111,8 @@ let run =
                             }
                       , typeDecls = resolved.typeDecls
                       , statementTypeArg = resolved.resultTypeName
+                      , imports = cols.imports
+                      , needsCustomTypeImport = cols.needsCustomTypeImport
                       }
               )
               compiledColumns
