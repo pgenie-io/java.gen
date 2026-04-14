@@ -1,3 +1,9 @@
+# v0.4.1
+
+## Fixes
+
+- Imports for some types fixed
+
 # v0.4.0
 
 ## Non-breaking
