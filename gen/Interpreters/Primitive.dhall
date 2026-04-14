@@ -157,7 +157,18 @@ let run =
                 [ "com.fasterxml.jackson.databind.JsonNode" ]
           , Line = codec "Line" "LINE" codecImports
           , Lseg = codec "Lseg" "LSEG" codecImports
-          , Ltree = codec "Ltree" "LTREE" codecImports
+          , Ltree =
+              Deps.Sdk.Compiled.ok
+                Output
+                { javaType = "Ltree"
+                , boxedJavaType = "Ltree"
+                , codecRef = "Codec.LTREE"
+                , imports = codecImports
+                , isDateType = False
+                , jdbcSetter = ""
+                , sqlTypesConstant = ""
+                , testDefaultLiteral = "new Ltree(List.of(\"root\"))"
+                }
           , Macaddr = codec "Macaddr" "MACADDR" codecImports
           , Macaddr8 = codec "Macaddr8" "MACADDR8" codecImports
           , Money = codec "Long" "MONEY" noImports

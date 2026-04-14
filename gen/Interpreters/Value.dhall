@@ -87,7 +87,7 @@ let run =
                               }
                               scalar.pgCastSuffix
                         , needsCustomTypeImport = scalar.needsCustomTypeImport
-                        , testDefaultLiteral = "null"
+                        , testDefaultLiteral = "List.of()"
                         }
                 )
                 { javaType = scalar.javaType
