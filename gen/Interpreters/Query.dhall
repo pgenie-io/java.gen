@@ -110,14 +110,15 @@ let render =
               List/fold
                 ParamsMemberModule.Output
                 params
-                (List Text)
+                Deps.ImportSet.Struct
                 ( \(param : ParamsMemberModule.Output) ->
-                  \(acc : List Text) ->
-                    param.imports # acc
+                  \(acc : Deps.ImportSet.Struct) ->
+                    Deps.ImportSet.combine param.imports acc
                 )
-                ([] : List Text)
+                Deps.ImportSet.empty
 
-        let extraImports = paramImports # resultInfo.imports
+        let extraImports =
+              Deps.ImportSet.combine paramImports resultInfo.imports
 
         let paramFields =
               Deps.Prelude.List.map

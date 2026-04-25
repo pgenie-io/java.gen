@@ -19,7 +19,7 @@ let Output =
       , pgName : Text
       , isDateType : Bool
       , codecRef : Text
-      , imports : List Text
+      , imports : Deps.ImportSet.Struct
       , isOptional : Bool
       }
 

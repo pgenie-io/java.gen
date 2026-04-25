@@ -13,7 +13,7 @@ let Output =
         { statementImpl : Text
         , typeDecls : Text
         , statementTypeArg : Text
-        , imports : List Text
+        , imports : Deps.ImportSet.Struct
         , needsCustomTypeImport : Bool
         }
 
@@ -28,7 +28,7 @@ let run =
                     { typeDecls = ""
                     , statementImpl = Templates.StatementImplNoResult.run {=}
                     , statementTypeArg = "Long"
-                    , imports = [] : List Text
+                    , imports = Deps.ImportSet.empty
                     , needsCustomTypeImport = False
                     }
                 )

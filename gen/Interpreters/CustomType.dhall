@@ -49,12 +49,14 @@ let run =
                                       List/fold
                                         MemberGen.Output
                                         members
-                                        (List Text)
+                                        Deps.ImportSet.Struct
                                         ( \(member : MemberGen.Output) ->
-                                          \(acc : List Text) ->
-                                            member.imports # acc
+                                          \(acc : Deps.ImportSet.Struct) ->
+                                            Deps.ImportSet.combine
+                                              member.imports
+                                              acc
                                         )
-                                        ([] : List Text)
+                                        Deps.ImportSet.empty
 
                                 in  { moduleName
                                     , typeName

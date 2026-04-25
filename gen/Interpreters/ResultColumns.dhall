@@ -13,7 +13,7 @@ let Output =
       , decodeLinesWithRowVar : Text
       , decodeLinesWithoutRowVar : Text
       , columnNames : List Text
-      , imports : List Text
+      , imports : Deps.ImportSet.Struct
       , needsCustomTypeImport : Bool
       }
 
@@ -97,12 +97,12 @@ in  Algebra.module
                           List/fold
                             ResultColumnsMember.Output
                             columns
-                            (List Text)
+                            Deps.ImportSet.Struct
                             ( \(col : ResultColumnsMember.Output) ->
-                              \(acc : List Text) ->
-                                col.imports # acc
+                              \(acc : Deps.ImportSet.Struct) ->
+                                Deps.ImportSet.combine col.imports acc
                             )
-                            ([] : List Text)
+                            Deps.ImportSet.empty
 
                     let needsCustomTypeImport =
                           Deps.Prelude.List.any

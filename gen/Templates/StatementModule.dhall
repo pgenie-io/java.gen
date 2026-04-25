@@ -16,7 +16,7 @@ let Params =
       , typeDecls : Text
       , statementImpl : Text
       , statementTypeArg : Text
-      , extraImports : List Text
+      , extraImports : Deps.ImportSet.Struct
       , needsArrayListImport : Bool
       , hasResultType : Bool
       , hasOptionalFields : Bool
@@ -29,6 +29,11 @@ let someIf =
       \(v : V) ->
         if condition then Some v else None V
 
+let importIf =
+      \(condition : Bool) ->
+      \(import : Text) ->
+        if condition then [ import ] else [] : List Text
+
 in  Algebra.module
       Params
       ( \(params : Params) ->
@@ -40,19 +45,26 @@ in  Algebra.module
                       import ${import};
                       ''
                   )
-                  (   Deps.Prelude.List.unpackOptionals
-                        Text
-                        [ Some "java.sql.PreparedStatement"
-                        , Some "java.sql.ResultSet"
-                        , Some "java.sql.SQLException"
-                        , Some "java.time.*"
-                        , Some "java.util.ArrayList"
-                        , Some "java.util.List"
-                        , Some "java.util.Optional"
-                        , Some "io.codemine.java.postgresql.jdbc.Codec"
-                        , Some "io.codemine.java.postgresql.jdbc.Statement"
-                        ]
-                    # params.extraImports
+                  (   [ "java.sql.PreparedStatement"
+                      , "java.sql.ResultSet"
+                      , "java.sql.SQLException"
+                      , "java.time.*"
+                      , "java.util.ArrayList"
+                      , "java.util.List"
+                      , "java.util.Optional"
+                      , "io.codemine.java.postgresql.jdbc.Codec"
+                      , "io.codemine.java.postgresql.jdbc.Statement"
+                      ]
+                    # importIf
+                        params.extraImports.codecs
+                        "io.codemine.java.postgresql.codecs.*"
+                    # importIf
+                        params.extraImports.jsonNode
+                        "com.fasterxml.jackson.databind.JsonNode"
+                    # importIf
+                        params.extraImports.bigDecimal
+                        "java.math.BigDecimal"
+                    # importIf params.extraImports.uuid "java.util.UUID"
                     # Deps.Prelude.List.unpackOptionals
                         Text
                         [ someIf

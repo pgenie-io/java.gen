@@ -8,18 +8,25 @@ let Output =
       { javaType : Text
       , boxedJavaType : Text
       , codecRef : Text
-      , imports : List Text
+      , imports : Deps.ImportSet.Struct
       , isDateType : Bool
       , jdbcSetter : Text
       , sqlTypesConstant : Text
       , testDefaultLiteral : Text
       }
 
-let noImports
-    : List Text
-    = [] : List Text
+let noImports = Deps.ImportSet.empty
 
-let codecImports = [ "io.codemine.java.postgresql.codecs.*" ]
+let codecImports = Deps.ImportSet.codecs
+
+let jsonNodeImports = Deps.ImportSet.jsonNode
+
+let bigDecimalImports = Deps.ImportSet.bigDecimal
+
+let codecBigDecimalImports =
+      Deps.ImportSet.combine codecImports bigDecimalImports
+
+let uuidImports = Deps.ImportSet.uuid
 
 let unsupportedType =
       \(type : Text) ->
@@ -75,7 +82,7 @@ let dateType =
 let codec =
       \(javaType : Text) ->
       \(codecName : Text) ->
-      \(imports : List Text) ->
+      \(imports : Deps.ImportSet.Struct) ->
         Deps.Sdk.Compiled.ok
           Output
           { javaType
@@ -145,16 +152,8 @@ let run =
               codec "Multirange<Long>" "INT8MULTIRANGE" codecImports
           , Int8range = codec "Range<Long>" "INT8RANGE" codecImports
           , Interval = codec "Interval" "INTERVAL" codecImports
-          , Json =
-              codec
-                "JsonNode"
-                "JSON"
-                [ "com.fasterxml.jackson.databind.JsonNode" ]
-          , Jsonb =
-              codec
-                "JsonNode"
-                "JSONB"
-                [ "com.fasterxml.jackson.databind.JsonNode" ]
+          , Json = codec "JsonNode" "JSON" jsonNodeImports
+          , Jsonb = codec "JsonNode" "JSONB" jsonNodeImports
           , Line = codec "Line" "LINE" codecImports
           , Lseg = codec "Lseg" "LSEG" codecImports
           , Ltree =
@@ -173,17 +172,14 @@ let run =
           , Macaddr8 = codec "Macaddr8" "MACADDR8" codecImports
           , Money = codec "Long" "MONEY" noImports
           , Name = jdbcString "TEXT" "VARCHAR"
-          , Numeric = codec "BigDecimal" "NUMERIC" [ "java.math.BigDecimal" ]
+          , Numeric = codec "BigDecimal" "NUMERIC" bigDecimalImports
           , Nummultirange =
               codec
                 "Multirange<BigDecimal>"
                 "NUMMULTIRANGE"
-                (codecImports # [ "java.math.BigDecimal" ])
+                codecBigDecimalImports
           , Numrange =
-              codec
-                "Range<BigDecimal>"
-                "NUMRANGE"
-                (codecImports # [ "java.math.BigDecimal" ])
+              codec "Range<BigDecimal>" "NUMRANGE" codecBigDecimalImports
           , Oid = codec "Integer" "OID" noImports
           , Path = codec "Path" "PATH" codecImports
           , PgLsn = unsupportedType "pg_lsn"
@@ -203,7 +199,7 @@ let run =
               codec "Multirange<Instant>" "TSTZMULTIRANGE" codecImports
           , Tstzrange = codec "Range<Instant>" "TSTZRANGE" codecImports
           , Tsvector = codec "Tsvector" "TSVECTOR" codecImports
-          , Uuid = codec "UUID" "UUID" [ "java.util.UUID" ]
+          , Uuid = codec "UUID" "UUID" uuidImports
           , Varbit = codec "Bit" "VARBIT" codecImports
           , Varchar = jdbcString "VARCHAR" "VARCHAR"
           , Xml = unsupportedType "xml"

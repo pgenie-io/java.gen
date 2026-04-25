@@ -18,7 +18,7 @@ let Output =
       , fieldType : Text
       , boxedJavaType : Text
       , codecRef : Text
-      , imports : List Text
+      , imports : Deps.ImportSet.Struct
       , dims : Natural
       , isNullable : Bool
       , elementIsNullable : Bool

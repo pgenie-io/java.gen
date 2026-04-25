@@ -19,7 +19,7 @@ let Output =
       , jdbcSetter : Text
       , sqlTypesConstant : Text
       , codecRef : Text
-      , imports : List Text
+      , imports : Deps.ImportSet.Struct
       , isNullable : Bool
       , isOptional : Bool
       , elementIsOptional : Bool

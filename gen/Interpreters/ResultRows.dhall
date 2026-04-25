@@ -13,7 +13,7 @@ let Output =
         { statementImpl : Text
         , typeDecls : Text
         , statementTypeArg : Text
-        , imports : List Text
+        , imports : Deps.ImportSet.Struct
         , needsCustomTypeImport : Bool
         }
 

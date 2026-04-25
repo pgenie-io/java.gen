@@ -14,7 +14,7 @@ let Output =
       { javaType : Text
       , boxedJavaType : Text
       , codecRef : Text
-      , imports : List Text
+      , imports : Deps.ImportSet.Struct
       , isDateType : Bool
       , jdbcSetter : Text
       , sqlTypesConstant : Text
@@ -50,7 +50,7 @@ let run =
                       { javaType = typeName
                       , boxedJavaType = typeName
                       , codecRef = "${typeName}.CODEC"
-                      , imports = [] : List Text
+                      , imports = Deps.ImportSet.empty
                       , isDateType = False
                       , jdbcSetter = ""
                       , sqlTypesConstant = ""

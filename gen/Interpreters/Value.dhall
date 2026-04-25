@@ -16,7 +16,7 @@ let Output =
       , rawCodecType : Text
       , elementIsOptional : Bool
       , codecRef : Text
-      , imports : List Text
+      , imports : Deps.ImportSet.Struct
       , isDateType : Bool
       , jdbcSetter : Text
       , sqlTypesConstant : Text

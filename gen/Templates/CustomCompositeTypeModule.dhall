@@ -16,9 +16,14 @@ let Params =
       , typeName : Text
       , pgSchema : Text
       , pgTypeName : Text
-      , extraImports : List Text
+      , extraImports : Deps.ImportSet.Struct
       , fields : List Field
       }
+
+let importIf =
+      \(condition : Bool) ->
+      \(import : Text) ->
+        if condition then [ import ] else [] : List Text
 
 let run =
       \(params : Params) ->
@@ -90,7 +95,14 @@ let run =
                   then  [ "java.util.Optional" ]
                   else  [] : List Text
                 )
-              # params.extraImports
+              # importIf
+                  params.extraImports.codecs
+                  "io.codemine.java.postgresql.codecs.*"
+              # importIf
+                  params.extraImports.jsonNode
+                  "com.fasterxml.jackson.databind.JsonNode"
+              # importIf params.extraImports.bigDecimal "java.math.BigDecimal"
+              # importIf params.extraImports.uuid "java.util.UUID"
               # [ "io.codemine.java.postgresql.jdbc.Codec" ]
 
         let importSection =
