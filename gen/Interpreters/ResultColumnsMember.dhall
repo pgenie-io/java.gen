@@ -8,6 +8,8 @@ let Model = Deps.Sdk.Project
 
 let Value = ./Value.dhall
 
+let JavaIdentifier = ../Utilities/JavaIdentifier.dhall
+
 let Templates = ../Templates/package.dhall
 
 let Input = Model.Member
@@ -32,8 +34,7 @@ let run =
           Value.Output
           Output
           ( \(value : Value.Output) ->
-              let fieldName =
-                    Deps.CodegenKit.Name.toTextInCamel input.name ++ "_"
+              let fieldName = JavaIdentifier.escape input.name
 
               let fieldType =
                     if    input.isNullable
