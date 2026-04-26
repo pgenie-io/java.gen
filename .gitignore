@@ -18,6 +18,7 @@
 !/src/
 !/gen/
 !/demo-output/
+!/samples/
 !/.github/
 
 # Reignore build output:
