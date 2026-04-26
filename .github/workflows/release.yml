@@ -3,17 +3,127 @@ name: Release Dhall Frozen Package
 on:
   workflow_dispatch:
     inputs:
-      version-tag:
-        description: Version tag for the release
+      version:
+        description: Release version in SemVer format (e.g. 1.2.3)
         required: true
+        type: string
+  workflow_call:
+    inputs:
+      version:
+        description: Release version in SemVer format (e.g. 1.2.3)
+        required: true
+        type: string
+
+permissions:
+  contents: write
 
 jobs:
+  validate:
+    name: Validate release
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Validate SemVer format
+        shell: bash
+        run: |
+          if ! [[ "${{ inputs.version }}" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "::error::Version '${{ inputs.version }}' is not valid SemVer (expected X.Y.Z)."
+            exit 1
+          fi
+
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.ref }}
+          fetch-depth: 0
+
+      - name: Validate changelog contains Upcoming section
+        shell: bash
+        run: |
+          if ! grep -q '^# Upcoming$' CHANGELOG.md; then
+            echo "::error::CHANGELOG.md must contain a '# Upcoming' section before releasing."
+            exit 1
+          fi
+
+      - name: Check changelog release header
+        shell: bash
+        run: |
+          expected_heading="# v${{ inputs.version }}"
+          top_heading="$(head -n 1 CHANGELOG.md)"
+
+          if [[ "$top_heading" != '# Upcoming' && "$top_heading" != "$expected_heading" ]]; then
+            echo "::error::CHANGELOG.md must start with either '# Upcoming' or '$expected_heading' before releasing."
+            exit 1
+          fi
+
+      - name: Check tag does not already exist
+        shell: bash
+        run: |
+          if git ls-remote --tags origin "refs/tags/v${{ inputs.version }}" | grep -q .; then
+            echo "::error::Tag v${{ inputs.version }} already exists. Choose a different version."
+            exit 1
+          fi
+
+  prepare-release:
+    name: Prepare release commit
+    needs: validate
+    runs-on: ubuntu-latest
+    outputs:
+      commit-sha: ${{ steps.commit.outputs.commit-sha }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.ref }}
+          fetch-depth: 0
+
+      - name: Prepare changelog for release
+        id: commit
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          expected_heading="# v${{ inputs.version }}"
+          top_heading="$(head -n 1 CHANGELOG.md)"
+          needs_commit=false
+
+          if [[ "$top_heading" == '# Upcoming' ]]; then
+            perl -0pi -e 's/^# Upcoming$/# v${{ inputs.version }}/m' CHANGELOG.md
+            needs_commit=true
+          elif [[ "$top_heading" != "$expected_heading" ]]; then
+            echo "::error::CHANGELOG.md must start with either '# Upcoming' or '$expected_heading' before releasing."
+            exit 1
+          fi
+
+          if [[ "$needs_commit" == true ]]; then
+            git config user.name "github-actions[bot]"
+            git config user.email "github-actions[bot]@users.noreply.github.com"
+            git add CHANGELOG.md
+            git commit -m "Prepare v${{ inputs.version }} release"
+            git push origin HEAD:"${{ github.ref }}"
+          fi
+
+          echo "commit-sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+
+  ci:
+    name: Run CI
+    needs: prepare-release
+    uses: ./.github/workflows/ci.yml
+    secrets: inherit
+    with:
+      ref: ${{ needs.prepare-release.outputs.commit-sha }}
+
   release:
+    name: Create release
+    needs: [prepare-release, ci]
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
+        with:
+          ref: ${{ needs.prepare-release.outputs.commit-sha }}
 
       - name: Resolve Dhall
         id: resolve
@@ -25,8 +135,8 @@ jobs:
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ inputs.version-tag }}
-          name: "${{ inputs.version-tag }}"
+          tag_name: v${{ inputs.version }}
+          name: "v${{ inputs.version }}"
           body: |
             ## Dhall Frozen Package Release
 
@@ -47,5 +157,5 @@ jobs:
       - name: Deployment Summary
         run: |
           echo "✓ Successfully deployed Dhall frozen package"
-          echo "Release Tag: ${{ inputs.version-tag }}"
+          echo "Release Tag: v${{ inputs.version }}"
           echo "Artifact: package.dhall"
