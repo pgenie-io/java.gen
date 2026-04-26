@@ -92,7 +92,8 @@ let codec =
           , isDateType = False
           , jdbcSetter = ""
           , sqlTypesConstant = ""
-          , testDefaultLiteral = "null"
+          , testDefaultLiteral =
+              "io.codemine.java.postgresql.codecs.Codec.${codecName}.random(new java.util.Random(0L), 0)"
           }
 
 let run =

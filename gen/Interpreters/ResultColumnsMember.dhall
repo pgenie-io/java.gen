@@ -32,7 +32,8 @@ let run =
           Value.Output
           Output
           ( \(value : Value.Output) ->
-              let fieldName = Deps.CodegenKit.Name.toTextInCamel input.name
+              let fieldName =
+                    Deps.CodegenKit.Name.toTextInCamel input.name ++ "_"
 
               let fieldType =
                     if    input.isNullable

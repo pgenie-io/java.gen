@@ -34,7 +34,8 @@ let run =
           Value.Output
           Output
           ( \(value : Value.Output) ->
-              let fieldName = Deps.CodegenKit.Name.toTextInCamel input.name
+              let fieldName =
+                    Deps.CodegenKit.Name.toTextInCamel input.name ++ "_"
 
               let isOptional = config.useOptional && input.isNullable
 
@@ -61,8 +62,6 @@ let run =
                   , testDefaultLiteral =
                       if    isOptional
                       then  "Optional.empty()"
-                      else  if input.isNullable
-                      then  "null"
                       else  value.testDefaultLiteral
                   }
           )

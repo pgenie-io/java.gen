@@ -35,6 +35,7 @@ When the repository content conflicts with outside examples, prefer the structur
 - Keep the Maven output compatible with Java 21 build setup.
 - Keep the Maven set up idiomatic, simple and up to date with the latest releases.
 - Extract templates producing strings into `gen/Templates/`. Avoid inlining them in `gen/Interpreters/` as much as possible.
+- Do not place utilities in `gen/Deps/`. They should only contain references to external Dhall libraries. Introduce other directories for utilities if needed.
 
 ### Interpreters
 
