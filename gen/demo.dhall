@@ -7,23 +7,10 @@
 -- This generates the demo output for the music_catalogue fixture project.
 let Deps = ./Deps/package.dhall
 
-let Prelude = Deps.Prelude
-
-let Sdk = Deps.Sdk
-
 let Gen = ./Gen.dhall
 
-let project = Sdk.Fixtures.Demo
+let project = Deps.Sdk.Fixtures.Demo
 
-let compiledFiles = Gen.compile (Some { useOptional = True }) project
+let compiledFiles = Gen.compileToFileMap (Some { useOptional = True }) project
 
-let compiledFileMap =
-      Sdk.Compiled.map
-        Sdk.Files.Type
-        (Prelude.Map.Type Text Text)
-        Sdk.Files.toFileMap
-        compiledFiles
-
-let fileMap = Sdk.Compiled.toFileMap compiledFileMap
-
-in  fileMap : Prelude.Map.Type Text Text
+in  compiledFiles
