@@ -2,82 +2,154 @@ let Deps = ../Deps/package.dhall
 
 let Name = Deps.CodegenKit.Name
 
-let L = Name.Head.Char.Type
-
-let mk =
-      \(head : Name.Head.Char.Type) ->
-      \(tail : List Name.Head.Char.Type) ->
-        Name.word head tail
-
 let reservedKeywords
     : List Name.Type
-    = [ mk L.A [ L.B, L.S, L.T, L.R, L.A, L.C, L.T ]
-      , mk L.A [ L.S, L.S, L.E, L.R, L.T ]
-      , mk L.B [ L.O, L.O, L.L, L.E, L.A, L.N ]
-      , mk L.B [ L.R, L.E, L.A, L.K ]
-      , mk L.B [ L.Y, L.T, L.E ]
-      , mk L.C [ L.A, L.S, L.E ]
-      , mk L.C [ L.A, L.T, L.C, L.H ]
-      , mk L.C [ L.H, L.A, L.R ]
-      , mk L.C [ L.L, L.A, L.S, L.S ]
-      , mk L.C [ L.O, L.N, L.S, L.T ]
-      , mk L.C [ L.O, L.N, L.T, L.I, L.N, L.U, L.E ]
-      , mk L.D [ L.E, L.F, L.A, L.U, L.L, L.T ]
-      , mk L.D [ L.O ]
-      , mk L.D [ L.O, L.U, L.B, L.L, L.E ]
-      , mk L.E [ L.L, L.S, L.E ]
-      , mk L.E [ L.N, L.U, L.M ]
-      , mk L.E [ L.X, L.T, L.E, L.N, L.D, L.S ]
-      , mk L.F [ L.I, L.N, L.A, L.L ]
-      , mk L.F [ L.I, L.N, L.A, L.L, L.L, L.Y ]
-      , mk L.F [ L.L, L.O, L.A, L.T ]
-      , mk L.F [ L.O, L.R ]
-      , mk L.G [ L.O, L.T, L.O ]
-      , mk L.I [ L.F ]
-      , mk L.I [ L.M, L.P, L.L, L.E, L.M, L.E, L.N, L.T, L.S ]
-      , mk L.I [ L.M, L.P, L.O, L.R, L.T ]
-      , mk L.I [ L.N, L.S, L.T, L.A, L.N, L.C, L.E, L.O, L.F ]
-      , mk L.I [ L.N, L.T ]
-      , mk L.I [ L.N, L.T, L.E, L.R, L.F, L.A, L.C, L.E ]
-      , mk L.L [ L.O, L.N, L.G ]
-      , mk L.M [ L.O, L.D, L.U, L.L, L.E ]
-      , mk L.N [ L.A, L.T, L.I, L.V, L.E ]
-      , mk L.N [ L.E, L.W ]
-      , mk L.P [ L.A, L.C, L.K, L.A, L.G, L.E ]
-      , mk L.P [ L.R, L.I, L.V, L.A, L.T, L.E ]
-      , mk L.P [ L.R, L.O, L.T, L.E, L.C, L.T, L.E, L.D ]
-      , mk L.P [ L.U, L.B, L.L, L.I, L.C ]
-      , mk L.R [ L.E, L.C, L.O, L.R, L.D ]
-      , mk L.R [ L.E, L.T, L.U, L.R, L.N ]
-      , mk L.S [ L.E, L.A, L.L, L.E, L.D ]
-      , mk L.S [ L.H, L.O, L.R, L.T ]
-      , mk L.S [ L.T, L.A, L.T, L.I, L.C ]
-      , mk L.S [ L.T, L.R, L.I, L.C, L.T, L.F, L.P ]
-      , mk L.S [ L.U, L.P, L.E, L.R ]
-      , mk L.S [ L.W, L.I, L.T, L.C, L.H ]
-      , mk L.S [ L.Y, L.N, L.C, L.H, L.R, L.O, L.N, L.I, L.Z, L.E, L.D ]
-      , mk L.T [ L.H, L.I, L.S ]
-      , mk L.T [ L.H, L.R, L.O, L.W ]
-      , mk L.T [ L.H, L.R, L.O, L.W, L.S ]
-      , mk L.T [ L.R, L.A, L.N, L.S, L.I, L.E, L.N, L.T ]
-      , mk L.T [ L.R, L.Y ]
-      , mk L.V [ L.O, L.I, L.D ]
-      , mk L.V [ L.O, L.L, L.A, L.T, L.I, L.L, L.E ]
-      , mk L.W [ L.H, L.I, L.L, L.E ]
-      , mk L.E [ L.X, L.P, L.O, L.R, L.T, L.S ]
-      , mk L.O [ L.P, L.E, L.N ]
-      , mk L.R [ L.E, L.Q, L.U, L.I, L.R, L.E, L.S ]
-      , mk L.T [ L.R, L.A, L.N, L.S, L.I, L.T, L.I, L.V, L.E ]
-      , mk L.U [ L.S, L.E, L.S ]
-      , mk L.P [ L.R, L.O, L.V, L.I, L.D, L.E, L.S ]
-      , mk L.W [ L.I, L.T, L.H ]
-      , mk L.V [ L.A, L.R ]
-      , mk L.R [ L.E, L.C, L.O, L.R, L.D ]
-      , mk L.Y [ L.I, L.E, L.L, L.D ]
-      , mk L.T [ L.R, L.U, L.E ]
-      , mk L.F [ L.A, L.L, L.S, L.E ]
-      , mk L.N [ L.U, L.L, L.L ]
-      ]
+    = let Char = Deps.Lude.Structures.LatinChar.Type
+
+      let a = Char.A
+
+      let b = Char.B
+
+      let c = Char.C
+
+      let d = Char.D
+
+      let e = Char.E
+
+      let f = Char.F
+
+      let g = Char.G
+
+      let h = Char.H
+
+      let i = Char.I
+
+      let j = Char.J
+
+      let k = Char.K
+
+      let l = Char.L
+
+      let m = Char.M
+
+      let n = Char.N
+
+      let o = Char.O
+
+      let p = Char.P
+
+      let q = Char.Q
+
+      let r = Char.R
+
+      let s = Char.S
+
+      let t = Char.T
+
+      let u = Char.U
+
+      let v = Char.V
+
+      let w = Char.W
+
+      let x = Char.X
+
+      let y = Char.Y
+
+      let z = Char.Z
+
+      let LatinChars/fromList =
+            \(charList : List Char) ->
+              merge
+                { None = { head = z, tail = [] : List Char }
+                , Some =
+                    \(latinChars : Deps.Lude.Structures.LatinChars.Type) ->
+                      latinChars
+                }
+                (Deps.Lude.Extensions.List.uncons Char charList)
+
+      let Name/fromCharList
+          : List Char -> Name.Type
+          = \(charList : List Char) ->
+              Name.fromLatinChars (LatinChars/fromList charList)
+
+      let reservedKeywords =
+            [ [ a, b, s, t, r, a, c, t ]
+            , [ a, s, s, e, r, t ]
+            , [ b, o, o, l, e, a, n ]
+            , [ b, r, e, a, k ]
+            , [ b, y, t, e ]
+            , [ c, a, s, e ]
+            , [ c, a, t, c, h ]
+            , [ c, h, a, r ]
+            , [ c, l, a, s, s ]
+            , [ c, o, n, s, t ]
+            , [ c, o, n, t, i, n, u, e ]
+            , [ d, e, f, a, u, l, t ]
+            , [ d, o ]
+            , [ d, o, u, b, l, e ]
+            , [ e, l, s, e ]
+            , [ e, n, u, m ]
+            , [ e, x, t, e, n, d, s ]
+            , [ f, i, n, a, l ]
+            , [ f, i, n, a, l, l, y ]
+            , [ f, l, o, a, t ]
+            , [ f, o, r ]
+            , [ g, o, t, o ]
+            , [ i, f ]
+            , [ i, m, p, l, e, m, e, n, t, s ]
+            , [ i, m, p, o, r, t ]
+            , [ i, n, s, t, a, n, c, e, o, f ]
+            , [ i, n, t ]
+            , [ i, n, t, e, r, f, a, c, e ]
+            , [ l, o, n, g ]
+            , [ m, o, d, u, l, e ]
+            , [ n, a, t, i, v, e ]
+            , [ n, e, w ]
+            , [ p, a, c, k, a, g, e ]
+            , [ p, r, i, v, a, t, e ]
+            , [ p, r, o, t, e, c, t, e, d ]
+            , [ p, u, b, l, i, c ]
+            , [ r, e, c, o, r, d ]
+            , [ r, e, t, u, r, n ]
+            , [ s, e, a, l, e, d ]
+            , [ s, h, o, r, t ]
+            , [ s, t, a, t, i, c ]
+            , [ s, t, r, i, c, t, f, p ]
+            , [ s, u, p, e, r ]
+            , [ s, w, i, t, c, h ]
+            , [ s, y, n, c, h, r, o, n, i, z, e, d ]
+            , [ t, h, i, s ]
+            , [ t, h, r, o, w ]
+            , [ t, h, r, o, w, s ]
+            , [ t, r, a, n, s, i, e, n, t ]
+            , [ t, r, y ]
+            , [ v, o, i, d ]
+            , [ v, o, l, a, t, i, l, e ]
+            , [ w, h, i, l, e ]
+            , [ e, x, p, o, r, t, s ]
+            , [ o, p, e, n ]
+            , [ r, e, q, u, i, r, e, s ]
+            , [ t, r, a, n, s, i, t, i, v, e ]
+            , [ u, s, e, s ]
+            , [ p, r, o, v, i, d, e, s ]
+            , [ w, i, t, h ]
+            , [ v, a, r ]
+            , [ r, e, c, o, r, d ]
+            , [ y, i, e, l, d ]
+            , [ t, r, u, e ]
+            , [ f, a, l, s, e ]
+            , [ n, u, l, l ]
+            ]
+
+      let reservedKeywords =
+            Deps.Prelude.List.map
+              (List Char)
+              Name.Type
+              Name/fromCharList
+              reservedKeywords
+
+      in  reservedKeywords
 
 let isReserved =
       \(name : Name.Type) ->
