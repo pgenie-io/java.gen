@@ -73,7 +73,7 @@ let reservedKeywords
           = \(charList : List Char) ->
               Name.fromLatinChars (LatinChars/fromList charList)
 
-      let reservedKeywords =
+      let charLists =
             [ [ a, b, s, t, r, a, c, t ]
             , [ a, s, s, e, r, t ]
             , [ b, o, o, l, e, a, n ]
@@ -142,20 +142,21 @@ let reservedKeywords
             , [ n, u, l, l ]
             ]
 
-      let reservedKeywords =
+      let names =
             Deps.Prelude.List.map
               (List Char)
               Name.Type
               Name/fromCharList
-              reservedKeywords
+              charLists
 
-      in  reservedKeywords
+      in  names
 
 let isReserved =
       \(name : Name.Type) ->
-        Deps.Prelude.List.any
+        Deps.Lude.Extensions.List.elem
           Name.Type
-          (\(keyword : Name.Type) -> Name.equality.equal name keyword)
+          Name.equality
+          name
           reservedKeywords
 
 in  { escape =
