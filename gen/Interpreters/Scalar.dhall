@@ -21,6 +21,7 @@ let Output =
       , pgCastSuffix : Optional Text
       , needsCustomTypeImport : Bool
       , testDefaultLiteral : Text
+      , testLiteralIsNull : Bool
       }
 
 let run =
@@ -57,6 +58,7 @@ let run =
                       , pgCastSuffix = Some "::${pgName}"
                       , needsCustomTypeImport = True
                       , testDefaultLiteral = "null"
+                      , testLiteralIsNull = True
                       }
           }
           input

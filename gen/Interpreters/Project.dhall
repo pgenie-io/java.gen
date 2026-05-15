@@ -51,6 +51,19 @@ let combineOutputs =
                 )
                 customTypes
 
+        let testCustomTypeFiles
+            : List Sdk.File.Type
+            = Deps.Prelude.List.map
+                CustomTypeGen.Output
+                Sdk.File.Type
+                ( \(customType : CustomTypeGen.Output) ->
+                    { path =
+                        testPrefix ++ "types/" ++ customType.testModulePath
+                    , content = customType.testModuleContent
+                    }
+                )
+                customTypes
+
         let statementFiles
             : List Sdk.File.Type
             = Deps.Prelude.List.map
@@ -160,6 +173,7 @@ let combineOutputs =
 
         in      [ pomXml, readmeMd, abstractDatabaseIT ]
               # customTypeFiles
+              # testCustomTypeFiles
               # statementFiles
               # testStatementFiles
             : List Sdk.File.Type

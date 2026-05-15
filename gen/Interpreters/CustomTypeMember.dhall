@@ -21,6 +21,10 @@ let Output =
       , codecRef : Text
       , imports : Deps.ImportSet.Struct
       , isOptional : Bool
+      , isNullable : Bool
+      , testPresentLiteral : Text
+      , testAbsentLiteral : Text
+      , testLiteralIsNull : Bool
       }
 
 let run =
@@ -41,6 +45,16 @@ let run =
                     then  value.boxedJavaType
                     else  value.javaType
 
+              let testPresentLiteral =
+                    if    isOptional
+                    then  if    value.testLiteralIsNull
+                          then  "Optional.empty()"
+                          else  "Optional.of(${value.testDefaultLiteral})"
+                    else  value.testDefaultLiteral
+
+              let testAbsentLiteral =
+                    if isOptional then "Optional.empty()" else "null"
+
               in  { fieldName
                   , fieldType
                   , boxedJavaType = value.boxedJavaType
@@ -51,6 +65,10 @@ let run =
                   , codecRef = value.codecRef
                   , imports = value.imports
                   , isOptional
+                  , isNullable = input.isNullable
+                  , testPresentLiteral
+                  , testAbsentLiteral
+                  , testLiteralIsNull = value.testLiteralIsNull
                   }
           )
           ( Sdk.Compiled.nest

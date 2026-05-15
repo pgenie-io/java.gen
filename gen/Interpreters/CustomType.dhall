@@ -17,6 +17,9 @@ let Output =
       , typeName : Text
       , modulePath : Text
       , moduleContent : Text
+      , testModuleName : Text
+      , testModulePath : Text
+      , testModuleContent : Text
       }
 
 let run =
@@ -58,6 +61,86 @@ let run =
                                         )
                                         Deps.ImportSet.empty
 
+                                let Combination = List Text
+
+                                let FieldSpec =
+                                      { testPresentLiteral : Text
+                                      , testAbsentLiteral : Text
+                                      , isVariable : Bool
+                                      }
+
+                                let fieldSpecs
+                                    : List FieldSpec
+                                    = Deps.Prelude.List.map
+                                        MemberGen.Output
+                                        FieldSpec
+                                        ( \(m : MemberGen.Output) ->
+                                            { testPresentLiteral =
+                                                m.testPresentLiteral
+                                            , testAbsentLiteral =
+                                                m.testAbsentLiteral
+                                            , isVariable =
+                                                m.isNullable
+                                                  && Deps.Prelude.Bool.not
+                                                       m.testLiteralIsNull
+                                            }
+                                        )
+                                        members
+
+                                let combinations
+                                    : List Combination
+                                    = List/fold
+                                        FieldSpec
+                                        fieldSpecs
+                                        (List Combination)
+                                        ( \(spec : FieldSpec) ->
+                                          \(combos : List Combination) ->
+                                            if    spec.isVariable
+                                            then  Deps.Prelude.List.concatMap
+                                                    Combination
+                                                    Combination
+                                                    ( \(combo : Combination) ->
+                                                        [ [ spec.testAbsentLiteral
+                                                          ] # combo
+                                                        , [ spec.testPresentLiteral
+                                                          ] # combo
+                                                        ]
+                                                    )
+                                                    combos
+                                            else  Deps.Prelude.List.map
+                                                    Combination
+                                                    Combination
+                                                    ( \(combo : Combination) ->
+                                                        [ spec.testPresentLiteral
+                                                        ] # combo
+                                                    )
+                                                    combos
+                                        )
+                                        [ [] : Combination ]
+
+                                let testCases =
+                                      Deps.Prelude.List.map
+                                        { index : Natural, value : Combination }
+                                        Templates.CustomCompositeTypeTestModule.TestCase
+                                        ( \( indexed
+                                           : { index : Natural
+                                             , value : Combination
+                                             }
+                                           ) ->
+                                            { testName =
+                                                "roundtripCombination${Natural/show
+                                                                          indexed.index}"
+                                            , constructorArgs =
+                                                Deps.Prelude.Text.concatSep
+                                                  ", "
+                                                  indexed.value
+                                            }
+                                        )
+                                        ( Deps.Prelude.List.indexed
+                                            Combination
+                                            combinations
+                                        )
+
                                 in  { moduleName
                                     , typeName
                                     , modulePath
@@ -93,6 +176,17 @@ let run =
                                                 )
                                                 members
                                           }
+                                    , testModuleName = moduleName ++ "IT"
+                                    , testModulePath = moduleName ++ "IT.java"
+                                    , testModuleContent =
+                                        Templates.CustomCompositeTypeTestModule.run
+                                          { packageName = config.packageName
+                                          , typeName
+                                          , pgTypeName = input.pgName
+                                          , needsCodecsImport =
+                                              extraImports.codecs
+                                          , testCases
+                                          }
                                     }
                             )
                             compiledMembers
@@ -120,6 +214,25 @@ let run =
                                           Deps.CodegenKit.Name.toTextInPascal
                                             variant.name
                                       , pgValue = variant.pgName
+                                      }
+                                  )
+                                  variants
+                            }
+                      , testModuleName = moduleName ++ "IT"
+                      , testModulePath = moduleName ++ "IT.java"
+                      , testModuleContent =
+                          Templates.CustomEnumTypeTestModule.run
+                            { packageName = config.packageName
+                            , typeName
+                            , pgTypeName = input.pgName
+                            , variants =
+                                Deps.Prelude.List.map
+                                  Model.EnumVariant
+                                  Templates.CustomEnumTypeTestModule.Variant
+                                  ( \(variant : Model.EnumVariant) ->
+                                      { variantName =
+                                          Deps.CodegenKit.Name.toTextInPascal
+                                            variant.name
                                       }
                                   )
                                   variants
