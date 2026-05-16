@@ -32,7 +32,7 @@ public record TrackInfo(
 
     public static final Codec<TrackInfo> CODEC = Codec.<TrackInfo>composite(
             "public", "track_info",
-            objects -> new TrackInfo((( Optional<String> ) objects[0]), (( Optional<Integer> ) objects[1]), (( Optional<List<Optional<String>>> ) objects[2])),
+            objects -> new TrackInfo(Optional.ofNullable((String) objects[0]), Optional.ofNullable((Integer) objects[1]), Optional.ofNullable((List<String>) objects[2]).map(list -> list.stream().map(o -> Optional.ofNullable(o)).toList())),
             Codec.<TrackInfo, String>field("title", Codec.TEXT, row -> row.title().orElse(null)),
             Codec.<TrackInfo, Integer>field("duration_seconds", Codec.INT4, row -> row.durationSeconds().orElse(null)),
             Codec.<TrackInfo, List<String>>field("tags", Codec.TEXT.inDim(), row -> row.tags().map(list -> list.stream().map(o -> o.orElse(null)).toList()).orElse(null)));
