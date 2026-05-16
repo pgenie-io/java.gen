@@ -9,7 +9,6 @@ let Output =
       , boxedJavaType : Text
       , codecRef : Text
       , imports : Deps.ImportSet.Struct
-      , isDateType : Bool
       , jdbcSetter : Text
       , sqlTypesConstant : Text
       , testDefaultLiteral : Text
@@ -45,7 +44,6 @@ let jdbcPrimitive =
           , boxedJavaType
           , codecRef = "Codec.${codecName}"
           , imports = noImports
-          , isDateType = False
           , jdbcSetter
           , sqlTypesConstant
           , testDefaultLiteral
@@ -60,7 +58,6 @@ let jdbcString =
           , boxedJavaType = "String"
           , codecRef = "Codec.${codecName}"
           , imports = noImports
-          , isDateType = False
           , jdbcSetter = "setString"
           , sqlTypesConstant
           , testDefaultLiteral = "\"\""
@@ -73,7 +70,6 @@ let dateType =
         , boxedJavaType = "LocalDate"
         , codecRef = "Codec.DATE"
         , imports = noImports
-        , isDateType = True
         , jdbcSetter = ""
         , sqlTypesConstant = "DATE"
         , testDefaultLiteral = "LocalDate.of(2000, 1, 1)"
@@ -91,7 +87,6 @@ let codec =
               , boxedJavaType = javaType
               , codecRef
               , imports
-              , isDateType = False
               , jdbcSetter = ""
               , sqlTypesConstant = ""
               , testDefaultLiteral =
@@ -166,7 +161,6 @@ let run =
                 , boxedJavaType = "Ltree"
                 , codecRef = "Codec.LTREE"
                 , imports = codecImports
-                , isDateType = False
                 , jdbcSetter = ""
                 , sqlTypesConstant = ""
                 , testDefaultLiteral = "new Ltree(List.of(\"root\"))"

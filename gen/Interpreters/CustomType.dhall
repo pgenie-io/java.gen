@@ -168,8 +168,6 @@ let run =
                                                     , elementIsOptional =
                                                         member.elementIsOptional
                                                     , codecRef = member.codecRef
-                                                    , isDateType =
-                                                        member.isDateType
                                                     , isOptional =
                                                         member.isOptional
                                                     }

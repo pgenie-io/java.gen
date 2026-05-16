@@ -17,7 +17,6 @@ let Output =
       , rawCodecType : Text
       , elementIsOptional : Bool
       , pgName : Text
-      , isDateType : Bool
       , codecRef : Text
       , imports : Deps.ImportSet.Struct
       , isOptional : Bool
@@ -58,7 +57,6 @@ let run =
                   , rawCodecType = value.rawCodecType
                   , elementIsOptional = value.elementIsOptional
                   , pgName = input.pgName
-                  , isDateType = value.isDateType
                   , codecRef = value.codecRef
                   , imports = value.imports
                   , isOptional

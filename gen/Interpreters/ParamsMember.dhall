@@ -15,7 +15,6 @@ let Output =
       , fieldType : Text
       , pgName : Text
       , pgCastSuffix : Text
-      , isDateType : Bool
       , jdbcSetter : Text
       , sqlTypesConstant : Text
       , codecRef : Text
@@ -49,7 +48,6 @@ let run =
                   , fieldType
                   , pgName = input.pgName
                   , pgCastSuffix = value.pgCastSuffix
-                  , isDateType = value.isDateType
                   , jdbcSetter = value.jdbcSetter
                   , sqlTypesConstant = value.sqlTypesConstant
                   , codecRef = value.codecRef

@@ -7,7 +7,6 @@ let Field =
       , rawCodecType : Text
       , elementIsOptional : Bool
       , codecRef : Text
-      , isDateType : Bool
       , isOptional : Bool
       }
 
