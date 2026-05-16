@@ -64,12 +64,16 @@ jobs:
             exit 1
           fi
 
-  prepare-release:
-    name: Prepare release commit
+  ci:
+    name: Run CI
     needs: validate
+    uses: ./.github/workflows/ci.yml
+    secrets: inherit
+
+  release:
+    name: Prepare and create release
+    needs: [validate, ci]
     runs-on: ubuntu-latest
-    outputs:
-      commit-sha: ${{ steps.commit.outputs.commit-sha }}
 
     steps:
       - name: Checkout repository
@@ -77,6 +81,13 @@ jobs:
         with:
           ref: ${{ github.ref }}
           fetch-depth: 0
+
+      - name: Resolve Dhall
+        id: resolve
+        uses: nikita-volkov/dhall-resolve.github-action@v1
+        with:
+          file: gen/Gen.dhall
+          cse: true
 
       - name: Prepare changelog for release
         id: commit
@@ -111,32 +122,6 @@ jobs:
 
           echo "commit-sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
 
-  ci:
-    name: Run CI
-    needs: prepare-release
-    uses: ./.github/workflows/ci.yml
-    secrets: inherit
-    with:
-      ref: ${{ needs.prepare-release.outputs.commit-sha }}
-
-  release:
-    name: Create release
-    needs: [prepare-release, ci]
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v6
-        with:
-          ref: ${{ needs.prepare-release.outputs.commit-sha }}
-
-      - name: Resolve Dhall
-        id: resolve
-        uses: nikita-volkov/dhall-resolve.github-action@v1
-        with:
-          file: gen/Gen.dhall
-          cse: true
-
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
@@ -147,7 +132,7 @@ jobs:
 
             This release contains the frozen Dhall package with all remote imports resolved and compacted via CSE.
 
-            **Commit**: ${{ github.sha }}
+            **Commit**: ${{ steps.commit.outputs.commit-sha }}
             **Workflow Run**: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
 
             The frozen package is CORS-compliant and self-contained, suitable for direct use without network dependencies.
