@@ -69,8 +69,18 @@ let run =
                 ", "
                 { index : Natural, value : Field }
                 ( \(field : { index : Natural, value : Field }) ->
-                    "(( ${field.value.fieldType} ) objects[${Natural/show
-                                                               field.index}])"
+                    let castExpr =
+                          "(${field.value.rawCodecType}) objects[${Natural/show
+                                                                     field.index}]"
+
+                    in  if        field.value.isOptional
+                              &&  field.value.elementIsOptional
+                        then  "Optional.ofNullable(${castExpr}).map(list -> list.stream().map(o -> Optional.ofNullable(o)).toList())"
+                        else  if field.value.isOptional
+                        then  "Optional.ofNullable(${castExpr})"
+                        else  if field.value.elementIsOptional
+                        then  "(${castExpr}).stream().map(o -> Optional.ofNullable(o)).toList()"
+                        else  castExpr
                 )
                 indexedFields
 

@@ -36,7 +36,7 @@ public record RecordingInfo(
 
     public static final Codec<RecordingInfo> CODEC = Codec.<RecordingInfo>composite(
             "public", "recording_info",
-            objects -> new RecordingInfo((( Optional<String> ) objects[0]), (( Optional<String> ) objects[1]), (( Optional<String> ) objects[2]), (( Optional<LocalDate> ) objects[3])),
+            objects -> new RecordingInfo(Optional.ofNullable((String) objects[0]), Optional.ofNullable((String) objects[1]), Optional.ofNullable((String) objects[2]), Optional.ofNullable((LocalDate) objects[3])),
             Codec.<RecordingInfo, String>field("studio_name", Codec.TEXT, row -> row.studioName().orElse(null)),
             Codec.<RecordingInfo, String>field("city", Codec.TEXT, row -> row.city().orElse(null)),
             Codec.<RecordingInfo, String>field("country", Codec.TEXT, row -> row.country().orElse(null)),
