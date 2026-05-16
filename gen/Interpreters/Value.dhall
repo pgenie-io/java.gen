@@ -23,7 +23,6 @@ let Output =
       , pgCastSuffix : Text
       , needsCustomTypeImport : Bool
       , testDefaultLiteral : Text
-      , testLiteralIsNull : Bool
       }
 
 let run =
@@ -89,7 +88,6 @@ let run =
                               scalar.pgCastSuffix
                         , needsCustomTypeImport = scalar.needsCustomTypeImport
                         , testDefaultLiteral = "List.of()"
-                        , testLiteralIsNull = False
                         }
                 )
                 { javaType = scalar.javaType
@@ -107,7 +105,6 @@ let run =
                       scalar.pgCastSuffix
                 , needsCustomTypeImport = scalar.needsCustomTypeImport
                 , testDefaultLiteral = scalar.testDefaultLiteral
-                , testLiteralIsNull = scalar.testLiteralIsNull
                 }
           )
           (Scalar.run config input.scalar)

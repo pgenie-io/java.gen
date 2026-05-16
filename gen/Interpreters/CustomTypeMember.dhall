@@ -24,7 +24,6 @@ let Output =
       , isNullable : Bool
       , testPresentLiteral : Text
       , testAbsentLiteral : Text
-      , testLiteralIsNull : Bool
       }
 
 let run =
@@ -47,9 +46,7 @@ let run =
 
               let testPresentLiteral =
                     if    isOptional
-                    then  if    value.testLiteralIsNull
-                          then  "Optional.empty()"
-                          else  "Optional.of(${value.testDefaultLiteral})"
+                    then  "Optional.of(${value.testDefaultLiteral})"
                     else  value.testDefaultLiteral
 
               let testAbsentLiteral =
@@ -68,7 +65,6 @@ let run =
                   , isNullable = input.isNullable
                   , testPresentLiteral
                   , testAbsentLiteral
-                  , testLiteralIsNull = value.testLiteralIsNull
                   }
           )
           ( Sdk.Compiled.nest

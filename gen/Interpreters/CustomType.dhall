@@ -79,10 +79,7 @@ let run =
                                                 m.testPresentLiteral
                                             , testAbsentLiteral =
                                                 m.testAbsentLiteral
-                                            , isVariable =
-                                                    m.isNullable
-                                                &&  Deps.Prelude.Bool.not
-                                                      m.testLiteralIsNull
+                                            , isVariable = m.isNullable
                                             }
                                         )
                                         members

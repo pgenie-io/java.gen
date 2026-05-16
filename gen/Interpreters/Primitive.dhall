@@ -13,7 +13,6 @@ let Output =
       , jdbcSetter : Text
       , sqlTypesConstant : Text
       , testDefaultLiteral : Text
-      , testLiteralIsNull : Bool
       }
 
 let noImports = Deps.ImportSet.empty
@@ -50,7 +49,6 @@ let jdbcPrimitive =
           , jdbcSetter
           , sqlTypesConstant
           , testDefaultLiteral
-          , testLiteralIsNull = False
           }
 
 let jdbcString =
@@ -66,7 +64,6 @@ let jdbcString =
           , jdbcSetter = "setString"
           , sqlTypesConstant
           , testDefaultLiteral = "\"\""
-          , testLiteralIsNull = False
           }
 
 let dateType =
@@ -80,7 +77,6 @@ let dateType =
         , jdbcSetter = ""
         , sqlTypesConstant = "DATE"
         , testDefaultLiteral = "LocalDate.of(2000, 1, 1)"
-        , testLiteralIsNull = False
         }
 
 let codec =
@@ -100,7 +96,6 @@ let codec =
               , sqlTypesConstant = ""
               , testDefaultLiteral =
                   "${codecRef}.toAgnostic().random(new java.util.Random(0L), 0)"
-              , testLiteralIsNull = False
               }
 
 let run =
@@ -175,7 +170,6 @@ let run =
                 , jdbcSetter = ""
                 , sqlTypesConstant = ""
                 , testDefaultLiteral = "new Ltree(List.of(\"root\"))"
-                , testLiteralIsNull = False
                 }
           , Macaddr = codec "Macaddr" "MACADDR" codecImports
           , Macaddr8 = codec "Macaddr8" "MACADDR8" codecImports

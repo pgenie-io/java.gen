@@ -21,7 +21,6 @@ let Output =
       , pgCastSuffix : Optional Text
       , needsCustomTypeImport : Bool
       , testDefaultLiteral : Text
-      , testLiteralIsNull : Bool
       }
 
 let run =
@@ -61,7 +60,6 @@ let run =
                       , needsCustomTypeImport = True
                       , testDefaultLiteral =
                           "${codecRef}.toAgnostic().random(new java.util.Random(0L), 0)"
-                      , testLiteralIsNull = False
                       }
           }
           input
