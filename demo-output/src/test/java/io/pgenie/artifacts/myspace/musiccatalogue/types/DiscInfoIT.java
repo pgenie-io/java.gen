@@ -45,4 +45,16 @@ class DiscInfoIT extends AbstractDatabaseIT {
         var value = new DiscInfo(Optional.of(""), Optional.empty());
         assertEquals(Optional.of(value), roundtrip(value));
     }
+
+    @Test
+    void roundtripCombination2() throws SQLException {
+        var value = new DiscInfo(Optional.empty(), Optional.of(RecordingInfo.CODEC.toAgnostic().random(new java.util.Random(0L), 0)));
+        assertEquals(Optional.of(value), roundtrip(value));
+    }
+
+    @Test
+    void roundtripCombination3() throws SQLException {
+        var value = new DiscInfo(Optional.of(""), Optional.of(RecordingInfo.CODEC.toAgnostic().random(new java.util.Random(0L), 0)));
+        assertEquals(Optional.of(value), roundtrip(value));
+    }
 }
