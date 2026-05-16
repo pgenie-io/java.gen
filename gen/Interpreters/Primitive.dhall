@@ -9,11 +9,9 @@ let Output =
       , boxedJavaType : Text
       , codecRef : Text
       , imports : Deps.ImportSet.Struct
-      , isDateType : Bool
       , jdbcSetter : Text
       , sqlTypesConstant : Text
       , testDefaultLiteral : Text
-      , testLiteralIsNull : Bool
       }
 
 let noImports = Deps.ImportSet.empty
@@ -46,11 +44,9 @@ let jdbcPrimitive =
           , boxedJavaType
           , codecRef = "Codec.${codecName}"
           , imports = noImports
-          , isDateType = False
           , jdbcSetter
           , sqlTypesConstant
           , testDefaultLiteral
-          , testLiteralIsNull = False
           }
 
 let jdbcString =
@@ -62,11 +58,9 @@ let jdbcString =
           , boxedJavaType = "String"
           , codecRef = "Codec.${codecName}"
           , imports = noImports
-          , isDateType = False
           , jdbcSetter = "setString"
           , sqlTypesConstant
           , testDefaultLiteral = "\"\""
-          , testLiteralIsNull = False
           }
 
 let dateType =
@@ -76,11 +70,9 @@ let dateType =
         , boxedJavaType = "LocalDate"
         , codecRef = "Codec.DATE"
         , imports = noImports
-        , isDateType = True
         , jdbcSetter = ""
         , sqlTypesConstant = "DATE"
         , testDefaultLiteral = "LocalDate.of(2000, 1, 1)"
-        , testLiteralIsNull = False
         }
 
 let codec =
@@ -95,12 +87,10 @@ let codec =
               , boxedJavaType = javaType
               , codecRef
               , imports
-              , isDateType = False
               , jdbcSetter = ""
               , sqlTypesConstant = ""
               , testDefaultLiteral =
                   "${codecRef}.toAgnostic().random(new java.util.Random(0L), 0)"
-              , testLiteralIsNull = False
               }
 
 let run =
@@ -171,11 +161,9 @@ let run =
                 , boxedJavaType = "Ltree"
                 , codecRef = "Codec.LTREE"
                 , imports = codecImports
-                , isDateType = False
                 , jdbcSetter = ""
                 , sqlTypesConstant = ""
                 , testDefaultLiteral = "new Ltree(List.of(\"root\"))"
-                , testLiteralIsNull = False
                 }
           , Macaddr = codec "Macaddr" "MACADDR" codecImports
           , Macaddr8 = codec "Macaddr8" "MACADDR8" codecImports

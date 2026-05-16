@@ -79,10 +79,7 @@ let run =
                                                 m.testPresentLiteral
                                             , testAbsentLiteral =
                                                 m.testAbsentLiteral
-                                            , isVariable =
-                                                    m.isNullable
-                                                &&  Deps.Prelude.Bool.not
-                                                      m.testLiteralIsNull
+                                            , isVariable = m.isNullable
                                             }
                                         )
                                         members
@@ -171,8 +168,6 @@ let run =
                                                     , elementIsOptional =
                                                         member.elementIsOptional
                                                     , codecRef = member.codecRef
-                                                    , isDateType =
-                                                        member.isDateType
                                                     , isOptional =
                                                         member.isOptional
                                                     }

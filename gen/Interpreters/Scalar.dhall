@@ -15,13 +15,11 @@ let Output =
       , boxedJavaType : Text
       , codecRef : Text
       , imports : Deps.ImportSet.Struct
-      , isDateType : Bool
       , jdbcSetter : Text
       , sqlTypesConstant : Text
       , pgCastSuffix : Optional Text
       , needsCustomTypeImport : Bool
       , testDefaultLiteral : Text
-      , testLiteralIsNull : Bool
       }
 
 let run =
@@ -54,14 +52,12 @@ let run =
                       , boxedJavaType = typeName
                       , codecRef
                       , imports = Deps.ImportSet.empty
-                      , isDateType = False
                       , jdbcSetter = ""
                       , sqlTypesConstant = ""
                       , pgCastSuffix = Some "::${pgName}"
                       , needsCustomTypeImport = True
                       , testDefaultLiteral =
                           "${codecRef}.toAgnostic().random(new java.util.Random(0L), 0)"
-                      , testLiteralIsNull = False
                       }
           }
           input

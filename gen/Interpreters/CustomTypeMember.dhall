@@ -19,14 +19,12 @@ let Output =
       , rawCodecType : Text
       , elementIsOptional : Bool
       , pgName : Text
-      , isDateType : Bool
       , codecRef : Text
       , imports : Deps.ImportSet.Struct
       , isOptional : Bool
       , isNullable : Bool
       , testPresentLiteral : Text
       , testAbsentLiteral : Text
-      , testLiteralIsNull : Bool
       }
 
 let run =
@@ -49,9 +47,7 @@ let run =
 
               let testPresentLiteral =
                     if    isOptional
-                    then  if    value.testLiteralIsNull
-                          then  "Optional.empty()"
-                          else  "Optional.of(${value.testDefaultLiteral})"
+                    then  "Optional.of(${value.testDefaultLiteral})"
                     else  value.testDefaultLiteral
 
               let testAbsentLiteral =
@@ -63,14 +59,12 @@ let run =
                   , rawCodecType = value.rawCodecType
                   , elementIsOptional = value.elementIsOptional
                   , pgName = input.pgName
-                  , isDateType = value.isDateType
                   , codecRef = value.codecRef
                   , imports = value.imports
                   , isOptional
                   , isNullable = input.isNullable
                   , testPresentLiteral
                   , testAbsentLiteral
-                  , testLiteralIsNull = value.testLiteralIsNull
                   }
           )
           ( Sdk.Compiled.nest

@@ -17,13 +17,11 @@ let Output =
       , elementIsOptional : Bool
       , codecRef : Text
       , imports : Deps.ImportSet.Struct
-      , isDateType : Bool
       , jdbcSetter : Text
       , sqlTypesConstant : Text
       , pgCastSuffix : Text
       , needsCustomTypeImport : Bool
       , testDefaultLiteral : Text
-      , testLiteralIsNull : Bool
       }
 
 let run =
@@ -73,7 +71,6 @@ let run =
                         , elementIsOptional
                         , codecRef = "${inDimSuffix}"
                         , imports = scalar.imports
-                        , isDateType = False
                         , jdbcSetter = ""
                         , sqlTypesConstant = ""
                         , pgCastSuffix =
@@ -89,7 +86,6 @@ let run =
                               scalar.pgCastSuffix
                         , needsCustomTypeImport = scalar.needsCustomTypeImport
                         , testDefaultLiteral = "List.of()"
-                        , testLiteralIsNull = False
                         }
                 )
                 { javaType = scalar.javaType
@@ -98,7 +94,6 @@ let run =
                 , elementIsOptional = False
                 , codecRef = scalar.codecRef
                 , imports = scalar.imports
-                , isDateType = scalar.isDateType
                 , jdbcSetter = scalar.jdbcSetter
                 , sqlTypesConstant = scalar.sqlTypesConstant
                 , pgCastSuffix =
@@ -107,7 +102,6 @@ let run =
                       scalar.pgCastSuffix
                 , needsCustomTypeImport = scalar.needsCustomTypeImport
                 , testDefaultLiteral = scalar.testDefaultLiteral
-                , testLiteralIsNull = scalar.testLiteralIsNull
                 }
           )
           (Scalar.run config input.scalar)
