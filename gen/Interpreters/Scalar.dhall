@@ -46,19 +46,22 @@ let run =
 
                 let pgName = Deps.CodegenKit.Name.toTextInSnake name
 
+                let codecRef = "${typeName}.CODEC"
+
                 in  Sdk.Compiled.ok
                       Output
                       { javaType = typeName
                       , boxedJavaType = typeName
-                      , codecRef = "${typeName}.CODEC"
+                      , codecRef
                       , imports = Deps.ImportSet.empty
                       , isDateType = False
                       , jdbcSetter = ""
                       , sqlTypesConstant = ""
                       , pgCastSuffix = Some "::${pgName}"
                       , needsCustomTypeImport = True
-                      , testDefaultLiteral = "null"
-                      , testLiteralIsNull = True
+                      , testDefaultLiteral =
+                          "${codecRef}.toAgnostic().random(new java.util.Random(0L), 0)"
+                      , testLiteralIsNull = False
                       }
           }
           input

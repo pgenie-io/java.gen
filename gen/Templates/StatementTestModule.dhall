@@ -19,6 +19,7 @@ in  Algebra.module
           import static org.junit.jupiter.api.Assertions.*;
 
           import ${params.packageName}.AbstractDatabaseIT;
+          import ${params.packageName}.types.*;
           import io.codemine.java.postgresql.codecs.*;
           import java.util.List;
           import java.sql.SQLException;

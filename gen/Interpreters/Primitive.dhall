@@ -87,19 +87,21 @@ let codec =
       \(javaType : Text) ->
       \(codecName : Text) ->
       \(imports : Deps.ImportSet.Struct) ->
-        Deps.Sdk.Compiled.ok
-          Output
-          { javaType
-          , boxedJavaType = javaType
-          , codecRef = "Codec.${codecName}"
-          , imports
-          , isDateType = False
-          , jdbcSetter = ""
-          , sqlTypesConstant = ""
-          , testDefaultLiteral =
-              "io.codemine.java.postgresql.codecs.Codec.${codecName}.random(new java.util.Random(0L), 0)"
-          , testLiteralIsNull = False
-          }
+        let codecRef = "Codec.${codecName}"
+
+        in  Deps.Sdk.Compiled.ok
+              Output
+              { javaType
+              , boxedJavaType = javaType
+              , codecRef
+              , imports
+              , isDateType = False
+              , jdbcSetter = ""
+              , sqlTypesConstant = ""
+              , testDefaultLiteral =
+                  "${codecRef}.toAgnostic().random(new java.util.Random(0L), 0)"
+              , testLiteralIsNull = False
+              }
 
 let run =
       \(config : Algebra.Config) ->
