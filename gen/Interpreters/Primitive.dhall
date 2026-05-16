@@ -9,8 +9,6 @@ let Output =
       , boxedJavaType : Text
       , codecRef : Text
       , imports : Deps.ImportSet.Struct
-      , jdbcSetter : Text
-      , sqlTypesConstant : Text
       , testDefaultLiteral : Text
       }
 
@@ -35,8 +33,6 @@ let jdbcPrimitive =
       \(javaType : Text) ->
       \(boxedJavaType : Text) ->
       \(codecName : Text) ->
-      \(jdbcSetter : Text) ->
-      \(sqlTypesConstant : Text) ->
       \(testDefaultLiteral : Text) ->
         Deps.Sdk.Compiled.ok
           Output
@@ -44,22 +40,17 @@ let jdbcPrimitive =
           , boxedJavaType
           , codecRef = "Codec.${codecName}"
           , imports = noImports
-          , jdbcSetter
-          , sqlTypesConstant
           , testDefaultLiteral
           }
 
 let jdbcString =
       \(codecName : Text) ->
-      \(sqlTypesConstant : Text) ->
         Deps.Sdk.Compiled.ok
           Output
           { javaType = "String"
           , boxedJavaType = "String"
           , codecRef = "Codec.${codecName}"
           , imports = noImports
-          , jdbcSetter = "setString"
-          , sqlTypesConstant
           , testDefaultLiteral = "\"\""
           }
 
@@ -70,8 +61,6 @@ let dateType =
         , boxedJavaType = "LocalDate"
         , codecRef = "Codec.DATE"
         , imports = noImports
-        , jdbcSetter = ""
-        , sqlTypesConstant = "DATE"
         , testDefaultLiteral = "LocalDate.of(2000, 1, 1)"
         }
 
@@ -87,8 +76,6 @@ let codec =
               , boxedJavaType = javaType
               , codecRef
               , imports
-              , jdbcSetter = ""
-              , sqlTypesConstant = ""
               , testDefaultLiteral =
                   "${codecRef}.toAgnostic().random(new java.util.Random(0L), 0)"
               }
@@ -103,13 +90,11 @@ let run =
                 "boolean"
                 "Boolean"
                 "BOOL"
-                "setBoolean"
-                "BOOLEAN"
                 "false"
           , Box = codec "Box" "BOX" codecImports
           , Box2D = unsupportedType "box2d"
           , Box3D = unsupportedType "box3d"
-          , Bpchar = jdbcString "BPCHAR" "CHAR"
+          , Bpchar = jdbcString "BPCHAR"
           , Bytea = codec "Bytea" "BYTEA" codecImports
           , Char = codec "Byte" "CHAR" noImports
           , Cidr = codec "Cidr" "CIDR" codecImports
@@ -120,14 +105,12 @@ let run =
               codec "Multirange<LocalDate>" "DATEMULTIRANGE" codecImports
           , Daterange = codec "Range<LocalDate>" "DATERANGE" codecImports
           , Float4 =
-              jdbcPrimitive "float" "Float" "FLOAT4" "setFloat" "REAL" "0.0f"
+              jdbcPrimitive "float" "Float" "FLOAT4" "0.0f"
           , Float8 =
               jdbcPrimitive
                 "double"
                 "Double"
                 "FLOAT8"
-                "setDouble"
-                "DOUBLE"
                 "0.0"
           , Geography = unsupportedType "geography"
           , Geometry = unsupportedType "geometry"
@@ -138,14 +121,12 @@ let run =
                 "short"
                 "Short"
                 "INT2"
-                "setShort"
-                "SMALLINT"
                 "(short) 0"
-          , Int4 = jdbcPrimitive "int" "Integer" "INT4" "setInt" "INTEGER" "0"
+          , Int4 = jdbcPrimitive "int" "Integer" "INT4" "0"
           , Int4multirange =
               codec "Multirange<Integer>" "INT4MULTIRANGE" codecImports
           , Int4range = codec "Range<Integer>" "INT4RANGE" codecImports
-          , Int8 = jdbcPrimitive "long" "Long" "INT8" "setLong" "BIGINT" "0L"
+          , Int8 = jdbcPrimitive "long" "Long" "INT8" "0L"
           , Int8multirange =
               codec "Multirange<Long>" "INT8MULTIRANGE" codecImports
           , Int8range = codec "Range<Long>" "INT8RANGE" codecImports
@@ -161,14 +142,12 @@ let run =
                 , boxedJavaType = "Ltree"
                 , codecRef = "Codec.LTREE"
                 , imports = codecImports
-                , jdbcSetter = ""
-                , sqlTypesConstant = ""
                 , testDefaultLiteral = "new Ltree(List.of(\"root\"))"
                 }
           , Macaddr = codec "Macaddr" "MACADDR" codecImports
           , Macaddr8 = codec "Macaddr8" "MACADDR8" codecImports
           , Money = codec "Long" "MONEY" noImports
-          , Name = jdbcString "TEXT" "VARCHAR"
+          , Name = jdbcString "TEXT"
           , Numeric = codec "BigDecimal" "NUMERIC" bigDecimalImports
           , Nummultirange =
               codec
@@ -183,7 +162,7 @@ let run =
           , PgSnapshot = unsupportedType "pg_snapshot"
           , Point = codec "Point" "POINT" codecImports
           , Polygon = codec "Polygon" "POLYGON" codecImports
-          , Text = jdbcString "TEXT" "VARCHAR"
+          , Text = jdbcString "TEXT"
           , Time = codec "LocalTime" "TIME" noImports
           , Timestamp = codec "LocalDateTime" "TIMESTAMP" noImports
           , Timestamptz = codec "Instant" "TIMESTAMPTZ" noImports
@@ -198,7 +177,7 @@ let run =
           , Tsvector = codec "Tsvector" "TSVECTOR" codecImports
           , Uuid = codec "UUID" "UUID" uuidImports
           , Varbit = codec "Bit" "VARBIT" codecImports
-          , Varchar = jdbcString "VARCHAR" "VARCHAR"
+          , Varchar = jdbcString "VARCHAR"
           , Xml = unsupportedType "xml"
           }
           input

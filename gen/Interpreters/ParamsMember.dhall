@@ -15,8 +15,6 @@ let Output =
       , fieldType : Text
       , pgName : Text
       , pgCastSuffix : Text
-      , jdbcSetter : Text
-      , sqlTypesConstant : Text
       , codecRef : Text
       , imports : Deps.ImportSet.Struct
       , isNullable : Bool
@@ -48,8 +46,6 @@ let run =
                   , fieldType
                   , pgName = input.pgName
                   , pgCastSuffix = value.pgCastSuffix
-                  , jdbcSetter = value.jdbcSetter
-                  , sqlTypesConstant = value.sqlTypesConstant
                   , codecRef = value.codecRef
                   , imports = value.imports
                   , isNullable = input.isNullable

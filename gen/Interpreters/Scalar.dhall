@@ -15,8 +15,6 @@ let Output =
       , boxedJavaType : Text
       , codecRef : Text
       , imports : Deps.ImportSet.Struct
-      , jdbcSetter : Text
-      , sqlTypesConstant : Text
       , pgCastSuffix : Optional Text
       , needsCustomTypeImport : Bool
       , testDefaultLiteral : Text
@@ -52,8 +50,6 @@ let run =
                       , boxedJavaType = typeName
                       , codecRef
                       , imports = Deps.ImportSet.empty
-                      , jdbcSetter = ""
-                      , sqlTypesConstant = ""
                       , pgCastSuffix = Some "::${pgName}"
                       , needsCustomTypeImport = True
                       , testDefaultLiteral =

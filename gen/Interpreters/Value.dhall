@@ -17,8 +17,6 @@ let Output =
       , elementIsOptional : Bool
       , codecRef : Text
       , imports : Deps.ImportSet.Struct
-      , jdbcSetter : Text
-      , sqlTypesConstant : Text
       , pgCastSuffix : Text
       , needsCustomTypeImport : Bool
       , testDefaultLiteral : Text
@@ -71,8 +69,6 @@ let run =
                         , elementIsOptional
                         , codecRef = "${inDimSuffix}"
                         , imports = scalar.imports
-                        , jdbcSetter = ""
-                        , sqlTypesConstant = ""
                         , pgCastSuffix =
                             merge
                               { None = ""
@@ -94,8 +90,6 @@ let run =
                 , elementIsOptional = False
                 , codecRef = scalar.codecRef
                 , imports = scalar.imports
-                , jdbcSetter = scalar.jdbcSetter
-                , sqlTypesConstant = scalar.sqlTypesConstant
                 , pgCastSuffix =
                     merge
                       { None = "", Some = \(suffix : Text) -> suffix }
