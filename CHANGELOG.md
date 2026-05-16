@@ -1,3 +1,10 @@
+# Upcoming
+
+## Fixes
+
+- Fix the `Optional` support for fields of composite types
+- Fix the repeated imports
+
 # v0.4.1
 
 ## Fixes
