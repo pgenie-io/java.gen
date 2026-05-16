@@ -16,4 +16,6 @@
 , ReadmeMd = ./ReadmeMd.dhall
 , CustomCompositeTypeModule = ./CustomCompositeTypeModule.dhall
 , CustomEnumTypeModule = ./CustomEnumTypeModule.dhall
+, CustomEnumTypeTestModule = ./CustomEnumTypeTestModule.dhall
+, CustomCompositeTypeTestModule = ./CustomCompositeTypeTestModule.dhall
 }

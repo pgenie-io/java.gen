@@ -25,7 +25,7 @@ jobs:
       - name: Regenerate demo-output from Dhall
         uses: nikita-volkov/dhall-directory-tree.github-action@v1
         with:
-          dhall_file: gen/demo.dhall
+          dhall_file: tests/Demo.dhall
           output_dir: demo-output
 
       - name: Set up Java 21
