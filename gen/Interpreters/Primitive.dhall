@@ -85,12 +85,7 @@ let run =
       \(input : Input) ->
         merge
           { Bit = codec "Bit" "BIT" codecImports
-          , Bool =
-              jdbcPrimitive
-                "boolean"
-                "Boolean"
-                "BOOL"
-                "false"
+          , Bool = jdbcPrimitive "boolean" "Boolean" "BOOL" "false"
           , Box = codec "Box" "BOX" codecImports
           , Box2D = unsupportedType "box2d"
           , Box3D = unsupportedType "box3d"
@@ -104,24 +99,13 @@ let run =
           , Datemultirange =
               codec "Multirange<LocalDate>" "DATEMULTIRANGE" codecImports
           , Daterange = codec "Range<LocalDate>" "DATERANGE" codecImports
-          , Float4 =
-              jdbcPrimitive "float" "Float" "FLOAT4" "0.0f"
-          , Float8 =
-              jdbcPrimitive
-                "double"
-                "Double"
-                "FLOAT8"
-                "0.0"
+          , Float4 = jdbcPrimitive "float" "Float" "FLOAT4" "0.0f"
+          , Float8 = jdbcPrimitive "double" "Double" "FLOAT8" "0.0"
           , Geography = unsupportedType "geography"
           , Geometry = unsupportedType "geometry"
           , Hstore = codec "Hstore" "HSTORE" codecImports
           , Inet = codec "Inet" "INET" codecImports
-          , Int2 =
-              jdbcPrimitive
-                "short"
-                "Short"
-                "INT2"
-                "(short) 0"
+          , Int2 = jdbcPrimitive "short" "Short" "INT2" "(short) 0"
           , Int4 = jdbcPrimitive "int" "Integer" "INT4" "0"
           , Int4multirange =
               codec "Multirange<Integer>" "INT4MULTIRANGE" codecImports
