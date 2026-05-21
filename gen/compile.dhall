@@ -17,19 +17,15 @@ in  \(config : Optional Config) ->
               False
 
       let interpreterConfig =
-            { rootModuleName = Deps.CodegenKit.Name.toTextInSnake project.name
+            { rootModuleName = project.name.inSnakeCase
             , packageName =
                 "io.pgenie.artifacts.${Deps.Prelude.Text.replace
                                          "_"
                                          ""
-                                         ( Deps.CodegenKit.Name.toTextInSnake
-                                             project.space
-                                         )}.${Deps.Prelude.Text.replace
-                                                "_"
-                                                ""
-                                                ( Deps.CodegenKit.Name.toTextInSnake
-                                                    project.name
-                                                )}"
+                                         project.space.inSnakeCase}.${Deps.Prelude.Text.replace
+                                                                        "_"
+                                                                        ""
+                                                                        project.name.inSnakeCase}"
             , useOptional
             }
 

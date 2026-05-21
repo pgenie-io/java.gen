@@ -2,7 +2,7 @@ let Algebra = ../Algebras/Template.dhall
 
 let Deps = ../Deps/package.dhall
 
-let indent = Deps.Lude.Extensions.Text.indentNonEmpty
+let indent = Deps.Lude.Text.indentNonEmpty
 
 let Params = { decodeLines : Text, columnNames : List Text }
 

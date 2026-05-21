@@ -6,9 +6,13 @@ let Algebra = ../Algebras/Interpreter.dhall
 
 let Sdk = Deps.Sdk
 
+let Lude = Deps.Lude
+
 let Model = Deps.Sdk.Project
 
 let Value = ./Value.dhall
+
+let JavaIdentifier = ../Utilities/JavaIdentifier.dhall
 
 let Input = Model.Member
 
@@ -22,6 +26,7 @@ let Output =
       , isNullable : Bool
       , isOptional : Bool
       , elementIsOptional : Bool
+      , dims : Natural
       , needsCustomTypeImport : Bool
       , testDefaultLiteral : Text
       }
@@ -29,11 +34,11 @@ let Output =
 let run =
       \(config : Algebra.Config) ->
       \(input : Input) ->
-        Sdk.Compiled.map
+        Lude.Compiled.map
           Value.Output
           Output
           ( \(value : Value.Output) ->
-              let fieldName = Deps.CodegenKit.Name.toTextInCamel input.name
+              let fieldName = JavaIdentifier.escape input.name.inCamelCase
 
               let isOptional = config.useOptional && input.isNullable
 
@@ -53,16 +58,23 @@ let run =
                   , isNullable = input.isNullable
                   , isOptional
                   , elementIsOptional = value.elementIsOptional
+                  , dims =
+                      Deps.Prelude.Optional.fold
+                        Deps.Sdk.Project.ArraySettings
+                        input.value.arraySettings
+                        Natural
+                        ( \(arr : Deps.Sdk.Project.ArraySettings) ->
+                            arr.dimensionality
+                        )
+                        0
                   , needsCustomTypeImport = value.needsCustomTypeImport
                   , testDefaultLiteral =
                       if    isOptional
                       then  "Optional.empty()"
-                      else  if input.isNullable
-                      then  "null"
                       else  value.testDefaultLiteral
                   }
           )
-          ( Sdk.Compiled.nest
+          ( Lude.Compiled.nest
               Value.Output
               input.pgName
               (Value.run config input.value)

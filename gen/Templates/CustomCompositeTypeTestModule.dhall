@@ -70,7 +70,7 @@ let run =
                     assertEquals(Optional.empty(), roundtrip(null));
                 }
 
-                ${Deps.Lude.Extensions.Text.indentNonEmpty 4 combinationTests}
+                ${Deps.Lude.Text.indentNonEmpty 4 combinationTests}
             }
             ''
 

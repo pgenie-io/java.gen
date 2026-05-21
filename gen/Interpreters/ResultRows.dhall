@@ -30,7 +30,7 @@ let run =
                     input.columns
                 )
 
-        in  Deps.Sdk.Compiled.map
+        in  Deps.Lude.Compiled.map
               ResultColumns.Output
               Output
               ( \(cols : ResultColumns.Output) ->

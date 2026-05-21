@@ -6,9 +6,13 @@ let Algebra = ../Algebras/Interpreter.dhall
 
 let Sdk = Deps.Sdk
 
+let Lude = Deps.Lude
+
 let Model = Deps.Sdk.Project
 
 let Value = ./Value.dhall
+
+let JavaIdentifier = ../Utilities/JavaIdentifier.dhall
 
 let Templates = ../Templates/package.dhall
 
@@ -30,11 +34,11 @@ let Output =
 let run =
       \(config : Algebra.Config) ->
       \(input : Input) ->
-        Sdk.Compiled.map
+        Lude.Compiled.map
           Value.Output
           Output
           ( \(value : Value.Output) ->
-              let fieldName = Deps.CodegenKit.Name.toTextInCamel input.name
+              let fieldName = JavaIdentifier.escape input.name.inCamelCase
 
               let fieldType =
                     if    input.isNullable
@@ -77,7 +81,7 @@ let run =
                   , needsCustomTypeImport = value.needsCustomTypeImport
                   }
           )
-          ( Sdk.Compiled.nest
+          ( Lude.Compiled.nest
               Value.Output
               input.pgName
               (Value.run config input.value)

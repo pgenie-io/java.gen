@@ -6,7 +6,9 @@ let Prelude = Deps.Prelude
 
 let Sdk = Deps.Sdk
 
-let Compiled = Sdk.Compiled
+let Lude = Deps.Lude
+
+let Compiled = Lude.Compiled
 
 let Input = Deps.Sdk.Project.QueryFragments
 

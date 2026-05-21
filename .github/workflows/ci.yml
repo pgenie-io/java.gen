@@ -88,7 +88,7 @@ jobs:
           mkdir -p "${{ matrix.output_dir }}"
 
       - name: Generate output from Dhall
-        uses: nikita-volkov/dhall-directory-tree.github-action@v1
+        uses: nikita-volkov/dhall-directory-tree.github-action@v2
         with:
           dhall_file: ${{ matrix.entry }}
           output_dir: ${{ matrix.output_dir }}

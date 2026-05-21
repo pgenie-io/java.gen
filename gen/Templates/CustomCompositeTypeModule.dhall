@@ -140,14 +140,12 @@ let run =
              * All fields are nullable, matching the PostgreSQL column definitions.
              */
             public record ${params.typeName}(
-                    ${Deps.Lude.Extensions.Text.indentNonEmpty 8 fieldDecls}) {
+                    ${Deps.Lude.Text.indentNonEmpty 8 fieldDecls}) {
 
                 public static final Codec<${params.typeName}> CODEC = Codec.<${params.typeName}>composite(
                         "${params.pgSchema}", "${params.pgTypeName}",
                         ${constructorExpr},
-                        ${Deps.Lude.Extensions.Text.indentNonEmpty
-                            12
-                            codecFieldEntries});
+                        ${Deps.Lude.Text.indentNonEmpty 12 codecFieldEntries});
 
             }
             ''

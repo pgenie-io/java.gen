@@ -23,7 +23,7 @@ jobs:
           mkdir demo-output
 
       - name: Regenerate demo-output from Dhall
-        uses: nikita-volkov/dhall-directory-tree.github-action@v1
+        uses: nikita-volkov/dhall-directory-tree.github-action@v2
         with:
           dhall_file: tests/Demo.dhall
           output_dir: demo-output

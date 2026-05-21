@@ -26,14 +26,14 @@ in  Algebra.module
         \(input : Input) ->
           let compiledColumns =
                 Deps.Typeclasses.Classes.Applicative.traverseList
-                  Deps.Sdk.Compiled.Type
-                  Deps.Sdk.Compiled.applicative
+                  Deps.Lude.Compiled.Type
+                  Deps.Lude.Compiled.applicative
                   Deps.Sdk.Project.Member
                   ResultColumnsMember.Output
                   (ResultColumnsMember.run config)
                   input
 
-          in  Deps.Sdk.Compiled.map
+          in  Deps.Lude.Compiled.map
                 (List ResultColumnsMember.Output)
                 Output
                 ( \(columns : List ResultColumnsMember.Output) ->
