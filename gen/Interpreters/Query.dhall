@@ -8,6 +8,8 @@ let Typeclasses = Deps.Typeclasses
 
 let Sdk = Deps.Sdk
 
+let Lude = Deps.Lude
+
 let Templates = ../Templates/package.dhall
 
 let ResultModule = ./Result.dhall
@@ -32,10 +34,9 @@ let render =
       \(result : ResultModule.Output) ->
       \(fragments : QueryFragmentsModule.Output) ->
       \(params : List ParamsMemberModule.Output) ->
-        let statementModuleName = Deps.CodegenKit.Name.toTextInPascal input.name
+        let statementModuleName = input.name.inPascalCase
 
-        let statementModulePath =
-              Deps.CodegenKit.Name.toTextInPascal input.name ++ ".java"
+        let statementModulePath = input.name.inPascalCase ++ ".java"
 
         let paramCastSuffixes =
               Deps.Prelude.List.map
@@ -207,7 +208,7 @@ let render =
               Templates.StatementModule.run
                 { packageName = config.packageName
                 , typeName = statementModuleName
-                , queryName = Deps.CodegenKit.Name.toTextInSnake input.name
+                , queryName = input.name.inSnakeCase
                 , sqlDoc = fragments.docComment
                 , sqlExp
                 , paramBindCode
@@ -233,8 +234,7 @@ let render =
                 (\(m : ParamsMemberModule.Output) -> m.testDefaultLiteral)
                 params
 
-        let testModulePath =
-              Deps.CodegenKit.Name.toTextInPascal input.name ++ "IT.java"
+        let testModulePath = input.name.inPascalCase ++ "IT.java"
 
         let testModuleContents =
               Templates.StatementTestModule.run
@@ -257,33 +257,33 @@ let render =
 let run =
       \(config : Algebra.Config) ->
       \(input : Input) ->
-        Sdk.Compiled.nest
+        Lude.Compiled.nest
           Output
           input.srcPath
           ( Typeclasses.Classes.Applicative.map3
-              Sdk.Compiled.Type
-              Sdk.Compiled.applicative
+              Lude.Compiled.Type
+              Lude.Compiled.applicative
               ResultModule.Output
               QueryFragmentsModule.Output
               (List ParamsMemberModule.Output)
               Output
               (render config input)
-              ( Sdk.Compiled.nest
+              ( Lude.Compiled.nest
                   ResultModule.Output
                   "result"
                   (ResultModule.run config input.result)
               )
-              ( Sdk.Compiled.nest
+              ( Lude.Compiled.nest
                   QueryFragmentsModule.Output
                   "sql"
                   (QueryFragmentsModule.run config input.fragments)
               )
-              ( Sdk.Compiled.nest
+              ( Lude.Compiled.nest
                   (List ParamsMemberModule.Output)
                   "params"
                   ( Typeclasses.Classes.Applicative.traverseList
-                      Sdk.Compiled.Type
-                      Sdk.Compiled.applicative
+                      Lude.Compiled.Type
+                      Lude.Compiled.applicative
                       Deps.Sdk.Project.Member
                       ParamsMemberModule.Output
                       (ParamsMemberModule.run config)

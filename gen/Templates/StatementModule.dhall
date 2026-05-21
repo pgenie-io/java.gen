@@ -4,7 +4,7 @@ let Deps = ../Deps/package.dhall
 
 let ImportSet = ../Structures/ImportSet.dhall
 
-let indent = Deps.Lude.Extensions.Text.indentNonEmpty
+let indent = Deps.Lude.Text.indentNonEmpty
 
 let Params =
       { packageName : Text
@@ -104,7 +104,7 @@ in  Algebra.module
                * <h2>SQL Template</h2>
                *
                * <pre>{@code
-               * ${Deps.Lude.Extensions.Text.prefixEachLine " * " params.sqlDoc}
+               * ${Deps.Lude.Text.prefixEachLine " * " params.sqlDoc}
                * }</pre>
                *
                * <h2>Source Path</h2> {@code ${params.srcPath}}

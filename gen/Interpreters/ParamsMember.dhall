@@ -6,6 +6,8 @@ let Algebra = ../Algebras/Interpreter.dhall
 
 let Sdk = Deps.Sdk
 
+let Lude = Deps.Lude
+
 let Model = Deps.Sdk.Project
 
 let Value = ./Value.dhall
@@ -31,11 +33,11 @@ let Output =
 let run =
       \(config : Algebra.Config) ->
       \(input : Input) ->
-        Sdk.Compiled.map
+        Lude.Compiled.map
           Value.Output
           Output
           ( \(value : Value.Output) ->
-              let fieldName = JavaIdentifier.escape input.name
+              let fieldName = JavaIdentifier.escape input.name.inCamelCase
 
               let isOptional = config.useOptional && input.isNullable
 
@@ -62,7 +64,7 @@ let run =
                       else  value.testDefaultLiteral
                   }
           )
-          ( Sdk.Compiled.nest
+          ( Lude.Compiled.nest
               Value.Output
               input.pgName
               (Value.run config input.value)

@@ -6,6 +6,8 @@ let Algebra = ../Algebras/Interpreter.dhall
 
 let Sdk = Deps.Sdk
 
+let Lude = Deps.Lude
+
 let Model = Deps.Sdk.Project
 
 let Primitive = ./Primitive.dhall
@@ -28,7 +30,7 @@ let run =
         merge
           { Primitive =
               \(primitive : Model.Primitive) ->
-                Sdk.Compiled.map
+                Lude.Compiled.map
                   Primitive.Output
                   Output
                   ( \(primitive : Primitive.Output) ->
@@ -40,13 +42,13 @@ let run =
                   (Primitive.run config primitive)
           , Custom =
               \(name : Model.Name) ->
-                let typeName = Deps.CodegenKit.Name.toTextInPascal name
+                let typeName = name.inPascalCase
 
-                let pgName = Deps.CodegenKit.Name.toTextInSnake name
+                let pgName = name.inSnakeCase
 
                 let codecRef = "${typeName}.CODEC"
 
-                in  Sdk.Compiled.ok
+                in  Lude.Compiled.ok
                       Output
                       { javaType = typeName
                       , boxedJavaType = typeName

@@ -55,12 +55,12 @@ let run =
              */
             public enum ${params.typeName} {
 
-                ${Deps.Lude.Extensions.Text.indentNonEmpty 4 variantEntries};
+                ${Deps.Lude.Text.indentNonEmpty 4 variantEntries};
 
                 public static final Codec<${params.typeName}> CODEC = Codec.enumeration(
                         "${params.pgSchema}", "${params.pgTypeName}",
                         Map.ofEntries(
-                                ${Deps.Lude.Extensions.Text.indentNonEmpty
+                                ${Deps.Lude.Text.indentNonEmpty
                                     20
                                     codecEntries}));
 

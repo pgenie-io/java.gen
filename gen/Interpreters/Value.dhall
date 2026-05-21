@@ -6,6 +6,8 @@ let Algebra = ../Algebras/Interpreter.dhall
 
 let Sdk = Deps.Sdk
 
+let Lude = Deps.Lude
+
 let Model = Deps.Sdk.Project
 
 let Scalar = ./Scalar.dhall
@@ -27,7 +29,7 @@ let Output =
 let run =
       \(config : Algebra.Config) ->
       \(input : Input) ->
-        Sdk.Compiled.map
+        Lude.Compiled.map
           Scalar.Output
           Output
           ( \(scalar : Scalar.Output) ->

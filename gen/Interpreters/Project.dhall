@@ -4,6 +4,8 @@ let Algebra = ../Algebras/Interpreter.dhall
 
 let Sdk = Deps.Sdk
 
+let Lude = Deps.Lude
+
 let Model = Deps.Sdk.Project
 
 let Templates = ../Templates/package.dhall
@@ -14,14 +16,10 @@ let CustomTypeGen = ./CustomType.dhall
 
 let Input = Model.Project
 
-let Output = List Sdk.File.Type
+let Output = List Lude.File.Type
 
 let toFlatLower =
-      \(name : Model.Name) ->
-        Deps.Prelude.Text.replace
-          "_"
-          ""
-          (Deps.CodegenKit.Name.toTextInSnake name)
+      \(name : Model.Name) -> Deps.Prelude.Text.replace "_" "" name.inSnakeCase
 
 let combineOutputs =
       \(input : Input) ->
@@ -40,10 +38,10 @@ let combineOutputs =
               "src/test/java/io/pgenie/artifacts/${spacePkg}/${namePkg}/"
 
         let customTypeFiles
-            : List Sdk.File.Type
+            : List Lude.File.Type
             = Deps.Prelude.List.map
                 CustomTypeGen.Output
-                Sdk.File.Type
+                Lude.File.Type
                 ( \(customType : CustomTypeGen.Output) ->
                     { path = srcPrefix ++ "types/" ++ customType.modulePath
                     , content = customType.moduleContent
@@ -52,10 +50,10 @@ let combineOutputs =
                 customTypes
 
         let testCustomTypeFiles
-            : List Sdk.File.Type
+            : List Lude.File.Type
             = Deps.Prelude.List.map
                 CustomTypeGen.Output
-                Sdk.File.Type
+                Lude.File.Type
                 ( \(customType : CustomTypeGen.Output) ->
                     { path = testPrefix ++ "types/" ++ customType.testModulePath
                     , content = customType.testModuleContent
@@ -64,10 +62,10 @@ let combineOutputs =
                 customTypes
 
         let statementFiles
-            : List Sdk.File.Type
+            : List Lude.File.Type
             = Deps.Prelude.List.map
                 QueryGen.Output
-                Sdk.File.Type
+                Lude.File.Type
                 ( \(query : QueryGen.Output) ->
                     { path =
                         srcPrefix ++ "statements/" ++ query.statementModulePath
@@ -77,10 +75,10 @@ let combineOutputs =
                 queries
 
         let testStatementFiles
-            : List Sdk.File.Type
+            : List Lude.File.Type
             = Deps.Prelude.List.map
                 QueryGen.Output
-                Sdk.File.Type
+                Lude.File.Type
                 ( \(query : QueryGen.Output) ->
                     { path = testPrefix ++ "statements/" ++ query.testModulePath
                     , content = query.testModuleContents
@@ -88,7 +86,7 @@ let combineOutputs =
                 )
                 queries
 
-        let artifactId = Deps.CodegenKit.Name.toTextInKebab input.name
+        let artifactId = input.name.inKebabCase
 
         let migrations =
               Deps.Prelude.List.map
@@ -98,7 +96,7 @@ let combineOutputs =
                 input.migrations
 
         let abstractDatabaseIT
-            : Sdk.File.Type
+            : Lude.File.Type
             = { path = testPrefix ++ "AbstractDatabaseIT.java"
               , content =
                   Templates.AbstractDatabaseIT.run { packageName, migrations }
@@ -131,9 +129,7 @@ let combineOutputs =
                 (\(q : QueryGen.Output) -> Some q.statementModuleName)
                 (None Text)
 
-        let projectName =
-              Deps.CodegenKit.Name.toTextInPascal
-                (Deps.CodegenKit.Name.concat input.space [ input.name ])
+        let projectName = input.space.inPascalCase ++ input.name.inPascalCase
 
         let version =
               "${Natural/show
@@ -142,7 +138,7 @@ let combineOutputs =
                                                                      input.version.patch}"
 
         let readmeMd
-            : Sdk.File.Type
+            : Lude.File.Type
             = { path = "README.md"
               , content =
                   Templates.ReadmeMd.run
@@ -158,7 +154,7 @@ let combineOutputs =
               }
 
         let pomXml
-            : Sdk.File.Type
+            : Lude.File.Type
             = { path = "pom.xml"
               , content =
                   Templates.PomXml.run
@@ -166,7 +162,7 @@ let combineOutputs =
                     , artifactId
                     , version
                     , projectName
-                    , dbName = Deps.CodegenKit.Name.toTextInSnake input.name
+                    , dbName = input.name.inSnakeCase
                     }
               }
 
@@ -175,61 +171,61 @@ let combineOutputs =
               # testCustomTypeFiles
               # statementFiles
               # testStatementFiles
-            : List Sdk.File.Type
+            : List Lude.File.Type
 
 let run =
       \(config : Algebra.Config) ->
       \(input : Input) ->
         let compiledQueries
-            : Sdk.Compiled.Type (List (Optional QueryGen.Output))
-            = Sdk.Compiled.traverseList
+            : Lude.Compiled.Type (List (Optional QueryGen.Output))
+            = Lude.Compiled.traverseList
                 Deps.Sdk.Project.Query
                 (Optional QueryGen.Output)
                 ( \(query : Deps.Sdk.Project.Query) ->
                     Deps.Typeclasses.Classes.Alternative.optional
-                      Sdk.Compiled.Type
-                      Sdk.Compiled.alternative
+                      Lude.Compiled.Type
+                      Lude.Compiled.alternative
                       QueryGen.Output
                       (QueryGen.run config query)
                 )
                 input.queries
 
         let compiledQueries
-            : Sdk.Compiled.Type (List QueryGen.Output)
-            = Sdk.Compiled.map
+            : Lude.Compiled.Type (List QueryGen.Output)
+            = Lude.Compiled.map
                 (List (Optional QueryGen.Output))
                 (List QueryGen.Output)
                 (Deps.Prelude.List.unpackOptionals QueryGen.Output)
                 compiledQueries
 
         let compiledTypes
-            : Sdk.Compiled.Type (List (Optional CustomTypeGen.Output))
-            = Sdk.Compiled.traverseList
+            : Lude.Compiled.Type (List (Optional CustomTypeGen.Output))
+            = Lude.Compiled.traverseList
                 Deps.Sdk.Project.CustomType
                 (Optional CustomTypeGen.Output)
                 ( \(ct : Deps.Sdk.Project.CustomType) ->
                     Deps.Typeclasses.Classes.Alternative.optional
-                      Sdk.Compiled.Type
-                      Sdk.Compiled.alternative
+                      Lude.Compiled.Type
+                      Lude.Compiled.alternative
                       CustomTypeGen.Output
                       (CustomTypeGen.run config ct)
                 )
                 input.customTypes
 
         let compiledTypes
-            : Sdk.Compiled.Type (List CustomTypeGen.Output)
-            = Sdk.Compiled.map
+            : Lude.Compiled.Type (List CustomTypeGen.Output)
+            = Lude.Compiled.map
                 (List (Optional CustomTypeGen.Output))
                 (List CustomTypeGen.Output)
                 (Deps.Prelude.List.unpackOptionals CustomTypeGen.Output)
                 compiledTypes
 
         let files
-            : Sdk.Compiled.Type (List Sdk.File.Type)
-            = Sdk.Compiled.map2
+            : Lude.Compiled.Type (List Lude.File.Type)
+            = Lude.Compiled.map2
                 (List QueryGen.Output)
                 (List CustomTypeGen.Output)
-                (List Sdk.File.Type)
+                (List Lude.File.Type)
                 (combineOutputs input)
                 compiledQueries
                 compiledTypes

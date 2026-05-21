@@ -5,7 +5,7 @@ let Config = { rootModuleName : Text, packageName : Text, useOptional : Bool }
 let module =
       \(Input : Type) ->
       \(Output : Type) ->
-        let Result = Deps.Sdk.Compiled.Type Output
+        let Result = Deps.Lude.Compiled.Type Output
 
         let Run = Config -> Input -> Result
 

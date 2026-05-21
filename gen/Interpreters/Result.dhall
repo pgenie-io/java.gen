@@ -24,7 +24,7 @@ let run =
       \(input : Input) ->
         merge
           { None =
-              Deps.Sdk.Compiled.ok
+              Deps.Lude.Compiled.ok
                 Output
                 ( \(_ : Text) ->
                     { typeDecls = ""

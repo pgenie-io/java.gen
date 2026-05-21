@@ -28,14 +28,14 @@ let uuidImports = ImportSet.uuid
 
 let unsupportedType =
       \(type : Text) ->
-        Deps.Sdk.Compiled.report Output [ type ] "Unsupported type"
+        Deps.Lude.Compiled.report Output [ type ] "Unsupported type"
 
 let jdbcPrimitive =
       \(javaType : Text) ->
       \(boxedJavaType : Text) ->
       \(codecName : Text) ->
       \(testDefaultLiteral : Text) ->
-        Deps.Sdk.Compiled.ok
+        Deps.Lude.Compiled.ok
           Output
           { javaType
           , boxedJavaType
@@ -46,7 +46,7 @@ let jdbcPrimitive =
 
 let jdbcString =
       \(codecName : Text) ->
-        Deps.Sdk.Compiled.ok
+        Deps.Lude.Compiled.ok
           Output
           { javaType = "String"
           , boxedJavaType = "String"
@@ -56,7 +56,7 @@ let jdbcString =
           }
 
 let dateType =
-      Deps.Sdk.Compiled.ok
+      Deps.Lude.Compiled.ok
         Output
         { javaType = "LocalDate"
         , boxedJavaType = "LocalDate"
@@ -71,7 +71,7 @@ let codec =
       \(imports : ImportSet.Type) ->
         let codecRef = "Codec.${codecName}"
 
-        in  Deps.Sdk.Compiled.ok
+        in  Deps.Lude.Compiled.ok
               Output
               { javaType
               , boxedJavaType = javaType
@@ -121,7 +121,7 @@ let run =
           , Line = codec "Line" "LINE" codecImports
           , Lseg = codec "Lseg" "LSEG" codecImports
           , Ltree =
-              Deps.Sdk.Compiled.ok
+              Deps.Lude.Compiled.ok
                 Output
                 { javaType = "Ltree"
                 , boxedJavaType = "Ltree"

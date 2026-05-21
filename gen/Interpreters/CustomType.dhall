@@ -6,6 +6,8 @@ let Algebra = ../Algebras/Interpreter.dhall
 
 let Sdk = Deps.Sdk
 
+let Lude = Deps.Lude
+
 let Model = Deps.Sdk.Project
 
 let Templates = ../Templates/package.dhall
@@ -27,9 +29,9 @@ let Output =
 let run =
       \(config : Algebra.Config) ->
       \(input : Input) ->
-        let typeName = Deps.CodegenKit.Name.toTextInPascal input.name
+        let typeName = input.name.inPascalCase
 
-        let moduleName = Deps.CodegenKit.Name.toTextInPascal input.name
+        let moduleName = input.name.inPascalCase
 
         let modulePath = moduleName ++ ".java"
 
@@ -37,16 +39,16 @@ let run =
               { Composite =
                   \(members : List Model.Member) ->
                     let compiledMembers
-                        : Sdk.Compiled.Type (List MemberGen.Output)
-                        = Sdk.Compiled.traverseList
+                        : Lude.Compiled.Type (List MemberGen.Output)
+                        = Lude.Compiled.traverseList
                             Model.Member
                             MemberGen.Output
                             (MemberGen.run config)
                             members
 
                     let compiledOutput
-                        : Sdk.Compiled.Type Output
-                        = Sdk.Compiled.map
+                        : Lude.Compiled.Type Output
+                        = Lude.Compiled.map
                             (List MemberGen.Output)
                             Output
                             ( \(members : List MemberGen.Output) ->
@@ -192,7 +194,7 @@ let run =
                     in  compiledOutput
               , Enum =
                   \(variants : List Model.EnumVariant) ->
-                    Sdk.Compiled.ok
+                    Lude.Compiled.ok
                       Output
                       { moduleName
                       , typeName
@@ -208,9 +210,7 @@ let run =
                                   Model.EnumVariant
                                   Templates.CustomEnumTypeModule.Variant
                                   ( \(variant : Model.EnumVariant) ->
-                                      { name =
-                                          Deps.CodegenKit.Name.toTextInPascal
-                                            variant.name
+                                      { name = variant.name.inPascalCase
                                       , pgValue = variant.pgName
                                       }
                                   )
@@ -228,9 +228,7 @@ let run =
                                   Model.EnumVariant
                                   Templates.CustomEnumTypeTestModule.Variant
                                   ( \(variant : Model.EnumVariant) ->
-                                      { variantName =
-                                          Deps.CodegenKit.Name.toTextInPascal
-                                            variant.name
+                                      { variantName = variant.name.inPascalCase
                                       }
                                   )
                                   variants
@@ -238,7 +236,7 @@ let run =
                       }
               , Domain =
                   \(_ : Model.Value) ->
-                    Sdk.Compiled.message
+                    Lude.Compiled.message
                       Output
                       "Domain types are not yet supported."
               }
