@@ -56,6 +56,19 @@ in  Algebra.module
 
                             in  "${p.codecRef}.decodeOptional(rs, ${rowExpr}, ${p.colIdx})${suffix}"
                       else  "${p.codecRef}.decodeNullable(rs, ${rowExpr}, ${p.colIdx})"
+                else  if p.useOptional
+                then  if    p.elementIsNullable
+                      then  let nonNullableSuffix =
+                                  Natural/fold
+                                    (Deps.Prelude.Natural.subtract 1 p.dims)
+                                    Text
+                                    ( \(inner : Text) ->
+                                        ".stream().map(d -> d${inner}).toList()"
+                                    )
+                                    ".stream().map(Optional::ofNullable).toList()"
+
+                            in  "${p.codecRef}.decodeNonNullable(rs, ${rowExpr}, ${p.colIdx})${nonNullableSuffix}"
+                      else  "${p.codecRef}.decodeNonNullable(rs, ${rowExpr}, ${p.colIdx})"
                 else  "${p.codecRef}.decodeNonNullable(rs, ${rowExpr}, ${p.colIdx})"
 
           in  "${p.fieldType} ${p.varName} = ${expression};"

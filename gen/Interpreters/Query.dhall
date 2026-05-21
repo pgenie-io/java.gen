@@ -91,6 +91,7 @@ let render =
                                               , isOptional = p.isOptional
                                               , elementIsOptional =
                                                   p.elementIsOptional
+                                              , dims = p.dims
                                               }
                                           )
                                   }

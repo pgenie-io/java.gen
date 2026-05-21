@@ -26,6 +26,7 @@ let Output =
       , isNullable : Bool
       , isOptional : Bool
       , elementIsOptional : Bool
+      , dims : Natural
       , needsCustomTypeImport : Bool
       , testDefaultLiteral : Text
       }
@@ -57,6 +58,15 @@ let run =
                   , isNullable = input.isNullable
                   , isOptional
                   , elementIsOptional = value.elementIsOptional
+                  , dims =
+                      Deps.Prelude.Optional.fold
+                        Deps.Sdk.Project.ArraySettings
+                        input.value.arraySettings
+                        Natural
+                        ( \(arr : Deps.Sdk.Project.ArraySettings) ->
+                            arr.dimensionality
+                        )
+                        0
                   , needsCustomTypeImport = value.needsCustomTypeImport
                   , testDefaultLiteral =
                       if    isOptional
