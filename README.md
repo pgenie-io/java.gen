@@ -37,7 +37,7 @@ name: music_catalogue
 version: 1.0.0
 artifacts:
   java:
-    gen: https://raw.githubusercontent.com/pgenie-io/java.gen/v0.4.2/gen/Gen.dhall
+    gen: https://raw.githubusercontent.com/pgenie-io/java.gen/v0.5.0/gen/Gen.dhall
     config:
       useOptional: true # use Optional<T> for nullable parameters and fields instead of `null`
 ```
