@@ -1,3 +1,13 @@
+# Upcoming
+
+## Breaking
+
+- Contract updated to v2.0
+
+## Fixes
+
+- Java keywords escaping
+
 # v0.4.2
 
 ## Fixes
