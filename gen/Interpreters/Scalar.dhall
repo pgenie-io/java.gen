@@ -1,5 +1,7 @@
 let Deps = ../Deps/package.dhall
 
+let ImportSet = ../Structures/ImportSet.dhall
+
 let Algebra = ../Algebras/Interpreter.dhall
 
 let Sdk = Deps.Sdk
@@ -14,7 +16,7 @@ let Output =
       { javaType : Text
       , boxedJavaType : Text
       , codecRef : Text
-      , imports : Deps.ImportSet.Struct
+      , imports : ImportSet.Type
       , pgCastSuffix : Optional Text
       , needsCustomTypeImport : Bool
       , testDefaultLiteral : Text
@@ -49,7 +51,7 @@ let run =
                       { javaType = typeName
                       , boxedJavaType = typeName
                       , codecRef
-                      , imports = Deps.ImportSet.empty
+                      , imports = ImportSet.empty
                       , pgCastSuffix = Some "::${pgName}"
                       , needsCustomTypeImport = True
                       , testDefaultLiteral =

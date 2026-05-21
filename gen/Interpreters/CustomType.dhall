@@ -1,5 +1,7 @@
 let Deps = ../Deps/package.dhall
 
+let ImportSet = ../Structures/ImportSet.dhall
+
 let Algebra = ../Algebras/Interpreter.dhall
 
 let Sdk = Deps.Sdk
@@ -52,14 +54,12 @@ let run =
                                       List/fold
                                         MemberGen.Output
                                         members
-                                        Deps.ImportSet.Struct
+                                        ImportSet.Type
                                         ( \(member : MemberGen.Output) ->
-                                          \(acc : Deps.ImportSet.Struct) ->
-                                            Deps.ImportSet.combine
-                                              member.imports
-                                              acc
+                                          \(acc : ImportSet.Type) ->
+                                            ImportSet.combine member.imports acc
                                         )
-                                        Deps.ImportSet.empty
+                                        ImportSet.empty
 
                                 let Combination = List Text
 

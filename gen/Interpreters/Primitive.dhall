@@ -1,5 +1,7 @@
 let Deps = ../Deps/package.dhall
 
+let ImportSet = ../Structures/ImportSet.dhall
+
 let Algebra = ../Algebras/Interpreter.dhall
 
 let Input = Deps.Sdk.Project.Primitive
@@ -8,22 +10,21 @@ let Output =
       { javaType : Text
       , boxedJavaType : Text
       , codecRef : Text
-      , imports : Deps.ImportSet.Struct
+      , imports : ImportSet.Type
       , testDefaultLiteral : Text
       }
 
-let noImports = Deps.ImportSet.empty
+let noImports = ImportSet.empty
 
-let codecImports = Deps.ImportSet.codecs
+let codecImports = ImportSet.codecs
 
-let jsonNodeImports = Deps.ImportSet.jsonNode
+let jsonNodeImports = ImportSet.jsonNode
 
-let bigDecimalImports = Deps.ImportSet.bigDecimal
+let bigDecimalImports = ImportSet.bigDecimal
 
-let codecBigDecimalImports =
-      Deps.ImportSet.combine codecImports bigDecimalImports
+let codecBigDecimalImports = ImportSet.combine codecImports bigDecimalImports
 
-let uuidImports = Deps.ImportSet.uuid
+let uuidImports = ImportSet.uuid
 
 let unsupportedType =
       \(type : Text) ->
@@ -67,7 +68,7 @@ let dateType =
 let codec =
       \(javaType : Text) ->
       \(codecName : Text) ->
-      \(imports : Deps.ImportSet.Struct) ->
+      \(imports : ImportSet.Type) ->
         let codecRef = "Codec.${codecName}"
 
         in  Deps.Sdk.Compiled.ok

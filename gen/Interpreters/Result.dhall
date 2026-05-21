@@ -1,5 +1,7 @@
 let Deps = ../Deps/package.dhall
 
+let ImportSet = ../Structures/ImportSet.dhall
+
 let Algebra = ../Algebras/Interpreter.dhall
 
 let ResultRows = ./ResultRows.dhall
@@ -13,7 +15,7 @@ let Output =
         { statementImpl : Text
         , typeDecls : Text
         , statementTypeArg : Text
-        , imports : Deps.ImportSet.Struct
+        , imports : ImportSet.Type
         , needsCustomTypeImport : Bool
         }
 
@@ -28,7 +30,7 @@ let run =
                     { typeDecls = ""
                     , statementImpl = Templates.StatementImplNoResult.run {=}
                     , statementTypeArg = "Long"
-                    , imports = Deps.ImportSet.empty
+                    , imports = ImportSet.empty
                     , needsCustomTypeImport = False
                     }
                 )

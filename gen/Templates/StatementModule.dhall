@@ -2,6 +2,8 @@ let Algebra = ../Algebras/Template.dhall
 
 let Deps = ../Deps/package.dhall
 
+let ImportSet = ../Structures/ImportSet.dhall
+
 let indent = Deps.Lude.Extensions.Text.indentNonEmpty
 
 let Params =
@@ -16,7 +18,7 @@ let Params =
       , typeDecls : Text
       , statementImpl : Text
       , statementTypeArg : Text
-      , extraImports : Deps.ImportSet.Struct
+      , extraImports : ImportSet.Type
       , needsArrayListImport : Bool
       , hasResultType : Bool
       , hasOptionalFields : Bool
