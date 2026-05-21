@@ -1,5 +1,15 @@
 let Deps = ../Deps/package.dhall
 
+let Algebra = ../Algebras/Interpreter.dhall
+
+let Model = Deps.Sdk.Project
+
+let Lude = Deps.Lude
+
+let Input = Model.Name
+
+let Output = { fieldName : Text }
+
 let javaKeywords
     : List Text
     = [ "abstract"
@@ -69,12 +79,22 @@ let javaKeywords
       , "null"
       ]
 
-in  { escape =
-        \(rendered : Text) ->
-          if    Deps.Prelude.List.any
-                  Text
-                  (\(kw : Text) -> Text/equal kw rendered)
-                  javaKeywords
-          then  "${rendered}_"
-          else  rendered
-    }
+let isJavaKeyword
+    : Input -> Bool
+    = \(name : Input) ->
+        Deps.Prelude.List.any
+          Text
+          (\(kw : Text) -> Text/equal kw name.inCamelCase)
+          javaKeywords
+
+let run =
+      \(config : Algebra.Config) ->
+      \(input : Input) ->
+        let rawFieldName = input.inCamelCase
+
+        let fieldName =
+              if isJavaKeyword input then "${rawFieldName}_" else rawFieldName
+
+        in  Lude.Compiled.ok Output { fieldName }
+
+in  Algebra.module Input Output run

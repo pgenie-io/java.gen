@@ -12,7 +12,7 @@ let Model = Deps.Sdk.Project
 
 let Value = ./Value.dhall
 
-let JavaIdentifier = ../Utilities/JavaIdentifier.dhall
+let Name = ./Name.dhall
 
 let Templates = ../Templates/package.dhall
 
@@ -34,57 +34,66 @@ let Output =
 let run =
       \(config : Algebra.Config) ->
       \(input : Input) ->
-        Lude.Compiled.map
-          Value.Output
-          Output
-          ( \(value : Value.Output) ->
-              let fieldName = JavaIdentifier.escape input.name.inCamelCase
+        let combine =
+              \(name : Name.Output) ->
+              \(value : Value.Output) ->
+                let fieldName = name.fieldName
 
-              let fieldType =
-                    if    input.isNullable
-                    then  if    config.useOptional
-                          then  "Optional<${value.boxedJavaType}>"
-                          else  value.javaType
-                    else  value.javaType
+                let fieldType =
+                      if    input.isNullable
+                      then  if    config.useOptional
+                            then  "Optional<${value.boxedJavaType}>"
+                            else  value.javaType
+                      else  value.javaType
 
-              in  { columnField =
-                      Templates.ResultColumnField.run
-                        { pgName = input.pgName
-                        , fieldType
-                        , fieldName
-                        , isNullable = input.isNullable
-                        }
-                  , fieldName
-                  , fieldType
-                  , boxedJavaType = value.boxedJavaType
-                  , codecRef = value.codecRef
-                  , imports = value.imports
-                  , dims =
-                      Deps.Prelude.Optional.fold
-                        Deps.Sdk.Project.ArraySettings
-                        input.value.arraySettings
-                        Natural
-                        ( \(arr : Deps.Sdk.Project.ArraySettings) ->
-                            arr.dimensionality
-                        )
-                        0
-                  , isNullable = input.isNullable
-                  , elementIsNullable =
-                      Deps.Prelude.Optional.fold
-                        Deps.Sdk.Project.ArraySettings
-                        input.value.arraySettings
-                        Bool
-                        ( \(arr : Deps.Sdk.Project.ArraySettings) ->
-                            arr.elementIsNullable
-                        )
-                        False
-                  , needsCustomTypeImport = value.needsCustomTypeImport
-                  }
-          )
-          ( Lude.Compiled.nest
+                in  { columnField =
+                        Templates.ResultColumnField.run
+                          { pgName = input.pgName
+                          , fieldType
+                          , fieldName
+                          , isNullable = input.isNullable
+                          }
+                    , fieldName
+                    , fieldType
+                    , boxedJavaType = value.boxedJavaType
+                    , codecRef = value.codecRef
+                    , imports = value.imports
+                    , dims =
+                        Deps.Prelude.Optional.fold
+                          Deps.Sdk.Project.ArraySettings
+                          input.value.arraySettings
+                          Natural
+                          ( \(arr : Deps.Sdk.Project.ArraySettings) ->
+                              arr.dimensionality
+                          )
+                          0
+                    , isNullable = input.isNullable
+                    , elementIsNullable =
+                        Deps.Prelude.Optional.fold
+                          Deps.Sdk.Project.ArraySettings
+                          input.value.arraySettings
+                          Bool
+                          ( \(arr : Deps.Sdk.Project.ArraySettings) ->
+                              arr.elementIsNullable
+                          )
+                          False
+                    , needsCustomTypeImport = value.needsCustomTypeImport
+                    }
+
+        in  Lude.Compiled.map2
+              Name.Output
               Value.Output
-              input.pgName
-              (Value.run config input.value)
-          )
+              Output
+              combine
+              ( Lude.Compiled.nest
+                  Name.Output
+                  input.pgName
+                  (Name.run config input.name)
+              )
+              ( Lude.Compiled.nest
+                  Value.Output
+                  input.pgName
+                  (Value.run config input.value)
+              )
 
 in  Algebra.module Input Output run
