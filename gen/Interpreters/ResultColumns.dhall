@@ -1,5 +1,7 @@
 let Deps = ../Deps/package.dhall
 
+let ImportSet = ../Structures/ImportSet.dhall
+
 let Algebra = ../Algebras/Interpreter.dhall
 
 let ResultColumnsMember = ./ResultColumnsMember.dhall
@@ -13,7 +15,7 @@ let Output =
       , decodeLinesWithRowVar : Text
       , decodeLinesWithoutRowVar : Text
       , columnNames : List Text
-      , imports : Deps.ImportSet.Struct
+      , imports : ImportSet.Type
       , needsCustomTypeImport : Bool
       }
 
@@ -97,12 +99,12 @@ in  Algebra.module
                           List/fold
                             ResultColumnsMember.Output
                             columns
-                            Deps.ImportSet.Struct
+                            ImportSet.Type
                             ( \(col : ResultColumnsMember.Output) ->
-                              \(acc : Deps.ImportSet.Struct) ->
-                                Deps.ImportSet.combine col.imports acc
+                              \(acc : ImportSet.Type) ->
+                                ImportSet.combine col.imports acc
                             )
-                            Deps.ImportSet.empty
+                            ImportSet.empty
 
                     let needsCustomTypeImport =
                           Deps.Prelude.List.any

@@ -1,5 +1,7 @@
 let Deps = ../Deps/package.dhall
 
+let ImportSet = ../Structures/ImportSet.dhall
+
 let Field =
       { pgName : Text
       , fieldName : Text
@@ -15,7 +17,7 @@ let Params =
       , typeName : Text
       , pgSchema : Text
       , pgTypeName : Text
-      , extraImports : Deps.ImportSet.Struct
+      , extraImports : ImportSet.Type
       , fields : List Field
       }
 

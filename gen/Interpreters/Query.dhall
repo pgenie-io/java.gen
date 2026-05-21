@@ -1,5 +1,7 @@
 let Deps = ../Deps/package.dhall
 
+let ImportSet = ../Structures/ImportSet.dhall
+
 let Algebra = ../Algebras/Interpreter.dhall
 
 let Typeclasses = Deps.Typeclasses
@@ -110,15 +112,14 @@ let render =
               List/fold
                 ParamsMemberModule.Output
                 params
-                Deps.ImportSet.Struct
+                ImportSet.Type
                 ( \(param : ParamsMemberModule.Output) ->
-                  \(acc : Deps.ImportSet.Struct) ->
-                    Deps.ImportSet.combine param.imports acc
+                  \(acc : ImportSet.Type) ->
+                    ImportSet.combine param.imports acc
                 )
-                Deps.ImportSet.empty
+                ImportSet.empty
 
-        let extraImports =
-              Deps.ImportSet.combine paramImports resultInfo.imports
+        let extraImports = ImportSet.combine paramImports resultInfo.imports
 
         let paramFields =
               Deps.Prelude.List.map

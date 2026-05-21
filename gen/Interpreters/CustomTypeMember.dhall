@@ -1,5 +1,7 @@
 let Deps = ../Deps/package.dhall
 
+let ImportSet = ../Structures/ImportSet.dhall
+
 let Algebra = ../Algebras/Interpreter.dhall
 
 let Sdk = Deps.Sdk
@@ -20,7 +22,7 @@ let Output =
       , elementIsOptional : Bool
       , pgName : Text
       , codecRef : Text
-      , imports : Deps.ImportSet.Struct
+      , imports : ImportSet.Type
       , isOptional : Bool
       , isNullable : Bool
       , testPresentLiteral : Text

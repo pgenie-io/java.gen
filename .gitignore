@@ -17,12 +17,8 @@
 !/design/
 !/src/
 !/gen/
-!/demo-output/
 !/tests/
 !/.github/
-
-# Reignore build output:
-/demo-output/target/
 
 # Ignore noise:
 .DS_Store

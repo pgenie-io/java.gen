@@ -1,5 +1,7 @@
 let Deps = ../Deps/package.dhall
 
+let ImportSet = ../Structures/ImportSet.dhall
+
 let Algebra = ../Algebras/Interpreter.dhall
 
 let Sdk = Deps.Sdk
@@ -17,10 +19,8 @@ let Output =
       , fieldType : Text
       , pgName : Text
       , pgCastSuffix : Text
-      , jdbcSetter : Text
-      , sqlTypesConstant : Text
       , codecRef : Text
-      , imports : Deps.ImportSet.Struct
+      , imports : ImportSet.Type
       , isNullable : Bool
       , isOptional : Bool
       , elementIsOptional : Bool
@@ -50,8 +50,6 @@ let run =
                   , fieldType
                   , pgName = input.pgName
                   , pgCastSuffix = value.pgCastSuffix
-                  , jdbcSetter = value.jdbcSetter
-                  , sqlTypesConstant = value.sqlTypesConstant
                   , codecRef = value.codecRef
                   , imports = value.imports
                   , isNullable = input.isNullable
