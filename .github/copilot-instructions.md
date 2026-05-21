@@ -30,20 +30,18 @@ When the repository content conflicts with outside examples, prefer the structur
 
 ## Generator Structure
 
-- Do not pay attention to `demo-output/` in this repo or in the Haskell and Rust reference generators. It is only intended to be the result of running the generator.
-- Target Java 21.
-- Keep the Maven output compatible with Java 21 build setup.
-- Keep the Maven set up idiomatic, simple and up to date with the latest releases.
-- Extract templates producing strings into `gen/Templates/`. Avoid inlining them in `gen/Interpreters/` as much as possible.
-- Do not place utilities in `gen/Deps/`. They should only contain references to external Dhall libraries. Introduce other directories for utilities if needed.
+- Layout: Do not pay attention to `demo-output/` in this repo or in the Haskell and Rust reference generators. It is only intended to be the result of running the generator.
+- Target: Java 21.
+- Maven: Keep the Maven output compatible with Java 21 build setup.
+- Maven setup: Keep the Maven set up idiomatic, simple and up to date with the latest releases.
+- Templates: Extract templates producing strings into `gen/Templates/`. Avoid inlining them in `gen/Interpreters/` as much as possible.
+- Utilities: Keep `gen/Deps/` for external Dhall library imports only.
+- Utilities: Put utility helpers in `gen/Utilities/`.
 
 ### Interpreters
 
-The interpeters should be structured as a tree resembling structured after the input model. The outer layers compose the outputs from the inner layers and collapse the data structures by evaluating the templates once the data is available.
-
-The purpose of the Output data structure is to contain all uses of the input data structure for evaluating templates.
-
-The Output types should not be declared as functions with extra parameters. That would signal that the interpreter is overstretching and trying to reach a context outside of its scope. Instead, it should just export the building blocks for what the calling interpreter (outer context) may need from it. At the same time, the interpreter should always strive to simplify (collapse) the output structure by evaluating the templates as soon as the data is available.
+- Structure: Interpreters should form a tree that mirrors the input model. Outer layers compose inner outputs and evaluate templates as soon as the data is available.
+- Output: Keep `Output` types as data, not functions with extra parameters.
 
 ## Type Mapping Rules
 
@@ -61,11 +59,9 @@ The Output types should not be declared as functions with extra parameters. That
 
 ## Design rules
 
-- `gen/Templates/` must not depend on `gen/Interpreters/` or the Project model from `Deps.Sdk`.
-- Textual templates should be extracted into `gen/Templates/` as much as possible. `gen/Interpreters/` should primarily be responsible for interpreting the Project model and orchestrating the generation process.
-- Templates may depend on other templates and their parameter structures may contain parameter structures of other templates. This may be especially useful for lists and optionals.
-  - However a final design decision has not been made on this and it may be simpler to just have the templates be simple and independent, with the interpreters responsible for composing them together as needed by calling them and thus interpreting into structures over chunks of text.
-    - Pick either approach, just be consistent within the boundaries of a module.
+- Boundary: `gen/Templates/` must not depend on `gen/Interpreters/` or the Project model from `Deps.Sdk`.
+- Templates: Textual templates should be extracted into `gen/Templates/` as much as possible. `gen/Interpreters/` should primarily be responsible for interpreting the Project model and orchestrating the generation process.
+- Composition: Keep templates simple and independent. Let interpreters compose them as needed.
 
 ## Dhall Code Style Rules
 
