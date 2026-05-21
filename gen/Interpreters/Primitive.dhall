@@ -132,7 +132,7 @@ let run =
           , Macaddr = codec "Macaddr" "MACADDR" codecImports
           , Macaddr8 = codec "Macaddr8" "MACADDR8" codecImports
           , Money = codec "Long" "MONEY" noImports
-          , Name = jdbcString "TEXT"
+          , Name = unsupportedType "name"
           , Numeric = codec "BigDecimal" "NUMERIC" bigDecimalImports
           , Nummultirange =
               codec
