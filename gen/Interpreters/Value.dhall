@@ -24,6 +24,7 @@ let Output =
       , pgCastSuffix : Text
       , needsCustomTypeImport : Bool
       , testDefaultLiteral : Text
+      , testRandomLiteral : Text
       }
 
 let run =
@@ -86,6 +87,7 @@ let run =
                               scalar.pgCastSuffix
                         , needsCustomTypeImport = scalar.needsCustomTypeImport
                         , testDefaultLiteral = "List.of()"
+                        , testRandomLiteral = "List.of()"
                         }
                 )
                 { javaType = scalar.javaType
@@ -100,6 +102,7 @@ let run =
                       scalar.pgCastSuffix
                 , needsCustomTypeImport = scalar.needsCustomTypeImport
                 , testDefaultLiteral = scalar.testDefaultLiteral
+                , testRandomLiteral = scalar.testRandomLiteral
                 }
           )
           (Scalar.run config input.scalar)

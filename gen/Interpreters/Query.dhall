@@ -237,6 +237,20 @@ let render =
                 (\(m : ParamsMemberModule.Output) -> m.testDefaultLiteral)
                 params
 
+        let testRandomArgs =
+              Deps.Prelude.List.map
+                ParamsMemberModule.Output
+                Text
+                (\(m : ParamsMemberModule.Output) -> m.testRandomLiteral)
+                params
+
+        let identityFieldNames =
+              Deps.Prelude.List.map
+                ParamsMemberModule.Output
+                Text
+                (\(m : ParamsMemberModule.Output) -> m.fieldName)
+                params
+
         let testModulePath = input.name.inPascalCase ++ "IT.java"
 
         let testModuleContents =
@@ -248,6 +262,11 @@ let render =
                 , resultNullable =
                         isOptionalCardinality
                     &&  Deps.Prelude.Bool.not config.useOptional
+                , shouldTestIdentity = input.identity
+                , identityFieldNames
+                , testRandomArgs
+                , isMultipleCardinality = needsArrayListImport
+                , isOptionalCardinality
                 }
 
         in  { statementModuleName

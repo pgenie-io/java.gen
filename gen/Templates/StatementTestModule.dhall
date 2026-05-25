@@ -2,51 +2,105 @@ let Algebra = ../Algebras/Template.dhall
 
 let Deps = ../Deps/package.dhall
 
+let Lude = ../Deps/Lude.dhall
+
 let Params =
       { packageName : Text
       , typeName : Text
       , defaultArgs : List Text
       , hasResult : Bool
       , resultNullable : Bool
+      , shouldTestIdentity : Bool
+      , identityFieldNames : List Text
+      , testRandomArgs : List Text
+      , isMultipleCardinality : Bool
+      , isOptionalCardinality : Bool
       }
 
 in  Algebra.module
       Params
       ( \(params : Params) ->
-          ''
-          package ${params.packageName}.statements;
+          let randomArgList =
+                Deps.Prelude.Text.concatSep ", " params.testRandomArgs
 
-          import static org.junit.jupiter.api.Assertions.*;
+          let defaultTestCase =
+                ''
+                @Test
+                void executesWithDefaultValues() throws SQLException {
+                    var result = execute(new ${params.typeName}(${Deps.Prelude.Text.concatSep
+                                                                    ", "
+                                                                    params.defaultArgs}));
+                    ${Lude.Text.indentNonEmpty
+                        4
+                        ( if    params.hasResult
+                          then  if    params.resultNullable
+                                then  "assertNull(result);"
+                                else  "assertNotNull(result);"
+                          else  "assertTrue(result >= 0L);"
+                        )}
+                }''
 
-          import ${params.packageName}.AbstractDatabaseIT;
-          import ${params.packageName}.types.*;
-          import io.codemine.java.postgresql.jdbc.Codec;
-          import io.codemine.java.postgresql.codecs.*;
-          import java.util.List;
-          import java.sql.SQLException;
-          import java.time.*;
-          import java.util.Optional;
-          import org.junit.jupiter.api.Test;
+          let identityTestCase =
+                ''
+                @Test
+                void satisfiesIdentityProperty() throws SQLException {
+                    var statement = new ${params.typeName}(${randomArgList});
+                    var result = execute(statement);
+                    ${Lude.Text.indentNonEmpty
+                        4
+                        ( let identityFieldAccessors =
+                                Deps.Prelude.Text.concatSep
+                                  ", "
+                                  ( Deps.Prelude.List.map
+                                      Text
+                                      Text
+                                      ( \(fieldName : Text) ->
+                                          "statement.${fieldName}()"
+                                      )
+                                      params.identityFieldNames
+                                  )
 
-          class ${params.typeName}IT extends AbstractDatabaseIT {
+                          in  if    params.isOptionalCardinality
+                              then  ''
+                                    assertTrue(result.isPresent());
+                                    assertEquals(
+                                        new ${params.typeName}.ResultRow(${identityFieldAccessors}),
+                                        result.get());''
+                              else  if params.isMultipleCardinality
+                              then  ''
+                                    assertEquals(1, result.size());
+                                    assertEquals(
+                                        new ${params.typeName}.ResultRow(${identityFieldAccessors}),
+                                        result.get(0));''
+                              else  ''
+                                    assertEquals(
+                                        new ${params.typeName}.Result(${identityFieldAccessors}),
+                                        result);''
+                        )}
+                }''
 
-              @Test
-              void executesWithDefaultValues() throws SQLException {
-                  var result = execute(new ${params.typeName}(${Deps.Prelude.Text.concatSep
-                                                                  ", "
-                                                                  params.defaultArgs}));
-                  ${if    params.hasResult
-                    then  if    params.resultNullable
-                          then  ''
-                                assertNull(result);
-                                ''
-                          else  ''
-                                assertNotNull(result);
-                                ''
-                    else  ''
-                          assertTrue(result >= 0L);
-                          ''}
+          in  ''
+              package ${params.packageName}.statements;
+
+              import static org.junit.jupiter.api.Assertions.*;
+
+              import ${params.packageName}.AbstractDatabaseIT;
+              import ${params.packageName}.types.*;
+              import io.codemine.java.postgresql.jdbc.Codec;
+              import io.codemine.java.postgresql.codecs.*;
+              import java.util.List;
+              import java.sql.SQLException;
+              import java.time.*;
+              import java.util.Optional;
+              import org.junit.jupiter.api.Test;
+
+              class ${params.typeName}IT extends AbstractDatabaseIT {
+                  ${Lude.Text.indentNonEmpty
+                      4
+                      ( if    params.shouldTestIdentity
+                        then  identityTestCase
+                        else  defaultTestCase
+                      )}
               }
-          }
-          ''
+              ''
       )

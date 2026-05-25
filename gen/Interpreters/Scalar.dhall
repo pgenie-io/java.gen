@@ -22,6 +22,7 @@ let Output =
       , pgCastSuffix : Optional Text
       , needsCustomTypeImport : Bool
       , testDefaultLiteral : Text
+      , testRandomLiteral : Text
       }
 
 let run =
@@ -58,6 +59,8 @@ let run =
                       , needsCustomTypeImport = True
                       , testDefaultLiteral =
                           "${codecRef}.toAgnostic().random(new java.util.Random(0L), 0)"
+                      , testRandomLiteral =
+                          "${codecRef}.toAgnostic().random(new java.util.Random(), 0)"
                       }
           }
           input

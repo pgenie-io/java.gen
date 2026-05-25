@@ -29,6 +29,7 @@ let Output =
       , dims : Natural
       , needsCustomTypeImport : Bool
       , testDefaultLiteral : Text
+      , testRandomLiteral : Text
       }
 
 let run =
@@ -71,6 +72,10 @@ let run =
                         if    isOptional
                         then  "Optional.empty()"
                         else  value.testDefaultLiteral
+                    , testRandomLiteral =
+                        if    isOptional
+                        then  "Optional.of(${value.testRandomLiteral})"
+                        else  value.testRandomLiteral
                     }
 
         in  Lude.Compiled.map2

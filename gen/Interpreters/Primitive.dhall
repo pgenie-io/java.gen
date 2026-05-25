@@ -12,6 +12,7 @@ let Output =
       , codecRef : Text
       , imports : ImportSet.Type
       , testDefaultLiteral : Text
+      , testRandomLiteral : Text
       }
 
 let noImports = ImportSet.empty
@@ -35,6 +36,7 @@ let jdbcPrimitive =
       \(boxedJavaType : Text) ->
       \(codecName : Text) ->
       \(testDefaultLiteral : Text) ->
+      \(testRandomLiteral : Text) ->
         Deps.Lude.Compiled.ok
           Output
           { javaType
@@ -42,6 +44,7 @@ let jdbcPrimitive =
           , codecRef = "Codec.${codecName}"
           , imports = noImports
           , testDefaultLiteral
+          , testRandomLiteral
           }
 
 let jdbcString =
@@ -53,6 +56,7 @@ let jdbcString =
           , codecRef = "Codec.${codecName}"
           , imports = noImports
           , testDefaultLiteral = "\"\""
+          , testRandomLiteral = "java.util.UUID.randomUUID().toString()"
           }
 
 let dateType =
@@ -63,6 +67,8 @@ let dateType =
         , codecRef = "Codec.DATE"
         , imports = noImports
         , testDefaultLiteral = "LocalDate.of(2000, 1, 1)"
+        , testRandomLiteral =
+            "Codec.DATE.toAgnostic().random(new java.util.Random(), 0)"
         }
 
 let codec =
@@ -79,6 +85,8 @@ let codec =
               , imports
               , testDefaultLiteral =
                   "${codecRef}.toAgnostic().random(new java.util.Random(0L), 0)"
+              , testRandomLiteral =
+                  "${codecRef}.toAgnostic().random(new java.util.Random(), 0)"
               }
 
 let run =
@@ -86,7 +94,13 @@ let run =
       \(input : Input) ->
         merge
           { Bit = codec "Bit" "BIT" codecImports
-          , Bool = jdbcPrimitive "boolean" "Boolean" "BOOL" "false"
+          , Bool =
+              jdbcPrimitive
+                "boolean"
+                "Boolean"
+                "BOOL"
+                "false"
+                "java.util.concurrent.ThreadLocalRandom.current().nextBoolean()"
           , Box = codec "Box" "BOX" codecImports
           , Box2D = unsupportedType "box2d"
           , Box3D = unsupportedType "box3d"
@@ -100,18 +114,48 @@ let run =
           , Datemultirange =
               codec "Multirange<LocalDate>" "DATEMULTIRANGE" codecImports
           , Daterange = codec "Range<LocalDate>" "DATERANGE" codecImports
-          , Float4 = jdbcPrimitive "float" "Float" "FLOAT4" "0.0f"
-          , Float8 = jdbcPrimitive "double" "Double" "FLOAT8" "0.0"
+          , Float4 =
+              jdbcPrimitive
+                "float"
+                "Float"
+                "FLOAT4"
+                "0.0f"
+                "java.util.concurrent.ThreadLocalRandom.current().nextFloat()"
+          , Float8 =
+              jdbcPrimitive
+                "double"
+                "Double"
+                "FLOAT8"
+                "0.0"
+                "java.util.concurrent.ThreadLocalRandom.current().nextDouble()"
           , Geography = unsupportedType "geography"
           , Geometry = unsupportedType "geometry"
           , Hstore = codec "Hstore" "HSTORE" codecImports
           , Inet = codec "Inet" "INET" codecImports
-          , Int2 = jdbcPrimitive "short" "Short" "INT2" "(short) 0"
-          , Int4 = jdbcPrimitive "int" "Integer" "INT4" "0"
+          , Int2 =
+              jdbcPrimitive
+                "short"
+                "Short"
+                "INT2"
+                "(short) 0"
+                "(short) java.util.concurrent.ThreadLocalRandom.current().nextInt()"
+          , Int4 =
+              jdbcPrimitive
+                "int"
+                "Integer"
+                "INT4"
+                "0"
+                "java.util.concurrent.ThreadLocalRandom.current().nextInt()"
           , Int4multirange =
               codec "Multirange<Integer>" "INT4MULTIRANGE" codecImports
           , Int4range = codec "Range<Integer>" "INT4RANGE" codecImports
-          , Int8 = jdbcPrimitive "long" "Long" "INT8" "0L"
+          , Int8 =
+              jdbcPrimitive
+                "long"
+                "Long"
+                "INT8"
+                "0L"
+                "java.util.concurrent.ThreadLocalRandom.current().nextLong()"
           , Int8multirange =
               codec "Multirange<Long>" "INT8MULTIRANGE" codecImports
           , Int8range = codec "Range<Long>" "INT8RANGE" codecImports
@@ -128,6 +172,8 @@ let run =
                 , codecRef = "Codec.LTREE"
                 , imports = codecImports
                 , testDefaultLiteral = "new Ltree(List.of(\"root\"))"
+                , testRandomLiteral =
+                    "new Ltree(List.of(java.util.UUID.randomUUID().toString()))"
                 }
           , Macaddr = codec "Macaddr" "MACADDR" codecImports
           , Macaddr8 = codec "Macaddr8" "MACADDR8" codecImports
