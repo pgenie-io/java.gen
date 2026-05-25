@@ -101,12 +101,12 @@ let render =
                     )
 
         let hasResult =
-              Deps.Prelude.Optional.fold
-                Deps.Sdk.Project.ResultRows
+              merge
+                { Void = False
+                , RowsAffected = True
+                , Rows = \(_ : Deps.Sdk.Project.ResultRows) -> True
+                }
                 input.result
-                Bool
-                (\(_ : Deps.Sdk.Project.ResultRows) -> True)
-                False
 
         let resultInfo = result statementModuleName
 
@@ -144,43 +144,45 @@ let render =
                 params
 
         let hasOptionalResult =
-              Deps.Prelude.Optional.fold
-                Deps.Sdk.Project.ResultRows
+              merge
+                { Void = False
+                , RowsAffected = False
+                , Rows =
+                    \(rows : Deps.Sdk.Project.ResultRows) ->
+                          config.useOptional
+                      &&  Deps.Prelude.List.any
+                            Deps.Sdk.Project.Member
+                            ( \(m : Deps.Sdk.Project.Member) ->
+                                    m.isNullable
+                                ||  Deps.Prelude.Optional.fold
+                                      Deps.Sdk.Project.ArraySettings
+                                      m.value.arraySettings
+                                      Bool
+                                      ( \ ( arr
+                                          : Deps.Sdk.Project.ArraySettings
+                                          ) ->
+                                          arr.elementIsNullable
+                                      )
+                                      False
+                            )
+                            ( Deps.Prelude.NonEmpty.toList
+                                Deps.Sdk.Project.Member
+                                rows.columns
+                            )
+                }
                 input.result
-                Bool
-                ( \(rows : Deps.Sdk.Project.ResultRows) ->
-                        config.useOptional
-                    &&  Deps.Prelude.List.any
-                          Deps.Sdk.Project.Member
-                          ( \(m : Deps.Sdk.Project.Member) ->
-                                  m.isNullable
-                              ||  Deps.Prelude.Optional.fold
-                                    Deps.Sdk.Project.ArraySettings
-                                    m.value.arraySettings
-                                    Bool
-                                    ( \(arr : Deps.Sdk.Project.ArraySettings) ->
-                                        arr.elementIsNullable
-                                    )
-                                    False
-                          )
-                          ( Deps.Prelude.NonEmpty.toList
-                              Deps.Sdk.Project.Member
-                              rows.columns
-                          )
-                )
-                False
 
         let isOptionalCardinality =
-              Deps.Prelude.Optional.fold
-                Deps.Sdk.Project.ResultRows
+              merge
+                { Void = False
+                , RowsAffected = False
+                , Rows =
+                    \(rows : Deps.Sdk.Project.ResultRows) ->
+                      merge
+                        { Optional = True, Single = False, Multiple = False }
+                        rows.cardinality
+                }
                 input.result
-                Bool
-                ( \(rows : Deps.Sdk.Project.ResultRows) ->
-                    merge
-                      { Optional = True, Single = False, Multiple = False }
-                      rows.cardinality
-                )
-                False
 
         let hasOptionalResultType = config.useOptional && isOptionalCardinality
 
@@ -194,16 +196,16 @@ let render =
               ||  resultInfo.needsCustomTypeImport
 
         let needsArrayListImport =
-              Deps.Prelude.Optional.fold
-                Deps.Sdk.Project.ResultRows
+              merge
+                { Void = False
+                , RowsAffected = False
+                , Rows =
+                    \(rows : Deps.Sdk.Project.ResultRows) ->
+                      merge
+                        { Optional = False, Single = False, Multiple = True }
+                        rows.cardinality
+                }
                 input.result
-                Bool
-                ( \(rows : Deps.Sdk.Project.ResultRows) ->
-                    merge
-                      { Optional = False, Single = False, Multiple = True }
-                      rows.cardinality
-                )
-                False
 
         let statementModuleContents =
               Templates.StatementModule.run

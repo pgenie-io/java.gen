@@ -1,3 +1,9 @@
+# Upcoming
+
+## Breaking
+
+- Contract updated to v3.0
+
 # v0.5.0
 
 ## Breaking

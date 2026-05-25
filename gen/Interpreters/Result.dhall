@@ -23,7 +23,7 @@ let run =
       \(config : Algebra.Config) ->
       \(input : Input) ->
         merge
-          { None =
+          { Void =
               Deps.Lude.Compiled.ok
                 Output
                 ( \(_ : Text) ->
@@ -34,7 +34,18 @@ let run =
                     , needsCustomTypeImport = False
                     }
                 )
-          , Some = ResultRows.run config
+          , RowsAffected =
+              Deps.Lude.Compiled.ok
+                Output
+                ( \(_ : Text) ->
+                    { typeDecls = ""
+                    , statementImpl = Templates.StatementImplNoResult.run {=}
+                    , statementTypeArg = "Long"
+                    , imports = ImportSet.empty
+                    , needsCustomTypeImport = False
+                    }
+                )
+          , Rows = ResultRows.run config
           }
           input
 
