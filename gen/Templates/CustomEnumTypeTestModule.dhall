@@ -19,7 +19,7 @@ let run =
                     ''
                     @Test
                     void roundtrip${v.variantName}() throws SQLException {
-                        assertEquals(Optional.of(${params.typeName}.${v.variantName}), roundtrip(${params.typeName}.${v.variantName}));
+                        assertEquals(Optional.of(${params.typeName}.${v.variantName}), roundtrip(Optional.of(${params.typeName}.${v.variantName})));
                     }''
                 )
                 params.variants
@@ -37,11 +37,11 @@ let run =
 
             class ${params.typeName}IT extends AbstractDatabaseIT {
 
-                private Optional<${params.typeName}> roundtrip(${params.typeName} input) throws SQLException {
+                private Optional<${params.typeName}> roundtrip(Optional<${params.typeName}> input) throws SQLException {
                     return execute(new Statement<Optional<${params.typeName}>>() {
                         @Override public String sql() { return "select ?::${params.pgTypeName}"; }
                         @Override public void bindParams(PreparedStatement ps) throws SQLException {
-                            ${params.typeName}.CODEC.bind(ps, 1, input);
+                            ${params.typeName}.CODEC.bind(ps, 1, input.orElse(null));
                         }
                         @Override public boolean returnsRows() { return true; }
                         @Override public Optional<${params.typeName}> decodeResultSet(ResultSet rs) throws SQLException {
@@ -56,7 +56,7 @@ let run =
 
                 @Test
                 void roundtripNull() throws SQLException {
-                    assertEquals(Optional.empty(), roundtrip(null));
+                    assertEquals(Optional.empty(), roundtrip(Optional.empty()));
                 }
 
                 ${Deps.Lude.Text.indentNonEmpty 4 variantTests}
