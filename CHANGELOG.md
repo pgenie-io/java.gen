@@ -1,3 +1,9 @@
+# Upcoming
+
+## Fixes
+
+- Fix the `Optional` handling in custom type tests
+
 # v0.6.0
 
 ## Breaking
