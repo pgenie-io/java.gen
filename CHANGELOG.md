@@ -1,3 +1,8 @@
+# Upcoming
+
+- Fix the custom type tests to test `null` when the `useOptional` setting is false
+
+
 # v0.6.1
 
 ## Fixes
