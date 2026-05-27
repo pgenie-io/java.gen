@@ -8,6 +8,7 @@ let Params =
       , pgSchema : Text
       , pgTypeName : Text
       , variants : List Variant
+      , useOptional : Bool
       }
 
 let run =

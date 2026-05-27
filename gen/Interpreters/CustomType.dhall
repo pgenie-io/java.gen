@@ -175,6 +175,7 @@ let run =
                                                     }
                                                 )
                                                 members
+                                          , useOptional = config.useOptional
                                           }
                                     , testModuleName = moduleName ++ "IT"
                                     , testModulePath = moduleName ++ "IT.java"
@@ -186,6 +187,7 @@ let run =
                                           , needsCodecsImport =
                                               extraImports.codecs
                                           , testCases
+                                          , useOptional = config.useOptional
                                           }
                                     }
                             )
@@ -215,6 +217,7 @@ let run =
                                       }
                                   )
                                   variants
+                            , useOptional = config.useOptional
                             }
                       , testModuleName = moduleName ++ "IT"
                       , testModulePath = moduleName ++ "IT.java"
@@ -232,6 +235,7 @@ let run =
                                       }
                                   )
                                   variants
+                            , useOptional = config.useOptional
                             }
                       }
               , Domain =

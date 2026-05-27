@@ -19,6 +19,7 @@ let Params =
       , pgTypeName : Text
       , extraImports : ImportSet.Type
       , fields : List Field
+      , useOptional : Bool
       }
 
 let importIf =
