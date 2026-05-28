@@ -1,7 +1,16 @@
+# Upcoming
+
+## Breaking
+
+- Updated `io.codemine.java.postgresql:jdbc` dependency from 0.5.0 to 0.6.0.
+  - `money` type mapping changed from `Long` to `BigDecimal`; generated code now uses `Codec.money(2)`.
+  - `oid` type mapping changed from `Integer` to `Long`.
+
 # v0.6.2
 
-- Fix the custom type tests to test `null` when the `useOptional` setting is false
+## Fixes
 
+- Fix the custom type tests to test `null` when the `useOptional` setting is false
 
 # v0.6.1
 

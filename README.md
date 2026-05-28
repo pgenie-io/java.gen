@@ -78,8 +78,8 @@ Scalar types can appear as plain values, as nullable values
 | `numeric` | `BigDecimal` | postgresql-codecs |
 | `uuid` | `UUID` | postgresql-codecs |
 | `bytea` | `Bytea` | postgresql-codecs |
-| `oid` | `Integer` | postgresql-codecs |
-| `money` | `Long` | postgresql-codecs |
+| `oid` | `Long` | postgresql-codecs |
+| `money` | `BigDecimal` | postgresql-codecs |
 | `json` | `JsonNode` | postgresql-codecs (jackson) |
 | `jsonb` | `JsonNode` | postgresql-codecs (jackson) |
 | `bit` | `Bit` | postgresql-codecs |

@@ -177,7 +177,7 @@ let run =
                 }
           , Macaddr = codec "Macaddr" "MACADDR" codecImports
           , Macaddr8 = codec "Macaddr8" "MACADDR8" codecImports
-          , Money = codec "Long" "MONEY" noImports
+          , Money = codec "BigDecimal" "money(2)" bigDecimalImports
           , Name = unsupportedType "name"
           , Numeric = codec "BigDecimal" "NUMERIC" bigDecimalImports
           , Nummultirange =
@@ -187,7 +187,7 @@ let run =
                 codecBigDecimalImports
           , Numrange =
               codec "Range<BigDecimal>" "NUMRANGE" codecBigDecimalImports
-          , Oid = codec "Integer" "OID" noImports
+          , Oid = codec "Long" "OID" noImports
           , Path = codec "Path" "PATH" codecImports
           , PgLsn = unsupportedType "pg_lsn"
           , PgSnapshot = unsupportedType "pg_snapshot"
