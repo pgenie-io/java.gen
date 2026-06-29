@@ -81,10 +81,10 @@ let javaKeywords
 
 let isJavaKeyword
     : Input -> Bool
-    = \(name : Input) ->
+    = \(text : Text) ->
         Deps.Prelude.List.any
           Text
-          (\(kw : Text) -> Text/equal kw name.inCamelCase)
+          (\(kw : Text) -> Text/equal kw text)
           javaKeywords
 
 let run =
@@ -93,7 +93,7 @@ let run =
         let rawFieldName = input.inCamelCase
 
         let fieldName =
-              if isJavaKeyword input then "${rawFieldName}_" else rawFieldName
+              if isJavaKeyword rawFieldName then "${rawFieldName}_" else rawFieldName
 
         in  Lude.Compiled.ok Output { fieldName }
 
