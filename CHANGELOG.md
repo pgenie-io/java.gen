@@ -1,3 +1,9 @@
+# Upcoming
+
+## Non-breaking
+
+- Removed the dependency on the custom fork of Dhall by working around the need for `Text/equal`.
+
 # v0.7.0
 
 ## Breaking
