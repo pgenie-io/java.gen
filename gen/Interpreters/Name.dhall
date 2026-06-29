@@ -10,16 +10,24 @@ let Input = Model.Name
 
 let Output = { fieldName : Text }
 
-let isEmpty =
-    -- Text/equal is not available in this environment, so string equality is
-    -- encoded in "Text land": "x" stands for true and "" for false. This lets us
-    -- compute the keyword suffix without ever producing a Bool.
-      \(text : Text) -> Text/replace "xx" "" ("x" ++ Text/replace text "x" text)
-
-let equals =
-      \(t1 : Text) ->
-      \(t2 : Text) ->
-        isEmpty (Text/replace t1 "" t2 ++ Text/replace t2 "" t1)
+let replaceIfEquals =
+    -- Text/equal is not available in this environment. We get full-string
+    -- equality out of the substring-based Text/replace by wrapping both sides
+    -- in a sentinel ("|", which cannot occur in an identifier): "|target|" is a
+    -- substring of "|original|" only when target == original, so the inner
+    -- replace fires exactly on an exact match. The outer replace strips the
+    -- sentinels back out.
+      \(target : Text) ->
+      \(replacement : Text) ->
+      \(original : Text) ->
+        Text/replace
+          "|"
+          ""
+          ( Text/replace
+              ("|" ++ target ++ "|")
+              ("|" ++ replacement ++ "|")
+              ("|" ++ original ++ "|")
+          )
 
 let javaKeywords
     : List Text
@@ -90,27 +98,25 @@ let javaKeywords
       , "null"
       ]
 
-let keywordSuffix =
-    -- "_" if the name collides with a Java keyword, otherwise "". The fold yields
-    -- the "x" marker for the (at most one) matching keyword, which we map to "_".
-      \(name : Text) ->
-        Text/replace
-          "x"
-          "_"
-          ( List/fold
-              Text
-              javaKeywords
-              Text
-              (\(kw : Text) -> \(acc : Text) -> acc ++ equals kw name)
-              ""
-          )
-
 let run =
       \(config : Algebra.Config) ->
       \(input : Input) ->
         let rawFieldName = input.inCamelCase
 
-        let fieldName = rawFieldName ++ keywordSuffix rawFieldName
+        let fieldName =
+            -- Suffix the name with "_" if it collides with a Java keyword: each
+            -- keyword that exactly matches the accumulator rewrites it to
+            -- `kw ++ "_"`; at most one matches, and the result never matches a
+            -- later keyword.
+              List/fold
+                Text
+                javaKeywords
+                Text
+                ( \(kw : Text) ->
+                  \(acc : Text) ->
+                    replaceIfEquals kw (kw ++ "_") acc
+                )
+                rawFieldName
 
         in  Lude.Compiled.ok Output { fieldName }
 
