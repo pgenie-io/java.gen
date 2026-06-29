@@ -1,16 +1,14 @@
-let Deps = ../Deps/package.dhall
-
 let Algebra = ../Algebras/Interpreter.dhall
 
-let Model = Deps.Sdk.Project
+let Sdk = ../Deps/Sdk.dhall
 
-let Lude = Deps.Lude
+let Lude = ../Deps/Lude.dhall
 
-let Input = Model.Name
+let Input = Sdk.Project.Name
 
 let Output = { fieldName : Text }
 
-let replaceIfEquals =
+let replaceTextIfEquals =
     -- Text/equal is not available in this environment. We get full-string
     -- equality out of the substring-based Text/replace by wrapping both sides
     -- in a sentinel ("|", which cannot occur in an identifier): "|target|" is a
@@ -20,14 +18,22 @@ let replaceIfEquals =
       \(target : Text) ->
       \(replacement : Text) ->
       \(original : Text) ->
-        Text/replace
-          "|"
-          ""
-          ( Text/replace
-              ("|" ++ target ++ "|")
-              ("|" ++ replacement ++ "|")
-              ("|" ++ original ++ "|")
-          )
+        let replacedWithSentinels =
+              Text/replace "|${target}|" "|${replacement}|" "|${original}|"
+
+        let replacedSansSentinels = Text/replace "|" "" replacedWithSentinels
+
+        in  replacedSansSentinels
+
+let replaceTextIfInList
+    : List Text -> Text -> Text -> Text
+    = \(candidates : List Text) ->
+      \(replacement : Text) ->
+        List/fold
+          Text
+          candidates
+          Text
+          (\(candidate : Text) -> replaceTextIfEquals candidate replacement)
 
 let javaKeywords
     : List Text
@@ -98,25 +104,14 @@ let javaKeywords
       , "null"
       ]
 
+let escapeJavaKeyword
+    : Text -> Text
+    = \(text : Text) -> replaceTextIfInList javaKeywords (text ++ "_") text
+
 let run =
       \(config : Algebra.Config) ->
       \(input : Input) ->
-        let rawFieldName = input.inCamelCase
-
-        let fieldName =
-            -- Suffix the name with "_" if it collides with a Java keyword: each
-            -- keyword that exactly matches the accumulator rewrites it to
-            -- `kw ++ "_"`; at most one matches, and the result never matches a
-            -- later keyword.
-              List/fold
-                Text
-                javaKeywords
-                Text
-                ( \(kw : Text) ->
-                  \(acc : Text) ->
-                    replaceIfEquals kw (kw ++ "_") acc
-                )
-                rawFieldName
+        let fieldName = escapeJavaKeyword input.inCamelCase
 
         in  Lude.Compiled.ok Output { fieldName }
 
