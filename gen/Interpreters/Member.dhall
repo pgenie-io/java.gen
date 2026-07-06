@@ -4,11 +4,11 @@ let ImportSet = ../Structures/ImportSet.dhall
 
 let Algebra = ../Algebras/Interpreter.dhall
 
-let Sdk = Deps.Sdk
-
 let Lude = Deps.Lude
 
 let Model = Deps.Sdk.Project
+
+let Templates = ../Templates/package.dhall
 
 let Value = ./Value.dhall
 
@@ -22,14 +22,20 @@ let Output =
       , pgName : Text
       , pgCastSuffix : Text
       , codecRef : Text
+      , boxedJavaType : Text
+      , rawCodecType : Text
+      , columnField : Text
       , imports : ImportSet.Type
       , isNullable : Bool
       , isOptional : Bool
       , elementIsOptional : Bool
+      , elementIsNullable : Bool
       , dims : Natural
       , needsCustomTypeImport : Bool
       , testDefaultLiteral : Text
       , testRandomLiteral : Text
+      , testPresentLiteral : Text
+      , testAbsentLiteral : Text
       }
 
 let run =
@@ -54,18 +60,34 @@ let run =
                     , pgName = input.pgName
                     , pgCastSuffix = value.pgCastSuffix
                     , codecRef = value.codecRef
+                    , boxedJavaType = value.boxedJavaType
+                    , rawCodecType = value.rawCodecType
+                    , columnField =
+                        Templates.ResultColumnField.run
+                          { pgName = input.pgName
+                          , fieldType
+                          , fieldName
+                          , isNullable = input.isNullable
+                          }
                     , imports = value.imports
                     , isNullable = input.isNullable
                     , isOptional
                     , elementIsOptional = value.elementIsOptional
+                    , elementIsNullable =
+                        Deps.Prelude.Optional.fold
+                          Model.ArraySettings
+                          input.value.arraySettings
+                          Bool
+                          ( \(arr : Model.ArraySettings) ->
+                              arr.elementIsNullable
+                          )
+                          False
                     , dims =
                         Deps.Prelude.Optional.fold
-                          Deps.Sdk.Project.ArraySettings
+                          Model.ArraySettings
                           input.value.arraySettings
                           Natural
-                          ( \(arr : Deps.Sdk.Project.ArraySettings) ->
-                              arr.dimensionality
-                          )
+                          (\(arr : Model.ArraySettings) -> arr.dimensionality)
                           0
                     , needsCustomTypeImport = value.needsCustomTypeImport
                     , testDefaultLiteral =
@@ -76,6 +98,12 @@ let run =
                         if    isOptional
                         then  "Optional.of(${value.testRandomLiteral})"
                         else  value.testRandomLiteral
+                    , testPresentLiteral =
+                        if    isOptional
+                        then  "Optional.of(${value.testDefaultLiteral})"
+                        else  value.testDefaultLiteral
+                    , testAbsentLiteral =
+                        if isOptional then "Optional.empty()" else "null"
                     }
 
         in  Lude.Compiled.map2

@@ -16,7 +16,7 @@ let ResultModule = ./Result.dhall
 
 let QueryFragmentsModule = ./QueryFragments.dhall
 
-let ParamsMemberModule = ./ParamsMember.dhall
+let Member = ./Member.dhall
 
 let Input = Deps.Sdk.Project.Query
 
@@ -33,16 +33,16 @@ let render =
       \(input : Input) ->
       \(result : ResultModule.Output) ->
       \(fragments : QueryFragmentsModule.Output) ->
-      \(params : List ParamsMemberModule.Output) ->
+      \(params : List Member.Output) ->
         let statementModuleName = input.name.inPascalCase
 
         let statementModulePath = input.name.inPascalCase ++ ".java"
 
         let paramCastSuffixes =
               Deps.Prelude.List.map
-                ParamsMemberModule.Output
+                Member.Output
                 Text
-                (\(member : ParamsMemberModule.Output) -> member.pgCastSuffix)
+                (\(member : Member.Output) -> member.pgCastSuffix)
                 params
 
         let sqlExp = fragments.mkSqlExp paramCastSuffixes
@@ -76,13 +76,13 @@ let render =
                             let mParam =
                                   Deps.Prelude.List.index
                                     ip.value
-                                    ParamsMemberModule.Output
+                                    Member.Output
                                     params
 
                             in  merge
                                   { None = None Text
                                   , Some =
-                                      \(p : ParamsMemberModule.Output) ->
+                                      \(p : Member.Output) ->
                                         Some
                                           ( Templates.ParamBindStatement.run
                                               { idx
@@ -112,10 +112,10 @@ let render =
 
         let paramImports =
               List/fold
-                ParamsMemberModule.Output
+                Member.Output
                 params
                 ImportSet.Type
-                ( \(param : ParamsMemberModule.Output) ->
+                ( \(param : Member.Output) ->
                   \(acc : ImportSet.Type) ->
                     ImportSet.combine param.imports acc
                 )
@@ -125,9 +125,9 @@ let render =
 
         let paramFields =
               Deps.Prelude.List.map
-                ParamsMemberModule.Output
+                Member.Output
                 Text
-                ( \(member : ParamsMemberModule.Output) ->
+                ( \(member : Member.Output) ->
                     Templates.ParamField.run
                       { pgName = member.pgName
                       , fieldType = member.fieldType
@@ -139,8 +139,8 @@ let render =
 
         let hasOptionalParam =
               Deps.Prelude.List.any
-                ParamsMemberModule.Output
-                (\(m : ParamsMemberModule.Output) -> m.isOptional)
+                Member.Output
+                (\(m : Member.Output) -> m.isOptional)
                 params
 
         let hasOptionalResult =
@@ -188,10 +188,8 @@ let render =
 
         let needsCustomTypeImport =
                   Deps.Prelude.List.any
-                    ParamsMemberModule.Output
-                    ( \(m : ParamsMemberModule.Output) ->
-                        m.needsCustomTypeImport
-                    )
+                    Member.Output
+                    (\(m : Member.Output) -> m.needsCustomTypeImport)
                     params
               ||  resultInfo.needsCustomTypeImport
 
@@ -232,23 +230,23 @@ let render =
 
         let defaultArgs =
               Deps.Prelude.List.map
-                ParamsMemberModule.Output
+                Member.Output
                 Text
-                (\(m : ParamsMemberModule.Output) -> m.testDefaultLiteral)
+                (\(m : Member.Output) -> m.testDefaultLiteral)
                 params
 
         let testRandomArgs =
               Deps.Prelude.List.map
-                ParamsMemberModule.Output
+                Member.Output
                 Text
-                (\(m : ParamsMemberModule.Output) -> m.testRandomLiteral)
+                (\(m : Member.Output) -> m.testRandomLiteral)
                 params
 
         let identityFieldNames =
               Deps.Prelude.List.map
-                ParamsMemberModule.Output
+                Member.Output
                 Text
-                (\(m : ParamsMemberModule.Output) -> m.fieldName)
+                (\(m : Member.Output) -> m.fieldName)
                 params
 
         let testModulePath = input.name.inPascalCase ++ "IT.java"
@@ -287,7 +285,7 @@ let run =
               Lude.Compiled.applicative
               ResultModule.Output
               QueryFragmentsModule.Output
-              (List ParamsMemberModule.Output)
+              (List Member.Output)
               Output
               (render config input)
               ( Lude.Compiled.nest
@@ -301,14 +299,14 @@ let run =
                   (QueryFragmentsModule.run config input.fragments)
               )
               ( Lude.Compiled.nest
-                  (List ParamsMemberModule.Output)
+                  (List Member.Output)
                   "params"
                   ( Typeclasses.Classes.Applicative.traverseList
                       Lude.Compiled.Type
                       Lude.Compiled.applicative
                       Deps.Sdk.Project.Member
-                      ParamsMemberModule.Output
-                      (ParamsMemberModule.run config)
+                      Member.Output
+                      (Member.run config)
                       input.params
                   )
               )

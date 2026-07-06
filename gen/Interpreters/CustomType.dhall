@@ -12,7 +12,7 @@ let Model = Deps.Sdk.Project
 
 let Templates = ../Templates/package.dhall
 
-let MemberGen = ./CustomTypeMember.dhall
+let Member = ./Member.dhall
 
 let Input = Model.CustomType
 
@@ -39,25 +39,25 @@ let run =
               { Composite =
                   \(members : List Model.Member) ->
                     let compiledMembers
-                        : Lude.Compiled.Type (List MemberGen.Output)
+                        : Lude.Compiled.Type (List Member.Output)
                         = Lude.Compiled.traverseList
                             Model.Member
-                            MemberGen.Output
-                            (MemberGen.run config)
+                            Member.Output
+                            (Member.run config)
                             members
 
                     let compiledOutput
                         : Lude.Compiled.Type Output
                         = Lude.Compiled.map
-                            (List MemberGen.Output)
+                            (List Member.Output)
                             Output
-                            ( \(members : List MemberGen.Output) ->
+                            ( \(members : List Member.Output) ->
                                 let extraImports =
                                       List/fold
-                                        MemberGen.Output
+                                        Member.Output
                                         members
                                         ImportSet.Type
-                                        ( \(member : MemberGen.Output) ->
+                                        ( \(member : Member.Output) ->
                                           \(acc : ImportSet.Type) ->
                                             ImportSet.combine member.imports acc
                                         )
@@ -74,9 +74,9 @@ let run =
                                 let fieldSpecs
                                     : List FieldSpec
                                     = Deps.Prelude.List.map
-                                        MemberGen.Output
+                                        Member.Output
                                         FieldSpec
-                                        ( \(m : MemberGen.Output) ->
+                                        ( \(m : Member.Output) ->
                                             { testPresentLiteral =
                                                 m.testPresentLiteral
                                             , testAbsentLiteral =
@@ -155,11 +155,9 @@ let run =
                                           , extraImports
                                           , fields =
                                               Deps.Prelude.List.map
-                                                MemberGen.Output
+                                                Member.Output
                                                 Templates.CustomCompositeTypeModule.Field
-                                                ( \ ( member
-                                                    : MemberGen.Output
-                                                    ) ->
+                                                ( \(member : Member.Output) ->
                                                     { pgName = member.pgName
                                                     , fieldName =
                                                         member.fieldName

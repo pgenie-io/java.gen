@@ -4,7 +4,7 @@ let ImportSet = ../Structures/ImportSet.dhall
 
 let Algebra = ../Algebras/Interpreter.dhall
 
-let ResultColumnsMember = ./ResultColumnsMember.dhall
+let Member = ./Member.dhall
 
 let Templates = ../Templates/package.dhall
 
@@ -29,31 +29,25 @@ in  Algebra.module
                   Deps.Lude.Compiled.Type
                   Deps.Lude.Compiled.applicative
                   Deps.Sdk.Project.Member
-                  ResultColumnsMember.Output
-                  (ResultColumnsMember.run config)
+                  Member.Output
+                  (Member.run config)
                   input
 
           in  Deps.Lude.Compiled.map
-                (List ResultColumnsMember.Output)
+                (List Member.Output)
                 Output
-                ( \(columns : List ResultColumnsMember.Output) ->
+                ( \(columns : List Member.Output) ->
                     let indexedColumns =
-                          Deps.Prelude.List.indexed
-                            ResultColumnsMember.Output
-                            columns
+                          Deps.Prelude.List.indexed Member.Output columns
 
                     let columnFieldList =
                           Deps.Prelude.Text.concatMapSep
                             ''
                             ,
                             ''
-                            { index : Natural
-                            , value : ResultColumnsMember.Output
-                            }
+                            { index : Natural, value : Member.Output }
                             ( \ ( ic
-                                : { index : Natural
-                                  , value : ResultColumnsMember.Output
-                                  }
+                                : { index : Natural, value : Member.Output }
                                 ) ->
                                 ic.value.columnField
                             )
@@ -63,13 +57,9 @@ in  Algebra.module
                           \(rowVarPresent : Bool) ->
                             Deps.Prelude.Text.concatMapSep
                               "\n"
-                              { index : Natural
-                              , value : ResultColumnsMember.Output
-                              }
+                              { index : Natural, value : Member.Output }
                               ( \ ( ic
-                                  : { index : Natural
-                                    , value : ResultColumnsMember.Output
-                                    }
+                                  : { index : Natural, value : Member.Output }
                                   ) ->
                                   Templates.ColDecodeStatement.run
                                     { colIdx = Natural/show (ic.index + 1)
@@ -88,19 +78,17 @@ in  Algebra.module
 
                     let columnNames =
                           Deps.Prelude.List.map
-                            ResultColumnsMember.Output
+                            Member.Output
                             Text
-                            ( \(col : ResultColumnsMember.Output) ->
-                                col.fieldName
-                            )
+                            (\(col : Member.Output) -> col.fieldName)
                             columns
 
                     let imports =
                           List/fold
-                            ResultColumnsMember.Output
+                            Member.Output
                             columns
                             ImportSet.Type
-                            ( \(col : ResultColumnsMember.Output) ->
+                            ( \(col : Member.Output) ->
                               \(acc : ImportSet.Type) ->
                                 ImportSet.combine col.imports acc
                             )
@@ -108,8 +96,8 @@ in  Algebra.module
 
                     let needsCustomTypeImport =
                           Deps.Prelude.List.any
-                            ResultColumnsMember.Output
-                            ( \(col : ResultColumnsMember.Output) ->
+                            Member.Output
+                            ( \(col : Member.Output) ->
                                 col.needsCustomTypeImport
                             )
                             columns
