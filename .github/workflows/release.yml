@@ -148,7 +148,7 @@ jobs:
         run: |
           echo "✓ Successfully deployed Dhall frozen package"
           echo "Release Tag: v${{ inputs.version }}"
-          echo "Artifact: package.dhall"
+          echo "Artifact: resolved.dhall"
 
   # ── Post-release ─────────────────────────────────────────────────────────────
   update-docs:
