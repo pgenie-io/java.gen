@@ -15,6 +15,7 @@
 # Unignore subtrees:
 !/.github/
 !/design/
+!/docs/
 !/src/
 !/gen/
 !/tests/
