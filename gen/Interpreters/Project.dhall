@@ -18,32 +18,19 @@ let Input = Model.Project
 
 let Output = List Lude.File.Type
 
-let toFlatLower =
-      \(name : Model.Name) -> Deps.Prelude.Text.replace "_" "" name.inSnakeCase
-
 let combineOutputs =
+      \(config : Algebra.Config) ->
       \(input : Input) ->
       \(queries : List QueryGen.Output) ->
       \(customTypes : List CustomTypeGen.Output) ->
-        let spacePkg = toFlatLower input.space
-
-        let namePkg = toFlatLower input.name
-
-        let packageName = "io.pgenie.artifacts.${spacePkg}.${namePkg}"
-
-        let srcPrefix =
-              "src/main/java/io/pgenie/artifacts/${spacePkg}/${namePkg}/"
-
-        let testPrefix =
-              "src/test/java/io/pgenie/artifacts/${spacePkg}/${namePkg}/"
-
         let customTypeFiles
             : List Lude.File.Type
             = Deps.Prelude.List.map
                 CustomTypeGen.Output
                 Lude.File.Type
                 ( \(customType : CustomTypeGen.Output) ->
-                    { path = srcPrefix ++ "types/" ++ customType.modulePath
+                    { path =
+                        config.srcPrefix ++ "types/" ++ customType.modulePath
                     , content = customType.moduleContent
                     }
                 )
@@ -55,7 +42,10 @@ let combineOutputs =
                 CustomTypeGen.Output
                 Lude.File.Type
                 ( \(customType : CustomTypeGen.Output) ->
-                    { path = testPrefix ++ "types/" ++ customType.testModulePath
+                    { path =
+                            config.testPrefix
+                        ++  "types/"
+                        ++  customType.testModulePath
                     , content = customType.testModuleContent
                     }
                 )
@@ -68,7 +58,9 @@ let combineOutputs =
                 Lude.File.Type
                 ( \(query : QueryGen.Output) ->
                     { path =
-                        srcPrefix ++ "statements/" ++ query.statementModulePath
+                            config.srcPrefix
+                        ++  "statements/"
+                        ++  query.statementModulePath
                     , content = query.statementModuleContents
                     }
                 )
@@ -80,13 +72,14 @@ let combineOutputs =
                 QueryGen.Output
                 Lude.File.Type
                 ( \(query : QueryGen.Output) ->
-                    { path = testPrefix ++ "statements/" ++ query.testModulePath
+                    { path =
+                            config.testPrefix
+                        ++  "statements/"
+                        ++  query.testModulePath
                     , content = query.testModuleContents
                     }
                 )
                 queries
-
-        let artifactId = input.name.inKebabCase
 
         let migrations =
               Deps.Prelude.List.map
@@ -97,9 +90,10 @@ let combineOutputs =
 
         let abstractDatabaseIT
             : Lude.File.Type
-            = { path = testPrefix ++ "AbstractDatabaseIT.java"
+            = { path = config.testPrefix ++ "AbstractDatabaseIT.java"
               , content =
-                  Templates.AbstractDatabaseIT.run { packageName, migrations }
+                  Templates.AbstractDatabaseIT.run
+                    { packageName = config.packageName, migrations }
               }
 
         let statementNamesSection =
@@ -143,9 +137,9 @@ let combineOutputs =
               , content =
                   Templates.ReadmeMd.run
                     { projectName
-                    , groupId = "io.pgenie.artifacts.${spacePkg}"
-                    , artifactId
-                    , packageName
+                    , groupId = config.groupId
+                    , artifactId = config.artifactId
+                    , packageName = config.packageName
                     , version
                     , statementNames = statementNamesSection
                     , typeNames = typeNamesSection
@@ -158,8 +152,8 @@ let combineOutputs =
             = { path = "pom.xml"
               , content =
                   Templates.PomXml.run
-                    { groupId = "io.pgenie.artifacts.${spacePkg}"
-                    , artifactId
+                    { groupId = config.groupId
+                    , artifactId = config.artifactId
                     , version
                     , projectName
                     , dbName = input.name.inSnakeCase
@@ -226,7 +220,7 @@ let run =
                 (List QueryGen.Output)
                 (List CustomTypeGen.Output)
                 (List Lude.File.Type)
-                (combineOutputs input)
+                (combineOutputs config input)
                 compiledQueries
                 compiledTypes
 

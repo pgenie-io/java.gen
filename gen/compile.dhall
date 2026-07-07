@@ -16,16 +16,22 @@ in  \(config : Optional Config) ->
               (\(c : Config) -> c.useOptional)
               False
 
+      let flatten =
+            \(name : Sdk.Project.Name) ->
+              Deps.Prelude.Text.replace "_" "" name.inSnakeCase
+
+      let spacePkg = flatten project.space
+
+      let namePkg = flatten project.name
+
       let interpreterConfig =
-            { rootModuleName = project.name.inSnakeCase
-            , packageName =
-                "io.pgenie.artifacts.${Deps.Prelude.Text.replace
-                                         "_"
-                                         ""
-                                         project.space.inSnakeCase}.${Deps.Prelude.Text.replace
-                                                                        "_"
-                                                                        ""
-                                                                        project.name.inSnakeCase}"
+            { packageName = "io.pgenie.artifacts.${spacePkg}.${namePkg}"
+            , srcPrefix =
+                "src/main/java/io/pgenie/artifacts/${spacePkg}/${namePkg}/"
+            , testPrefix =
+                "src/test/java/io/pgenie/artifacts/${spacePkg}/${namePkg}/"
+            , groupId = "io.pgenie.artifacts.${spacePkg}"
+            , artifactId = project.name.inKebabCase
             , useOptional
             }
 

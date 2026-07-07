@@ -1,6 +1,13 @@
 let Deps = ../Deps/package.dhall
 
-let Config = { rootModuleName : Text, packageName : Text, useOptional : Bool }
+let Config =
+      { packageName : Text
+      , srcPrefix : Text
+      , testPrefix : Text
+      , groupId : Text
+      , artifactId : Text
+      , useOptional : Bool
+      }
 
 let module =
       \(Input : Type) ->
