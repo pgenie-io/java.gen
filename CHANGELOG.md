@@ -1,3 +1,9 @@
+# Upcoming
+
+## Non-breaking
+
+- Internal refactoring of the Dhall generator: unified the member interpreters, centralized import generation via `ImportSet`, and made the package layout be calculated once.
+
 # v0.7.1
 
 ## Non-breaking
