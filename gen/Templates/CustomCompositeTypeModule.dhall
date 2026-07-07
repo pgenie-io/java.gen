@@ -22,11 +22,6 @@ let Params =
       , useOptional : Bool
       }
 
-let importIf =
-      \(condition : Bool) ->
-      \(import : Text) ->
-        if condition then [ import ] else [] : List Text
-
 let run =
       \(params : Params) ->
         let fieldDecls =
@@ -107,14 +102,7 @@ let run =
                   then  [ "java.util.Optional" ]
                   else  [] : List Text
                 )
-              # importIf
-                  params.extraImports.codecs
-                  "io.codemine.java.postgresql.codecs.*"
-              # importIf
-                  params.extraImports.jsonNode
-                  "com.fasterxml.jackson.databind.JsonNode"
-              # importIf params.extraImports.bigDecimal "java.math.BigDecimal"
-              # importIf params.extraImports.uuid "java.util.UUID"
+              # ImportSet.toImportLines params.extraImports params.packageName
               # [ "io.codemine.java.postgresql.jdbc.Codec" ]
 
         let importSection =

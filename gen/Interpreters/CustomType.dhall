@@ -63,6 +63,9 @@ let run =
                                         )
                                         ImportSet.empty
 
+                                let moduleImports =
+                                      extraImports // { customTypes = False }
+
                                 let Combination = List Text
 
                                 let FieldSpec =
@@ -152,7 +155,7 @@ let run =
                                           , typeName
                                           , pgSchema = input.pgSchema
                                           , pgTypeName = input.pgName
-                                          , extraImports
+                                          , extraImports = moduleImports
                                           , fields =
                                               Deps.Prelude.List.map
                                                 Member.Output

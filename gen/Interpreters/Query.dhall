@@ -137,41 +137,6 @@ let render =
                 )
                 params
 
-        let hasOptionalParam =
-              Deps.Prelude.List.any
-                Member.Output
-                (\(m : Member.Output) -> m.isOptional)
-                params
-
-        let hasOptionalResult =
-              merge
-                { Void = False
-                , RowsAffected = False
-                , Rows =
-                    \(rows : Deps.Sdk.Project.ResultRows) ->
-                          config.useOptional
-                      &&  Deps.Prelude.List.any
-                            Deps.Sdk.Project.Member
-                            ( \(m : Deps.Sdk.Project.Member) ->
-                                    m.isNullable
-                                ||  Deps.Prelude.Optional.fold
-                                      Deps.Sdk.Project.ArraySettings
-                                      m.value.arraySettings
-                                      Bool
-                                      ( \ ( arr
-                                          : Deps.Sdk.Project.ArraySettings
-                                          ) ->
-                                          arr.elementIsNullable
-                                      )
-                                      False
-                            )
-                            ( Deps.Prelude.NonEmpty.toList
-                                Deps.Sdk.Project.Member
-                                rows.columns
-                            )
-                }
-                input.result
-
         let isOptionalCardinality =
               merge
                 { Void = False
@@ -184,16 +149,7 @@ let render =
                 }
                 input.result
 
-        let hasOptionalResultType = config.useOptional && isOptionalCardinality
-
-        let needsCustomTypeImport =
-                  Deps.Prelude.List.any
-                    Member.Output
-                    (\(m : Member.Output) -> m.needsCustomTypeImport)
-                    params
-              ||  resultInfo.needsCustomTypeImport
-
-        let needsArrayListImport =
+        let isMultipleCardinality =
               merge
                 { Void = False
                 , RowsAffected = False
@@ -219,13 +175,7 @@ let render =
                 , statementImpl = resultInfo.statementImpl
                 , statementTypeArg = resultInfo.statementTypeArg
                 , extraImports
-                , needsArrayListImport
                 , hasResultType = hasResult
-                , hasOptionalFields =
-                        hasOptionalParam
-                    ||  hasOptionalResult
-                    ||  hasOptionalResultType
-                , needsCustomTypeImport
                 }
 
         let defaultArgs =
@@ -263,7 +213,7 @@ let render =
                 , shouldTestIdentity = input.identity
                 , identityFieldNames
                 , testRandomArgs
-                , isMultipleCardinality = needsArrayListImport
+                , isMultipleCardinality
                 , isOptionalCardinality
                 }
 

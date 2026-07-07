@@ -31,7 +31,6 @@ let Output =
       , elementIsOptional : Bool
       , elementIsNullable : Bool
       , dims : Natural
-      , needsCustomTypeImport : Bool
       , testDefaultLiteral : Text
       , testRandomLiteral : Text
       , testPresentLiteral : Text
@@ -89,7 +88,6 @@ let run =
                           Natural
                           (\(arr : Model.ArraySettings) -> arr.dimensionality)
                           0
-                    , needsCustomTypeImport = value.needsCustomTypeImport
                     , testDefaultLiteral =
                         if    isOptional
                         then  "Optional.empty()"

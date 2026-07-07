@@ -19,22 +19,8 @@ let Params =
       , statementImpl : Text
       , statementTypeArg : Text
       , extraImports : ImportSet.Type
-      , needsArrayListImport : Bool
       , hasResultType : Bool
-      , hasOptionalFields : Bool
-      , needsCustomTypeImport : Bool
       }
-
-let someIf =
-      \(V : Type) ->
-      \(condition : Bool) ->
-      \(v : V) ->
-        if condition then Some v else None V
-
-let importIf =
-      \(condition : Bool) ->
-      \(import : Text) ->
-        if condition then [ import ] else [] : List Text
 
 in  Algebra.module
       Params
@@ -57,23 +43,9 @@ in  Algebra.module
                       , "io.codemine.java.postgresql.jdbc.Codec"
                       , "io.codemine.java.postgresql.jdbc.Statement"
                       ]
-                    # importIf
-                        params.extraImports.codecs
-                        "io.codemine.java.postgresql.codecs.*"
-                    # importIf
-                        params.extraImports.jsonNode
-                        "com.fasterxml.jackson.databind.JsonNode"
-                    # importIf
-                        params.extraImports.bigDecimal
-                        "java.math.BigDecimal"
-                    # importIf params.extraImports.uuid "java.util.UUID"
-                    # Deps.Prelude.List.unpackOptionals
-                        Text
-                        [ someIf
-                            Text
-                            params.needsCustomTypeImport
-                            "${params.packageName}.types.*"
-                        ]
+                    # ImportSet.toImportLines
+                        params.extraImports
+                        params.packageName
                   )
 
           let paramFieldList =

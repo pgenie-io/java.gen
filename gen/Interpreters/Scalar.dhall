@@ -20,7 +20,6 @@ let Output =
       , codecRef : Text
       , imports : ImportSet.Type
       , pgCastSuffix : Optional Text
-      , needsCustomTypeImport : Bool
       , testDefaultLiteral : Text
       , testRandomLiteral : Text
       }
@@ -35,10 +34,7 @@ let run =
                   Primitive.Output
                   Output
                   ( \(primitive : Primitive.Output) ->
-                          primitive
-                      /\  { pgCastSuffix = None Text
-                          , needsCustomTypeImport = False
-                          }
+                      primitive /\ { pgCastSuffix = None Text }
                   )
                   (Primitive.run config primitive)
           , Custom =
@@ -54,9 +50,8 @@ let run =
                       { javaType = typeName
                       , boxedJavaType = typeName
                       , codecRef
-                      , imports = ImportSet.empty
+                      , imports = ImportSet.customTypes
                       , pgCastSuffix = Some "::${pgName}"
-                      , needsCustomTypeImport = True
                       , testDefaultLiteral =
                           "${codecRef}.toAgnostic().random(new java.util.Random(0L), 0)"
                       , testRandomLiteral =

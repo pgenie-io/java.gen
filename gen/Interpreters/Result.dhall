@@ -16,7 +16,6 @@ let Output =
         , typeDecls : Text
         , statementTypeArg : Text
         , imports : ImportSet.Type
-        , needsCustomTypeImport : Bool
         }
 
 let run =
@@ -31,7 +30,6 @@ let run =
                     , statementImpl = Templates.StatementImplNoResult.run {=}
                     , statementTypeArg = "Long"
                     , imports = ImportSet.empty
-                    , needsCustomTypeImport = False
                     }
                 )
           , RowsAffected =
@@ -42,7 +40,6 @@ let run =
                     , statementImpl = Templates.StatementImplNoResult.run {=}
                     , statementTypeArg = "Long"
                     , imports = ImportSet.empty
-                    , needsCustomTypeImport = False
                     }
                 )
           , Rows = ResultRows.run config

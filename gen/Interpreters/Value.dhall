@@ -22,7 +22,6 @@ let Output =
       , codecRef : Text
       , imports : ImportSet.Type
       , pgCastSuffix : Text
-      , needsCustomTypeImport : Bool
       , testDefaultLiteral : Text
       , testRandomLiteral : Text
       }
@@ -85,7 +84,6 @@ let run =
                                           "[]"
                               }
                               scalar.pgCastSuffix
-                        , needsCustomTypeImport = scalar.needsCustomTypeImport
                         , testDefaultLiteral = "List.of()"
                         , testRandomLiteral = "List.of()"
                         }
@@ -100,7 +98,6 @@ let run =
                     merge
                       { None = "", Some = \(suffix : Text) -> suffix }
                       scalar.pgCastSuffix
-                , needsCustomTypeImport = scalar.needsCustomTypeImport
                 , testDefaultLiteral = scalar.testDefaultLiteral
                 , testRandomLiteral = scalar.testRandomLiteral
                 }

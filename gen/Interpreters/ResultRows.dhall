@@ -16,7 +16,6 @@ let Output =
         , typeDecls : Text
         , statementTypeArg : Text
         , imports : ImportSet.Type
-        , needsCustomTypeImport : Bool
         }
 
 let run =
@@ -114,7 +113,6 @@ let run =
                       , typeDecls = resolved.typeDecls
                       , statementTypeArg = resolved.resultTypeName
                       , imports = cols.imports
-                      , needsCustomTypeImport = cols.needsCustomTypeImport
                       }
               )
               compiledColumns

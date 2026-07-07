@@ -1,24 +1,39 @@
-let Self = { codecs : Bool, jsonNode : Bool, bigDecimal : Bool, uuid : Bool }
+let Self =
+      { codecs : Bool
+      , jsonNode : Bool
+      , bigDecimal : Bool
+      , uuid : Bool
+      , customTypes : Bool
+      }
 
 let empty
     : Self
-    = { codecs = False, jsonNode = False, bigDecimal = False, uuid = False }
+    = { codecs = False
+      , jsonNode = False
+      , bigDecimal = False
+      , uuid = False
+      , customTypes = False
+      }
 
 let codecs
     : Self
-    = { codecs = True, jsonNode = False, bigDecimal = False, uuid = False }
+    = empty // { codecs = True }
 
 let jsonNode
     : Self
-    = { codecs = False, jsonNode = True, bigDecimal = False, uuid = False }
+    = empty // { jsonNode = True }
 
 let bigDecimal
     : Self
-    = { codecs = False, jsonNode = False, bigDecimal = True, uuid = False }
+    = empty // { bigDecimal = True }
 
 let uuid
     : Self
-    = { codecs = False, jsonNode = False, bigDecimal = False, uuid = True }
+    = empty // { uuid = True }
+
+let customTypes
+    : Self
+    = empty // { customTypes = True }
 
 let combine =
       \(left : Self) ->
@@ -27,6 +42,31 @@ let combine =
         , jsonNode = left.jsonNode || right.jsonNode
         , bigDecimal = left.bigDecimal || right.bigDecimal
         , uuid = left.uuid || right.uuid
+        , customTypes = left.customTypes || right.customTypes
         }
 
-in  { Type = Self, empty, codecs, jsonNode, bigDecimal, uuid, combine }
+let importIf =
+      \(condition : Bool) ->
+      \(import : Text) ->
+        if condition then [ import ] else [] : List Text
+
+let toImportLines
+    : Self -> Text -> List Text
+    = \(self : Self) ->
+      \(packageName : Text) ->
+          importIf self.codecs "io.codemine.java.postgresql.codecs.*"
+        # importIf self.jsonNode "com.fasterxml.jackson.databind.JsonNode"
+        # importIf self.bigDecimal "java.math.BigDecimal"
+        # importIf self.uuid "java.util.UUID"
+        # importIf self.customTypes "${packageName}.types.*"
+
+in  { Type = Self
+    , empty
+    , codecs
+    , jsonNode
+    , bigDecimal
+    , uuid
+    , customTypes
+    , combine
+    , toImportLines
+    }

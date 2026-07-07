@@ -16,7 +16,6 @@ let Output =
       , decodeLinesWithoutRowVar : Text
       , columnNames : List Text
       , imports : ImportSet.Type
-      , needsCustomTypeImport : Bool
       }
 
 in  Algebra.module
@@ -94,20 +93,11 @@ in  Algebra.module
                             )
                             ImportSet.empty
 
-                    let needsCustomTypeImport =
-                          Deps.Prelude.List.any
-                            Member.Output
-                            ( \(col : Member.Output) ->
-                                col.needsCustomTypeImport
-                            )
-                            columns
-
                     in  { columnFieldList
                         , decodeLinesWithRowVar = mkDecodeLines True
                         , decodeLinesWithoutRowVar = mkDecodeLines False
                         , columnNames
                         , imports
-                        , needsCustomTypeImport
                         }
                 )
                 compiledColumns
