@@ -1,7 +1,5 @@
 let ImportSet = ../Structures/ImportSet.dhall
 
-let InterpreterConfig = ../InterpreterConfig.dhall
-
 let Sdk = ../Deps/Sdk.dhall
 
 let Prelude = ../Deps/Prelude.dhall
@@ -15,6 +13,8 @@ let Templates = ../Templates/package.dhall
 let Value = ./Value.dhall
 
 let Name = ./Name.dhall
+
+let Config = { useOptional : Bool }
 
 let Input = Model.Member
 
@@ -40,7 +40,7 @@ let Output =
       }
 
 let run =
-      \(config : InterpreterConfig.Type) ->
+      \(config : Config) ->
       \(input : Input) ->
         let combine =
               \(name : Name.Output) ->
@@ -114,7 +114,7 @@ let run =
               ( Lude.Compiled.nest
                   Name.Output
                   input.pgName
-                  (Name.run config input.name)
+                  (Name.run {=} input.name)
               )
               ( Lude.Compiled.nest
                   Value.Output
@@ -122,4 +122,4 @@ let run =
                   (Value.run config input.value)
               )
 
-in  Sdk.Sigs.Interpreter.module InterpreterConfig.Type Input Output run
+in  Sdk.Sigs.Interpreter.module Config Input Output run

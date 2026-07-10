@@ -1,5 +1,3 @@
-let InterpreterConfig = ../InterpreterConfig.dhall
-
 let Prelude = ../Deps/Prelude.dhall
 
 let Sdk = ../Deps/Sdk.dhall
@@ -9,6 +7,8 @@ let Lude = ../Deps/Lude.dhall
 let Contract = ../Deps/Contract.dhall
 
 let Compiled = Lude.Compiled
+
+let Config = {}
 
 let Input = Contract.QueryFragments
 
@@ -64,10 +64,10 @@ let renderDocComment
         )
 
 let run =
-      \(config : InterpreterConfig.Type) ->
+      \(_ : Config) ->
       \(input : Input) ->
         Compiled.ok
           Output
           { mkSqlExp = renderSqlExp input, docComment = renderDocComment input }
 
-in  Sdk.Sigs.Interpreter.module InterpreterConfig.Type Input Output run
+in  Sdk.Sigs.Interpreter.module Config Input Output run

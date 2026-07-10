@@ -10,11 +10,11 @@ let Typeclasses = ../Deps/Typeclasses.dhall
 
 let ImportSet = ../Structures/ImportSet.dhall
 
-let InterpreterConfig = ../InterpreterConfig.dhall
-
 let Member = ./Member.dhall
 
 let Templates = ../Templates/package.dhall
+
+let Config = { useOptional : Bool }
 
 let Input = List Contract.Member
 
@@ -27,10 +27,10 @@ let Output =
       }
 
 in  Sdk.Sigs.Interpreter.module
-      InterpreterConfig.Type
+      Config
       Input
       Output
-      ( \(config : InterpreterConfig.Type) ->
+      ( \(config : Config) ->
         \(input : Input) ->
           let compiledColumns =
                 Typeclasses.Classes.Applicative.traverseList

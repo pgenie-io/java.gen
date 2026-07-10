@@ -1,7 +1,5 @@
 let ImportSet = ../Structures/ImportSet.dhall
 
-let InterpreterConfig = ../InterpreterConfig.dhall
-
 let Sdk = ../Deps/Sdk.dhall
 
 let Prelude = ../Deps/Prelude.dhall
@@ -13,6 +11,8 @@ let Model = ../Deps/Contract.dhall
 let Templates = ../Templates/package.dhall
 
 let Member = ./Member.dhall
+
+let Config = { packageName : Text, useOptional : Bool }
 
 let Input = Model.CustomType
 
@@ -27,7 +27,7 @@ let Output =
       }
 
 let run =
-      \(config : InterpreterConfig.Type) ->
+      \(config : Config) ->
       \(input : Input) ->
         let typeName = input.name.inPascalCase
 
@@ -43,7 +43,7 @@ let run =
                         = Lude.Compiled.traverseList
                             Model.Member
                             Member.Output
-                            (Member.run config)
+                            (Member.run config.{ useOptional })
                             members
 
                     let compiledOutput
@@ -247,4 +247,4 @@ let run =
               }
               input.definition
 
-in  Sdk.Sigs.Interpreter.module InterpreterConfig.Type Input Output run
+in  Sdk.Sigs.Interpreter.module Config Input Output run

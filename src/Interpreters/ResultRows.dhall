@@ -8,11 +8,11 @@ let Contract = ../Deps/Contract.dhall
 
 let ImportSet = ../Structures/ImportSet.dhall
 
-let InterpreterConfig = ../InterpreterConfig.dhall
-
 let ResultColumns = ./ResultColumns.dhall
 
 let Templates = ../Templates/package.dhall
+
+let Config = { useOptional : Bool }
 
 let Input = Contract.ResultRows
 
@@ -25,7 +25,7 @@ let Output =
         }
 
 let run =
-      \(config : InterpreterConfig.Type) ->
+      \(config : Config) ->
       \(input : Input) ->
         let compiledColumns =
               ResultColumns.run
@@ -120,4 +120,4 @@ let run =
               )
               compiledColumns
 
-in  Sdk.Sigs.Interpreter.module InterpreterConfig.Type Input Output run
+in  Sdk.Sigs.Interpreter.module Config Input Output run

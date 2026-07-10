@@ -1,7 +1,5 @@
 let ImportSet = ../Structures/ImportSet.dhall
 
-let InterpreterConfig = ../InterpreterConfig.dhall
-
 let Typeclasses = ../Deps/Typeclasses.dhall
 
 let Sdk = ../Deps/Sdk.dhall
@@ -20,6 +18,8 @@ let QueryFragmentsModule = ./QueryFragments.dhall
 
 let Member = ./Member.dhall
 
+let Config = { packageName : Text, useOptional : Bool }
+
 let Input = Contract.Query
 
 let Output =
@@ -31,7 +31,7 @@ let Output =
       }
 
 let render =
-      \(config : InterpreterConfig.Type) ->
+      \(config : Config) ->
       \(input : Input) ->
       \(result : ResultModule.Output) ->
       \(fragments : QueryFragmentsModule.Output) ->
@@ -225,7 +225,7 @@ let render =
             }
 
 let run =
-      \(config : InterpreterConfig.Type) ->
+      \(config : Config) ->
       \(input : Input) ->
         Lude.Compiled.nest
           Output
@@ -241,12 +241,12 @@ let run =
               ( Lude.Compiled.nest
                   ResultModule.Output
                   "result"
-                  (ResultModule.run config input.result)
+                  (ResultModule.run config.{ useOptional } input.result)
               )
               ( Lude.Compiled.nest
                   QueryFragmentsModule.Output
                   "sql"
-                  (QueryFragmentsModule.run config input.fragments)
+                  (QueryFragmentsModule.run {=} input.fragments)
               )
               ( Lude.Compiled.nest
                   (List Member.Output)
@@ -256,10 +256,10 @@ let run =
                       Lude.Compiled.applicative
                       Contract.Member
                       Member.Output
-                      (Member.run config)
+                      (Member.run config.{ useOptional })
                       input.params
                   )
               )
           )
 
-in  Sdk.Sigs.Interpreter.module InterpreterConfig.Type Input Output run
+in  Sdk.Sigs.Interpreter.module Config Input Output run

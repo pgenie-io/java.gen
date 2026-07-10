@@ -1,7 +1,5 @@
 let ImportSet = ../Structures/ImportSet.dhall
 
-let InterpreterConfig = ../InterpreterConfig.dhall
-
 let Sdk = ../Deps/Sdk.dhall
 
 let Lude = ../Deps/Lude.dhall
@@ -9,6 +7,8 @@ let Lude = ../Deps/Lude.dhall
 let Model = ../Deps/Contract.dhall
 
 let Primitive = ./Primitive.dhall
+
+let Config = {}
 
 let Input = Model.Scalar
 
@@ -23,7 +23,7 @@ let Output =
       }
 
 let run =
-      \(config : InterpreterConfig.Type) ->
+      \(_ : Config) ->
       \(input : Input) ->
         merge
           { Primitive =
@@ -34,7 +34,7 @@ let run =
                   ( \(primitive : Primitive.Output) ->
                       primitive /\ { pgCastSuffix = None Text }
                   )
-                  (Primitive.run config primitive)
+                  (Primitive.run {=} primitive)
           , Custom =
               \(name : Model.Name) ->
                 let typeName = name.inPascalCase
@@ -58,4 +58,4 @@ let run =
           }
           input
 
-in  Sdk.Sigs.Interpreter.module InterpreterConfig.Type Input Output run
+in  Sdk.Sigs.Interpreter.module Config Input Output run

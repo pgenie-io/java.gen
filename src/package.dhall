@@ -1,16 +1,22 @@
 let Contract = ./Deps/Contract.dhall
 
-let Config = ./Config.dhall
-
-let InterpreterConfig = ./InterpreterConfig.dhall
+let Prelude = ./Deps/Prelude.dhall
 
 let ProjectInterpreter = ./Interpreters/Project.dhall
 
-let compile =
-      \(config : Optional Config) ->
-      \(project : Contract.Project) ->
-        ProjectInterpreter.run
-          (InterpreterConfig.resolve config project)
-          project
+let Config = { useOptional : Bool }
 
-in  Contract.module Config compile
+let resolveConfig =
+      \(config : Optional Config) ->
+        Prelude.Optional.fold
+          Config
+          config
+          Config
+          (\(c : Config) -> c)
+          { useOptional = False }
+
+in  Contract.module
+      Config
+      ( \(config : Optional Config) ->
+          ProjectInterpreter.run (resolveConfig config)
+      )

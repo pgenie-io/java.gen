@@ -1,5 +1,3 @@
-let InterpreterConfig = ../InterpreterConfig.dhall
-
 let Sdk = ../Deps/Sdk.dhall
 
 let Prelude = ../Deps/Prelude.dhall
@@ -16,12 +14,23 @@ let QueryGen = ./Query.dhall
 
 let CustomTypeGen = ./CustomType.dhall
 
+let Config = { useOptional : Bool }
+
+let Resolved =
+      { packageName : Text
+      , srcPrefix : Text
+      , testPrefix : Text
+      , groupId : Text
+      , artifactId : Text
+      , useOptional : Bool
+      }
+
 let Input = Model.Project
 
 let Output = List Lude.File.Type
 
 let combineOutputs =
-      \(config : InterpreterConfig.Type) ->
+      \(resolved : Resolved) ->
       \(input : Input) ->
       \(queries : List QueryGen.Output) ->
       \(customTypes : List CustomTypeGen.Output) ->
@@ -32,7 +41,7 @@ let combineOutputs =
                 Lude.File.Type
                 ( \(customType : CustomTypeGen.Output) ->
                     { path =
-                        config.srcPrefix ++ "types/" ++ customType.modulePath
+                        resolved.srcPrefix ++ "types/" ++ customType.modulePath
                     , content = customType.moduleContent
                     }
                 )
@@ -45,7 +54,7 @@ let combineOutputs =
                 Lude.File.Type
                 ( \(customType : CustomTypeGen.Output) ->
                     { path =
-                            config.testPrefix
+                            resolved.testPrefix
                         ++  "types/"
                         ++  customType.testModulePath
                     , content = customType.testModuleContent
@@ -60,7 +69,7 @@ let combineOutputs =
                 Lude.File.Type
                 ( \(query : QueryGen.Output) ->
                     { path =
-                            config.srcPrefix
+                            resolved.srcPrefix
                         ++  "statements/"
                         ++  query.statementModulePath
                     , content = query.statementModuleContents
@@ -75,7 +84,7 @@ let combineOutputs =
                 Lude.File.Type
                 ( \(query : QueryGen.Output) ->
                     { path =
-                            config.testPrefix
+                            resolved.testPrefix
                         ++  "statements/"
                         ++  query.testModulePath
                     , content = query.testModuleContents
@@ -92,10 +101,10 @@ let combineOutputs =
 
         let abstractDatabaseIT
             : Lude.File.Type
-            = { path = config.testPrefix ++ "AbstractDatabaseIT.java"
+            = { path = resolved.testPrefix ++ "AbstractDatabaseIT.java"
               , content =
                   Templates.AbstractDatabaseIT.run
-                    { packageName = config.packageName, migrations }
+                    { packageName = resolved.packageName, migrations }
               }
 
         let statementNamesSection =
@@ -139,9 +148,9 @@ let combineOutputs =
               , content =
                   Templates.ReadmeMd.run
                     { projectName
-                    , groupId = config.groupId
-                    , artifactId = config.artifactId
-                    , packageName = config.packageName
+                    , groupId = resolved.groupId
+                    , artifactId = resolved.artifactId
+                    , packageName = resolved.packageName
                     , version
                     , statementNames = statementNamesSection
                     , typeNames = typeNamesSection
@@ -154,8 +163,8 @@ let combineOutputs =
             = { path = "pom.xml"
               , content =
                   Templates.PomXml.run
-                    { groupId = config.groupId
-                    , artifactId = config.artifactId
+                    { groupId = resolved.groupId
+                    , artifactId = resolved.artifactId
                     , version
                     , projectName
                     , dbName = input.name.inSnakeCase
@@ -170,8 +179,30 @@ let combineOutputs =
             : List Lude.File.Type
 
 let run =
-      \(config : InterpreterConfig.Type) ->
+      \(config : Config) ->
       \(input : Input) ->
+        let useOptional = config.useOptional
+
+        let flatten =
+              \(name : Model.Name) ->
+                Prelude.Text.replace "_" "" name.inSnakeCase
+
+        let spacePkg = flatten input.space
+
+        let namePkg = flatten input.name
+
+        let resolved
+            : Resolved
+            = { packageName = "io.pgenie.artifacts.${spacePkg}.${namePkg}"
+              , srcPrefix =
+                  "src/main/java/io/pgenie/artifacts/${spacePkg}/${namePkg}/"
+              , testPrefix =
+                  "src/test/java/io/pgenie/artifacts/${spacePkg}/${namePkg}/"
+              , groupId = "io.pgenie.artifacts.${spacePkg}"
+              , artifactId = input.name.inKebabCase
+              , useOptional
+              }
+
         let compiledQueries
             : Lude.Compiled.Type (List (Optional QueryGen.Output))
             = Lude.Compiled.traverseList
@@ -182,7 +213,7 @@ let run =
                       Lude.Compiled.Type
                       Lude.Compiled.alternative
                       QueryGen.Output
-                      (QueryGen.run config query)
+                      (QueryGen.run resolved.{ packageName, useOptional } query)
                 )
                 input.queries
 
@@ -204,7 +235,10 @@ let run =
                       Lude.Compiled.Type
                       Lude.Compiled.alternative
                       CustomTypeGen.Output
-                      (CustomTypeGen.run config ct)
+                      ( CustomTypeGen.run
+                          resolved.{ packageName, useOptional }
+                          ct
+                      )
                 )
                 input.customTypes
 
@@ -222,10 +256,10 @@ let run =
                 (List QueryGen.Output)
                 (List CustomTypeGen.Output)
                 (List Lude.File.Type)
-                (combineOutputs config input)
+                (combineOutputs resolved input)
                 compiledQueries
                 compiledTypes
 
         in  files
 
-in  Sdk.Sigs.Interpreter.module InterpreterConfig.Type Input Output run
+in  Sdk.Sigs.Interpreter.module Config Input Output run

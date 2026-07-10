@@ -1,7 +1,5 @@
 let ImportSet = ../Structures/ImportSet.dhall
 
-let InterpreterConfig = ../InterpreterConfig.dhall
-
 let Sdk = ../Deps/Sdk.dhall
 
 let Prelude = ../Deps/Prelude.dhall
@@ -11,6 +9,8 @@ let Lude = ../Deps/Lude.dhall
 let Model = ../Deps/Contract.dhall
 
 let Scalar = ./Scalar.dhall
+
+let Config = { useOptional : Bool }
 
 let Input = Model.Value
 
@@ -27,7 +27,7 @@ let Output =
       }
 
 let run =
-      \(config : InterpreterConfig.Type) ->
+      \(config : Config) ->
       \(input : Input) ->
         Lude.Compiled.map
           Scalar.Output
@@ -102,6 +102,6 @@ let run =
                 , testRandomLiteral = scalar.testRandomLiteral
                 }
           )
-          (Scalar.run config input.scalar)
+          (Scalar.run {=} input.scalar)
 
-in  Sdk.Sigs.Interpreter.module InterpreterConfig.Type Input Output run
+in  Sdk.Sigs.Interpreter.module Config Input Output run

@@ -1,10 +1,10 @@
-let InterpreterConfig = ../InterpreterConfig.dhall
-
 let Sdk = ../Deps/Sdk.dhall
 
 let Contract = ../Deps/Contract.dhall
 
 let Lude = ../Deps/Lude.dhall
+
+let Config = {}
 
 let Input = Contract.Name
 
@@ -111,10 +111,10 @@ let escapeJavaKeyword
     = \(text : Text) -> replaceTextIfInList javaKeywords (text ++ "_") text
 
 let run =
-      \(config : InterpreterConfig.Type) ->
+      \(_ : Config) ->
       \(input : Input) ->
         let fieldName = escapeJavaKeyword input.inCamelCase
 
         in  Lude.Compiled.ok Output { fieldName }
 
-in  Sdk.Sigs.Interpreter.module InterpreterConfig.Type Input Output run
+in  Sdk.Sigs.Interpreter.module Config Input Output run
