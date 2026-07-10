@@ -1,4 +1,4 @@
-let ResolvedTarget = ../ResolvedTarget.dhall
+let InterpreterConfig = ../InterpreterConfig.dhall
 
 let Sdk = ../Deps/Sdk.dhall
 
@@ -111,10 +111,10 @@ let escapeJavaKeyword
     = \(text : Text) -> replaceTextIfInList javaKeywords (text ++ "_") text
 
 let run =
-      \(config : ResolvedTarget.Type) ->
+      \(config : InterpreterConfig.Type) ->
       \(input : Input) ->
         let fieldName = escapeJavaKeyword input.inCamelCase
 
         in  Lude.Compiled.ok Output { fieldName }
 
-in  Sdk.Sigs.Interpreter.module ResolvedTarget.Type Input Output run
+in  Sdk.Sigs.Interpreter.module InterpreterConfig.Type Input Output run

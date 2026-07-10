@@ -2,7 +2,13 @@
 
 ## Non-breaking
 
-- Migrated the generator's internal dependencies to `gen-contract` v4.0.1 and `gen-sdk` v1.0.0, renamed `Algebra` to `Sig` and `InterpreterConfig` to `ResolvedTarget`, and removed the now-redundant `gen/Algebras/` module in favor of `Sdk.Sigs`. No change to generated output or the public Dhall interface.
+- Migrated the generator's internal dependencies to `gen-contract` v4.0.1 and `gen-sdk` v1.0.0, renamed `Algebra` to `Sig`, and removed the now-redundant `Algebras/` module in favor of `Sdk.Sigs`. No change to generated output or the public Dhall interface.
+
+- Restructured the repository layout to align with the pGenie generator architecture:
+  - Generator implementation moved from `gen/` to `src/`.
+  - Public entry point renamed from `gen/Gen.dhall` to `src/package.dhall`.
+  - Internal `ResolvedTarget.dhall` renamed back to `InterpreterConfig.dhall`.
+  - Fixture drivers moved from `tests/` to `demos/`; the materialised demo output is no longer committed.
 
 # v1.0.0
 

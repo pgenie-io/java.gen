@@ -1,6 +1,6 @@
 let ImportSet = ../Structures/ImportSet.dhall
 
-let ResolvedTarget = ../ResolvedTarget.dhall
+let InterpreterConfig = ../InterpreterConfig.dhall
 
 let Typeclasses = ../Deps/Typeclasses.dhall
 
@@ -31,7 +31,7 @@ let Output =
       }
 
 let render =
-      \(config : ResolvedTarget.Type) ->
+      \(config : InterpreterConfig.Type) ->
       \(input : Input) ->
       \(result : ResultModule.Output) ->
       \(fragments : QueryFragmentsModule.Output) ->
@@ -225,7 +225,7 @@ let render =
             }
 
 let run =
-      \(config : ResolvedTarget.Type) ->
+      \(config : InterpreterConfig.Type) ->
       \(input : Input) ->
         Lude.Compiled.nest
           Output
@@ -262,4 +262,4 @@ let run =
               )
           )
 
-in  Sdk.Sigs.Interpreter.module ResolvedTarget.Type Input Output run
+in  Sdk.Sigs.Interpreter.module InterpreterConfig.Type Input Output run

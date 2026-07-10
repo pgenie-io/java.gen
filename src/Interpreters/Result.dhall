@@ -6,7 +6,7 @@ let Contract = ../Deps/Contract.dhall
 
 let ImportSet = ../Structures/ImportSet.dhall
 
-let ResolvedTarget = ../ResolvedTarget.dhall
+let InterpreterConfig = ../InterpreterConfig.dhall
 
 let ResultRows = ./ResultRows.dhall
 
@@ -23,7 +23,7 @@ let Output =
         }
 
 let run =
-      \(config : ResolvedTarget.Type) ->
+      \(config : InterpreterConfig.Type) ->
       \(input : Input) ->
         merge
           { Void =
@@ -50,4 +50,4 @@ let run =
           }
           input
 
-in  Sdk.Sigs.Interpreter.module ResolvedTarget.Type Input Output run
+in  Sdk.Sigs.Interpreter.module InterpreterConfig.Type Input Output run

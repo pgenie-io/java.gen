@@ -27,14 +27,14 @@
 **Interfaces:**
 - Consumes: nothing.
 - Produces: `demo-baseline/` for the golden diff:
-  `rm -rf demo-check && dhall to-directory-tree --allow-path-separators --file tests/Exhaustive.dhall --output demo-check && diff -r demo-baseline demo-check`
+  `rm -rf demo-check && dhall to-directory-tree --allow-path-separators --file demos/Exhaustive.dhall --output demo-check && diff -r demo-baseline demo-check`
 
 - [ ] **Step 1: Confirm clean tree and generate baseline**
 
 ```bash
 git status --porcelain
 rm -rf demo-baseline
-dhall to-directory-tree --allow-path-separators --file tests/Exhaustive.dhall --output demo-baseline
+dhall to-directory-tree --allow-path-separators --file demos/Exhaustive.dhall --output demo-baseline
 find demo-baseline -type f | wc -l
 ```
 
@@ -45,12 +45,12 @@ Expected: no tracked changes; generation exits 0; file count `1093`.
 ### Task 2: Nest the literals through the whole chain (atomic)
 
 **Files:**
-- Modify: `gen/Interpreters/Primitive.dhall`
-- Modify: `gen/Interpreters/Scalar.dhall`
-- Modify: `gen/Interpreters/Value.dhall`
-- Modify: `gen/Interpreters/Member.dhall`
-- Modify: `gen/Interpreters/Query.dhall`
-- Modify: `gen/Interpreters/CustomType.dhall`
+- Modify: `src/Interpreters/Primitive.dhall`
+- Modify: `src/Interpreters/Scalar.dhall`
+- Modify: `src/Interpreters/Value.dhall`
+- Modify: `src/Interpreters/Member.dhall`
+- Modify: `src/Interpreters/Query.dhall`
+- Modify: `src/Interpreters/CustomType.dhall`
 
 **Interfaces:**
 - Consumes: the post-plan-2 shapes of `Value.Output` and `Member.Output`.
@@ -63,7 +63,7 @@ Intermediate states do not typecheck at the tree level; per-file checks are used
 
 - [ ] **Step 1: Primitive — Output type**
 
-In `gen/Interpreters/Primitive.dhall`, replace in `Output`:
+In `src/Interpreters/Primitive.dhall`, replace in `Output`:
 
 ```dhall
       , testDefaultLiteral : Text
@@ -178,15 +178,15 @@ with:
 Then check this file in isolation:
 
 ```bash
-dhall format gen/Interpreters/Primitive.dhall
-dhall type --file gen/Interpreters/Primitive.dhall > /dev/null && echo OK
+dhall format src/Interpreters/Primitive.dhall
+dhall type --file src/Interpreters/Primitive.dhall > /dev/null && echo OK
 ```
 
 Expected: `OK`
 
 - [ ] **Step 3: Scalar**
 
-In `gen/Interpreters/Scalar.dhall`, in `Output`, replace:
+In `src/Interpreters/Scalar.dhall`, in `Output`, replace:
 
 ```dhall
       , testDefaultLiteral : Text
@@ -222,15 +222,15 @@ with:
 Then:
 
 ```bash
-dhall format gen/Interpreters/Scalar.dhall
-dhall type --file gen/Interpreters/Scalar.dhall > /dev/null && echo OK
+dhall format src/Interpreters/Scalar.dhall
+dhall type --file src/Interpreters/Scalar.dhall > /dev/null && echo OK
 ```
 
 Expected: `OK`
 
 - [ ] **Step 4: Value**
 
-In `gen/Interpreters/Value.dhall`, in `Output`, replace:
+In `src/Interpreters/Value.dhall`, in `Output`, replace:
 
 ```dhall
       , testDefaultLiteral : Text
@@ -275,15 +275,15 @@ with:
 Then:
 
 ```bash
-dhall format gen/Interpreters/Value.dhall
-dhall type --file gen/Interpreters/Value.dhall > /dev/null && echo OK
+dhall format src/Interpreters/Value.dhall
+dhall type --file src/Interpreters/Value.dhall > /dev/null && echo OK
 ```
 
 Expected: `OK`
 
 - [ ] **Step 5: Member**
 
-In `gen/Interpreters/Member.dhall`, in `Output`, replace:
+In `src/Interpreters/Member.dhall`, in `Output`, replace:
 
 ```dhall
       , testDefaultLiteral : Text
@@ -346,15 +346,15 @@ with:
 Then:
 
 ```bash
-dhall format gen/Interpreters/Member.dhall
-dhall type --file gen/Interpreters/Member.dhall > /dev/null && echo OK
+dhall format src/Interpreters/Member.dhall
+dhall type --file src/Interpreters/Member.dhall > /dev/null && echo OK
 ```
 
 Expected: `OK`
 
 - [ ] **Step 6: Query (consumer)**
 
-In `gen/Interpreters/Query.dhall`, in the `defaultArgs` binding, replace:
+In `src/Interpreters/Query.dhall`, in the `defaultArgs` binding, replace:
 
 ```dhall
                 (\(m : Member.Output) -> m.testDefaultLiteral)
@@ -380,7 +380,7 @@ with:
 
 - [ ] **Step 7: CustomType (consumer)**
 
-In `gen/Interpreters/CustomType.dhall`, in the `fieldSpecs` mapping, replace:
+In `src/Interpreters/CustomType.dhall`, in the `fieldSpecs` mapping, replace:
 
 ```dhall
                                             { testPresentLiteral =
@@ -407,11 +407,11 @@ with:
 - [ ] **Step 8: Whole-tree typecheck, golden diff**
 
 ```bash
-dhall format gen/Interpreters/Query.dhall gen/Interpreters/CustomType.dhall
-dhall type --file tests/Exhaustive.dhall > /dev/null && echo TYPES-OK
-grep -rn "testDefaultLiteral\|testRandomLiteral" gen/Interpreters ; echo "grep-done"
+dhall format src/Interpreters/Query.dhall src/Interpreters/CustomType.dhall
+dhall type --file demos/Exhaustive.dhall > /dev/null && echo TYPES-OK
+grep -rn "testDefaultLiteral\|testRandomLiteral" src/Interpreters ; echo "grep-done"
 rm -rf demo-check
-dhall to-directory-tree --allow-path-separators --file tests/Exhaustive.dhall --output demo-check
+dhall to-directory-tree --allow-path-separators --file demos/Exhaustive.dhall --output demo-check
 diff -r demo-baseline demo-check && echo IDENTICAL
 ```
 
@@ -420,7 +420,7 @@ Expected: `TYPES-OK`; the grep prints nothing before `grep-done`; then `IDENTICA
 - [ ] **Step 9: Commit**
 
 ```bash
-git add gen/Interpreters
+git add src/Interpreters
 git commit -m "refactor: nest generated-test literals into a test sub-record"
 ```
 
@@ -429,7 +429,7 @@ git commit -m "refactor: nest generated-test literals into a test sub-record"
 ### Task 3: Full verification against the real build
 
 **Files:**
-- Modify: `demo-output/` (regenerated, untracked)
+- Generate: `demo-verify/` (transient scratch directory, not committed)
 
 **Interfaces:**
 - Consumes: everything above.
@@ -438,9 +438,9 @@ git commit -m "refactor: nest generated-test literals into a test sub-record"
 - [ ] **Step 1: Regenerate demo output and run the generated integration tests (requires Docker, ~minutes)**
 
 ```bash
-rm -rf demo-output
-dhall to-directory-tree --allow-path-separators --file tests/Exhaustive.dhall --output demo-output
-cd demo-output && mvn -q verify && cd -
+rm -rf demo-verify
+dhall to-directory-tree --allow-path-separators --file demos/Exhaustive.dhall --output demo-verify
+cd demo-verify && mvn -q verify && cd -
 ```
 
 Expected: `BUILD SUCCESS`.
@@ -448,5 +448,5 @@ Expected: `BUILD SUCCESS`.
 - [ ] **Step 2: Clean up scratch directories**
 
 ```bash
-rm -rf demo-baseline demo-check
+rm -rf demo-baseline demo-check demo-verify
 ```

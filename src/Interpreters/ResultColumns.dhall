@@ -10,7 +10,7 @@ let Typeclasses = ../Deps/Typeclasses.dhall
 
 let ImportSet = ../Structures/ImportSet.dhall
 
-let ResolvedTarget = ../ResolvedTarget.dhall
+let InterpreterConfig = ../InterpreterConfig.dhall
 
 let Member = ./Member.dhall
 
@@ -27,10 +27,10 @@ let Output =
       }
 
 in  Sdk.Sigs.Interpreter.module
-      ResolvedTarget.Type
+      InterpreterConfig.Type
       Input
       Output
-      ( \(config : ResolvedTarget.Type) ->
+      ( \(config : InterpreterConfig.Type) ->
         \(input : Input) ->
           let compiledColumns =
                 Typeclasses.Classes.Applicative.traverseList

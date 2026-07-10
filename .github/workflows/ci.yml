@@ -19,8 +19,8 @@ permissions:
   contents: read
 
 jobs:
-  discover-tests:
-    name: Discover test entries
+  discover-demos:
+    name: Discover demo entries
     runs-on: ubuntu-latest
     outputs:
       matrix: ${{ steps.discover.outputs.matrix }}
@@ -31,17 +31,17 @@ jobs:
         with:
           ref: ${{ inputs.ref || github.sha }}
 
-      - name: Build matrix from tests directory
+      - name: Build matrix from demos directory
         id: discover
         shell: bash
         run: |
           set -euo pipefail
 
           shopt -s nullglob
-          entries=(tests/*)
+          entries=(demos/*.dhall)
 
           if [[ ${#entries[@]} -eq 0 ]]; then
-            echo "::error::No entries were found under tests/."
+            echo "::error::No entries were found under demos/."
             exit 1
           fi
 
@@ -50,7 +50,7 @@ jobs:
 
           for entry in "${entries[@]}"; do
             if [[ ! -f "$entry" ]]; then
-              echo "::error::tests entry '$entry' is not a file."
+              echo "::error::demos entry '$entry' is not a file."
               exit 1
             fi
 
@@ -70,11 +70,11 @@ jobs:
 
   ci:
     name: Generate and verify (${{ matrix.entry }})
-    needs: discover-tests
+    needs: discover-demos
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
-      matrix: ${{ fromJson(needs.discover-tests.outputs.matrix) }}
+      matrix: ${{ fromJson(needs.discover-demos.outputs.matrix) }}
 
     steps:
       - name: Checkout repository

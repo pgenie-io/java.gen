@@ -1,4 +1,4 @@
-let ResolvedTarget = ../ResolvedTarget.dhall
+let InterpreterConfig = ../InterpreterConfig.dhall
 
 let Sdk = ../Deps/Sdk.dhall
 
@@ -21,7 +21,7 @@ let Input = Model.Project
 let Output = List Lude.File.Type
 
 let combineOutputs =
-      \(config : ResolvedTarget.Type) ->
+      \(config : InterpreterConfig.Type) ->
       \(input : Input) ->
       \(queries : List QueryGen.Output) ->
       \(customTypes : List CustomTypeGen.Output) ->
@@ -170,7 +170,7 @@ let combineOutputs =
             : List Lude.File.Type
 
 let run =
-      \(config : ResolvedTarget.Type) ->
+      \(config : InterpreterConfig.Type) ->
       \(input : Input) ->
         let compiledQueries
             : Lude.Compiled.Type (List (Optional QueryGen.Output))
@@ -228,4 +228,4 @@ let run =
 
         in  files
 
-in  Sdk.Sigs.Interpreter.module ResolvedTarget.Type Input Output run
+in  Sdk.Sigs.Interpreter.module InterpreterConfig.Type Input Output run

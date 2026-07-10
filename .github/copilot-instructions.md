@@ -30,13 +30,13 @@ When the repository content conflicts with outside examples, prefer the structur
 
 ## Generator Structure
 
-- Layout: Do not pay attention to `demo-output/` in this repo or in the Haskell and Rust reference generators. It is only intended to be the result of running the generator.
+- Layout: Do not pay attention to generated output under `demos/*/` in this repo or in the Haskell and Rust reference generators. It is only intended to be the transient result of running a fixture driver.
 - Target: Java 21.
 - Maven: Keep the Maven output compatible with Java 21 build setup.
 - Maven setup: Keep the Maven set up idiomatic, simple and up to date with the latest releases.
-- Templates: Extract templates producing strings into `gen/Templates/`. Avoid inlining them in `gen/Interpreters/` as much as possible.
-- Utilities: Keep `gen/Deps/` for external Dhall library imports only.
-- Utilities: Put utility helpers in `gen/Utilities/`.
+- Templates: Extract templates producing strings into `src/Templates/`. Avoid inlining them in `src/Interpreters/` as much as possible.
+- Utilities: Keep `src/Deps/` for external Dhall library imports only.
+- Utilities: Put utility helpers in `src/Utilities/`.
 
 ### Interpreters
 
@@ -59,8 +59,8 @@ When the repository content conflicts with outside examples, prefer the structur
 
 ## Design rules
 
-- Boundary: `gen/Templates/` must not depend on `gen/Interpreters/` or the Project model from `Deps.Sdk`.
-- Templates: Textual templates should be extracted into `gen/Templates/` as much as possible. `gen/Interpreters/` should primarily be responsible for interpreting the Project model and orchestrating the generation process.
+- Boundary: `src/Templates/` must not depend on `src/Interpreters/` or the Project model from `Deps.Sdk`.
+- Templates: Textual templates should be extracted into `src/Templates/` as much as possible. `src/Interpreters/` should primarily be responsible for interpreting the Project model and orchestrating the generation process.
 - Composition: Keep templates simple and independent. Let interpreters compose them as needed.
 
 ## Dhall Code Style Rules

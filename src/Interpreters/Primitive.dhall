@@ -6,7 +6,7 @@ let Contract = ../Deps/Contract.dhall
 
 let ImportSet = ../Structures/ImportSet.dhall
 
-let ResolvedTarget = ../ResolvedTarget.dhall
+let InterpreterConfig = ../InterpreterConfig.dhall
 
 let Input = Contract.Primitive
 
@@ -93,7 +93,7 @@ let codec =
               }
 
 let run =
-      \(config : ResolvedTarget.Type) ->
+      \(config : InterpreterConfig.Type) ->
       \(input : Input) ->
         merge
           { Bit = codec "Bit" "BIT" codecImports
@@ -216,4 +216,4 @@ let run =
           }
           input
 
-in  Sdk.Sigs.Interpreter.module ResolvedTarget.Type Input Output run
+in  Sdk.Sigs.Interpreter.module InterpreterConfig.Type Input Output run

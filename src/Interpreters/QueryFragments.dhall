@@ -1,4 +1,4 @@
-let ResolvedTarget = ../ResolvedTarget.dhall
+let InterpreterConfig = ../InterpreterConfig.dhall
 
 let Prelude = ../Deps/Prelude.dhall
 
@@ -64,10 +64,10 @@ let renderDocComment
         )
 
 let run =
-      \(config : ResolvedTarget.Type) ->
+      \(config : InterpreterConfig.Type) ->
       \(input : Input) ->
         Compiled.ok
           Output
           { mkSqlExp = renderSqlExp input, docComment = renderDocComment input }
 
-in  Sdk.Sigs.Interpreter.module ResolvedTarget.Type Input Output run
+in  Sdk.Sigs.Interpreter.module InterpreterConfig.Type Input Output run

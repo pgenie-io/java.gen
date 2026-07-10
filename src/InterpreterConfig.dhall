@@ -4,7 +4,7 @@ let Prelude = ./Deps/Prelude.dhall
 
 let Config = ./Config.dhall
 
-let ResolvedTarget =
+let InterpreterConfig =
       { packageName : Text
       , srcPrefix : Text
       , testPrefix : Text
@@ -41,6 +41,6 @@ let resolve =
               , artifactId = project.name.inKebabCase
               , useOptional
               }
-            : ResolvedTarget
+            : InterpreterConfig
 
-in  { Type = ResolvedTarget, resolve }
+in  { Type = InterpreterConfig, resolve }
