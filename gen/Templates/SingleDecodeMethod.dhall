@@ -1,4 +1,4 @@
-let Algebra = ../Algebras/Template.dhall
+let Sdk = ../Deps/Sdk.dhall
 
 let Deps = ../Deps/package.dhall
 
@@ -6,7 +6,7 @@ let indent = Deps.Lude.Text.indentNonEmpty
 
 let Params = { decodeLines : Text, columnNames : List Text }
 
-in  Algebra.module
+in  Sdk.Sigs.Template.module
       Params
       ( \(p : Params) ->
           ''

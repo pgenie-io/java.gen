@@ -1,7 +1,7 @@
 -- Renders the row type declaration for a single-row or optional result.
 -- `rowTypeName` is "Result" for single-cardinality and "ResultRow" for optional-cardinality.
 -- Produces the declaration without any surrounding indentation; splice site must indent.
-let Algebra = ../Algebras/Template.dhall
+let Sdk = ../Deps/Sdk.dhall
 
 let Deps = ../Deps/package.dhall
 
@@ -9,7 +9,7 @@ let indent = Deps.Lude.Text.indentNonEmpty
 
 let Params = { typeNameBase : Text, columnFieldList : Text, rowTypeName : Text }
 
-in  Algebra.module
+in  Sdk.Sigs.Template.module
       Params
       ( \(p : Params) ->
           ''

@@ -1,6 +1,6 @@
 let Deps = ../Deps/package.dhall
 
-let Algebra = ../Algebras/Interpreter.dhall
+let ResolvedTarget = ../ResolvedTarget.dhall
 
 let Prelude = Deps.Prelude
 
@@ -10,7 +10,7 @@ let Lude = Deps.Lude
 
 let Compiled = Lude.Compiled
 
-let Input = Deps.Sdk.Project.QueryFragments
+let Input = Deps.Contract.QueryFragments
 
 let Output
     : Type
@@ -23,16 +23,16 @@ let escapeJavaString
         [ Prelude.Text.replace "\\" "\\\\", Prelude.Text.replace "\"" "\\\"" ]
 
 let renderSqlExp
-    : Deps.Sdk.Project.QueryFragments -> List Text -> Text
-    = \(fragments : Deps.Sdk.Project.QueryFragments) ->
+    : Deps.Contract.QueryFragments -> List Text -> Text
+    = \(fragments : Deps.Contract.QueryFragments) ->
       \(castSuffixes : List Text) ->
         Prelude.Text.concatMap
-          Deps.Sdk.Project.QueryFragment
-          ( \(queryFragment : Deps.Sdk.Project.QueryFragment) ->
+          Deps.Contract.QueryFragment
+          ( \(queryFragment : Deps.Contract.QueryFragment) ->
               merge
                 { Sql = escapeJavaString
                 , Var =
-                    \(var : Deps.Sdk.Project.Var) ->
+                    \(var : Deps.Contract.Var) ->
                       let suffix =
                             Prelude.Optional.fold
                               Text
@@ -52,22 +52,22 @@ let renderSqlExp
           fragments
 
 let renderDocComment
-    : Deps.Sdk.Project.QueryFragments -> Text
+    : Deps.Contract.QueryFragments -> Text
     = Prelude.Text.concatMap
-        Deps.Sdk.Project.QueryFragment
-        ( \(queryFragment : Deps.Sdk.Project.QueryFragment) ->
+        Deps.Contract.QueryFragment
+        ( \(queryFragment : Deps.Contract.QueryFragment) ->
             merge
               { Sql = Prelude.Function.identity Text
-              , Var = \(var : Deps.Sdk.Project.Var) -> "\$${var.rawName}"
+              , Var = \(var : Deps.Contract.Var) -> "\$${var.rawName}"
               }
               queryFragment
         )
 
 let run =
-      \(config : Algebra.Config) ->
+      \(config : ResolvedTarget.Type) ->
       \(input : Input) ->
         Compiled.ok
           Output
           { mkSqlExp = renderSqlExp input, docComment = renderDocComment input }
 
-in  Algebra.module Input Output run
+in  Deps.Sdk.Sigs.Interpreter.module ResolvedTarget.Type Input Output run

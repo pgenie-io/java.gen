@@ -1,7 +1,7 @@
 -- Renders a single PreparedStatement binding statement for one parameter occurrence.
 -- idx: 1-based string index (e.g. "1", "2").
 -- Produces the statement(s) without any surrounding indentation; splice site must indent.
-let Algebra = ../Algebras/Template.dhall
+let Sdk = ../Deps/Sdk.dhall
 
 let Deps = ../Deps/package.dhall
 
@@ -34,6 +34,6 @@ let valueExpr =
                                                                                p.dims}"
         else  "this.${p.fieldName}()"
 
-in  Algebra.module
+in  Sdk.Sigs.Template.module
       Params
       (\(p : Params) -> "${p.codecRef}.bind(ps, ${p.idx}, ${valueExpr p});")

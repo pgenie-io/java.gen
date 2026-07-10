@@ -1,12 +1,12 @@
 let Deps = ../Deps/package.dhall
 
-let Algebra = ../Algebras/Interpreter.dhall
+let ResolvedTarget = ../ResolvedTarget.dhall
 
 let Sdk = Deps.Sdk
 
 let Lude = Deps.Lude
 
-let Model = Deps.Sdk.Project
+let Model = Deps.Contract
 
 let Templates = ../Templates/package.dhall
 
@@ -19,7 +19,7 @@ let Input = Model.Project
 let Output = List Lude.File.Type
 
 let combineOutputs =
-      \(config : Algebra.Config) ->
+      \(config : ResolvedTarget.Type) ->
       \(input : Input) ->
       \(queries : List QueryGen.Output) ->
       \(customTypes : List CustomTypeGen.Output) ->
@@ -168,14 +168,14 @@ let combineOutputs =
             : List Lude.File.Type
 
 let run =
-      \(config : Algebra.Config) ->
+      \(config : ResolvedTarget.Type) ->
       \(input : Input) ->
         let compiledQueries
             : Lude.Compiled.Type (List (Optional QueryGen.Output))
             = Lude.Compiled.traverseList
-                Deps.Sdk.Project.Query
+                Deps.Contract.Query
                 (Optional QueryGen.Output)
-                ( \(query : Deps.Sdk.Project.Query) ->
+                ( \(query : Deps.Contract.Query) ->
                     Deps.Typeclasses.Classes.Alternative.optional
                       Lude.Compiled.Type
                       Lude.Compiled.alternative
@@ -195,9 +195,9 @@ let run =
         let compiledTypes
             : Lude.Compiled.Type (List (Optional CustomTypeGen.Output))
             = Lude.Compiled.traverseList
-                Deps.Sdk.Project.CustomType
+                Deps.Contract.CustomType
                 (Optional CustomTypeGen.Output)
-                ( \(ct : Deps.Sdk.Project.CustomType) ->
+                ( \(ct : Deps.Contract.CustomType) ->
                     Deps.Typeclasses.Classes.Alternative.optional
                       Lude.Compiled.Type
                       Lude.Compiled.alternative
@@ -226,4 +226,4 @@ let run =
 
         in  files
 
-in  Algebra.module Input Output run
+in  Deps.Sdk.Sigs.Interpreter.module ResolvedTarget.Type Input Output run

@@ -11,6 +11,5 @@ let Gen = ../gen/Gen.dhall
 
 let project = Deps.Sdk.Fixtures.Exhaustive
 
-let compiledFiles = Gen.compileToFileMap (Some { useOptional = True }) project
-
-in  compiledFiles
+in  Deps.Sdk.Output.toFileMap
+      (Gen.compile (Some { useOptional = True }) project)

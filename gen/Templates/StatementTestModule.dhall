@@ -1,4 +1,4 @@
-let Algebra = ../Algebras/Template.dhall
+let Sdk = ../Deps/Sdk.dhall
 
 let Deps = ../Deps/package.dhall
 
@@ -17,7 +17,7 @@ let Params =
       , isOptionalCardinality : Bool
       }
 
-in  Algebra.module
+in  Sdk.Sigs.Template.module
       Params
       ( \(params : Params) ->
           let randomArgList =

@@ -1,6 +1,6 @@
 -- Renders the Result and ResultRow type declarations for a multiple-row result.
 -- Produces the declarations without any surrounding indentation; splice site must indent.
-let Algebra = ../Algebras/Template.dhall
+let Sdk = ../Deps/Sdk.dhall
 
 let Deps = ../Deps/package.dhall
 
@@ -8,7 +8,7 @@ let indent = Deps.Lude.Text.indentNonEmpty
 
 let Params = { typeNameBase : Text, columnFieldList : Text }
 
-in  Algebra.module
+in  Sdk.Sigs.Template.module
       Params
       ( \(p : Params) ->
           ''

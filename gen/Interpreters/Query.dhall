@@ -2,7 +2,7 @@ let Deps = ../Deps/package.dhall
 
 let ImportSet = ../Structures/ImportSet.dhall
 
-let Algebra = ../Algebras/Interpreter.dhall
+let ResolvedTarget = ../ResolvedTarget.dhall
 
 let Typeclasses = Deps.Typeclasses
 
@@ -18,7 +18,7 @@ let QueryFragmentsModule = ./QueryFragments.dhall
 
 let Member = ./Member.dhall
 
-let Input = Deps.Sdk.Project.Query
+let Input = Deps.Contract.Query
 
 let Output =
       { statementModuleName : Text
@@ -29,7 +29,7 @@ let Output =
       }
 
 let render =
-      \(config : Algebra.Config) ->
+      \(config : ResolvedTarget.Type) ->
       \(input : Input) ->
       \(result : ResultModule.Output) ->
       \(fragments : QueryFragmentsModule.Output) ->
@@ -50,13 +50,13 @@ let render =
         let paramBindCode =
               let paramOccurrences =
                     Deps.Prelude.List.filterMap
-                      Deps.Sdk.Project.QueryFragment
+                      Deps.Contract.QueryFragment
                       Natural
-                      ( \(fragment : Deps.Sdk.Project.QueryFragment) ->
+                      ( \(fragment : Deps.Contract.QueryFragment) ->
                           merge
                             { Sql = \(_ : Text) -> None Natural
                             , Var =
-                                \(v : Deps.Sdk.Project.Var) -> Some v.paramIndex
+                                \(v : Deps.Contract.Var) -> Some v.paramIndex
                             }
                             fragment
                       )
@@ -104,7 +104,7 @@ let render =
               merge
                 { Void = False
                 , RowsAffected = True
-                , Rows = \(_ : Deps.Sdk.Project.ResultRows) -> True
+                , Rows = \(_ : Deps.Contract.ResultRows) -> True
                 }
                 input.result
 
@@ -142,7 +142,7 @@ let render =
                 { Void = False
                 , RowsAffected = False
                 , Rows =
-                    \(rows : Deps.Sdk.Project.ResultRows) ->
+                    \(rows : Deps.Contract.ResultRows) ->
                       merge
                         { Optional = True, Single = False, Multiple = False }
                         rows.cardinality
@@ -154,7 +154,7 @@ let render =
                 { Void = False
                 , RowsAffected = False
                 , Rows =
-                    \(rows : Deps.Sdk.Project.ResultRows) ->
+                    \(rows : Deps.Contract.ResultRows) ->
                       merge
                         { Optional = False, Single = False, Multiple = True }
                         rows.cardinality
@@ -225,7 +225,7 @@ let render =
             }
 
 let run =
-      \(config : Algebra.Config) ->
+      \(config : ResolvedTarget.Type) ->
       \(input : Input) ->
         Lude.Compiled.nest
           Output
@@ -254,7 +254,7 @@ let run =
                   ( Typeclasses.Classes.Applicative.traverseList
                       Lude.Compiled.Type
                       Lude.Compiled.applicative
-                      Deps.Sdk.Project.Member
+                      Deps.Contract.Member
                       Member.Output
                       (Member.run config)
                       input.params
@@ -262,4 +262,4 @@ let run =
               )
           )
 
-in  Algebra.module Input Output run
+in  Deps.Sdk.Sigs.Interpreter.module ResolvedTarget.Type Input Output run

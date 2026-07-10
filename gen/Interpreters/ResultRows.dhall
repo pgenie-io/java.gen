@@ -2,13 +2,13 @@ let Deps = ../Deps/package.dhall
 
 let ImportSet = ../Structures/ImportSet.dhall
 
-let Algebra = ../Algebras/Interpreter.dhall
+let ResolvedTarget = ../ResolvedTarget.dhall
 
 let ResultColumns = ./ResultColumns.dhall
 
 let Templates = ../Templates/package.dhall
 
-let Input = Deps.Sdk.Project.ResultRows
+let Input = Deps.Contract.ResultRows
 
 let Output =
       Text ->
@@ -19,13 +19,13 @@ let Output =
         }
 
 let run =
-      \(config : Algebra.Config) ->
+      \(config : ResolvedTarget.Type) ->
       \(input : Input) ->
         let compiledColumns =
               ResultColumns.run
                 config
                 ( Deps.Prelude.NonEmpty.toList
-                    Deps.Sdk.Project.Member
+                    Deps.Contract.Member
                     input.columns
                 )
 
@@ -117,4 +117,4 @@ let run =
               )
               compiledColumns
 
-in  Algebra.module Input Output run
+in  Deps.Sdk.Sigs.Interpreter.module ResolvedTarget.Type Input Output run

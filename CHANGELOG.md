@@ -1,3 +1,9 @@
+# Upcoming
+
+## Non-breaking
+
+- Migrated the generator's internal dependencies to `gen-contract` v4.0.1 and `gen-sdk` v1.0.0, renamed `Algebra` to `Sig` and `InterpreterConfig` to `ResolvedTarget`, and removed the now-redundant `gen/Algebras/` module in favor of `Sdk.Sigs`. No change to generated output or the public Dhall interface.
+
 # v1.0.0
 
 ## Breaking

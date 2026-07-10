@@ -3,7 +3,7 @@
 -- Produces the statement(s) without any surrounding indentation; splice site must indent.
 let Deps = ../Deps/package.dhall
 
-let Algebra = ../Algebras/Template.dhall
+let Sdk = ../Deps/Sdk.dhall
 
 let Params =
       { colIdx : Text
@@ -17,7 +17,7 @@ let Params =
       , rowVarPresent : Bool
       }
 
-in  Algebra.module
+in  Sdk.Sigs.Template.module
       Params
       ( \(p : Params) ->
           let rowExpr = if p.rowVarPresent then "row" else "0"

@@ -2,11 +2,11 @@ let Deps = ../Deps/package.dhall
 
 let ImportSet = ../Structures/ImportSet.dhall
 
-let Algebra = ../Algebras/Interpreter.dhall
+let ResolvedTarget = ../ResolvedTarget.dhall
 
 let Lude = Deps.Lude
 
-let Model = Deps.Sdk.Project
+let Model = Deps.Contract
 
 let Templates = ../Templates/package.dhall
 
@@ -38,7 +38,7 @@ let Output =
       }
 
 let run =
-      \(config : Algebra.Config) ->
+      \(config : ResolvedTarget.Type) ->
       \(input : Input) ->
         let combine =
               \(name : Name.Output) ->
@@ -120,4 +120,4 @@ let run =
                   (Value.run config input.value)
               )
 
-in  Algebra.module Input Output run
+in  Deps.Sdk.Sigs.Interpreter.module ResolvedTarget.Type Input Output run

@@ -1,10 +1,10 @@
 -- Renders the Statement interface method implementations for a no-result statement.
 -- Produces the methods without any surrounding indentation; splice site must indent.
-let Algebra = ../Algebras/Template.dhall
+let Sdk = ../Deps/Sdk.dhall
 
 let Params = {}
 
-in  Algebra.module
+in  Sdk.Sigs.Template.module
       Params
       ( \(p : Params) ->
           ''

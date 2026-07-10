@@ -2,13 +2,13 @@ let Deps = ../Deps/package.dhall
 
 let ImportSet = ../Structures/ImportSet.dhall
 
-let Algebra = ../Algebras/Interpreter.dhall
+let ResolvedTarget = ../ResolvedTarget.dhall
 
 let ResultRows = ./ResultRows.dhall
 
 let Templates = ../Templates/package.dhall
 
-let Input = Deps.Sdk.Project.Result
+let Input = Deps.Contract.Result
 
 let Output =
       Text ->
@@ -19,7 +19,7 @@ let Output =
         }
 
 let run =
-      \(config : Algebra.Config) ->
+      \(config : ResolvedTarget.Type) ->
       \(input : Input) ->
         merge
           { Void =
@@ -46,4 +46,4 @@ let run =
           }
           input
 
-in  Algebra.module Input Output run
+in  Deps.Sdk.Sigs.Interpreter.module ResolvedTarget.Type Input Output run

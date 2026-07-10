@@ -1,10 +1,12 @@
-let Algebra = ../Algebras/Interpreter.dhall
+let ResolvedTarget = ../ResolvedTarget.dhall
 
 let Sdk = ../Deps/Sdk.dhall
 
+let Contract = ../Deps/Contract.dhall
+
 let Lude = ../Deps/Lude.dhall
 
-let Input = Sdk.Project.Name
+let Input = Contract.Name
 
 let Output = { fieldName : Text }
 
@@ -109,10 +111,10 @@ let escapeJavaKeyword
     = \(text : Text) -> replaceTextIfInList javaKeywords (text ++ "_") text
 
 let run =
-      \(config : Algebra.Config) ->
+      \(config : ResolvedTarget.Type) ->
       \(input : Input) ->
         let fieldName = escapeJavaKeyword input.inCamelCase
 
         in  Lude.Compiled.ok Output { fieldName }
 
-in  Algebra.module Input Output run
+in  Sdk.Sigs.Interpreter.module ResolvedTarget.Type Input Output run

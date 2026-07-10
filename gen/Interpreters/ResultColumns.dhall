@@ -2,13 +2,13 @@ let Deps = ../Deps/package.dhall
 
 let ImportSet = ../Structures/ImportSet.dhall
 
-let Algebra = ../Algebras/Interpreter.dhall
+let ResolvedTarget = ../ResolvedTarget.dhall
 
 let Member = ./Member.dhall
 
 let Templates = ../Templates/package.dhall
 
-let Input = List Deps.Sdk.Project.Member
+let Input = List Deps.Contract.Member
 
 let Output =
       { columnFieldList : Text
@@ -18,16 +18,17 @@ let Output =
       , imports : ImportSet.Type
       }
 
-in  Algebra.module
+in  Deps.Sdk.Sigs.Interpreter.module
+      ResolvedTarget.Type
       Input
       Output
-      ( \(config : Algebra.Config) ->
+      ( \(config : ResolvedTarget.Type) ->
         \(input : Input) ->
           let compiledColumns =
                 Deps.Typeclasses.Classes.Applicative.traverseList
                   Deps.Lude.Compiled.Type
                   Deps.Lude.Compiled.applicative
-                  Deps.Sdk.Project.Member
+                  Deps.Contract.Member
                   Member.Output
                   (Member.run config)
                   input

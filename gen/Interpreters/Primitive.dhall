@@ -2,9 +2,9 @@ let Deps = ../Deps/package.dhall
 
 let ImportSet = ../Structures/ImportSet.dhall
 
-let Algebra = ../Algebras/Interpreter.dhall
+let ResolvedTarget = ../ResolvedTarget.dhall
 
-let Input = Deps.Sdk.Project.Primitive
+let Input = Deps.Contract.Primitive
 
 let Output =
       { javaType : Text
@@ -90,7 +90,7 @@ let codec =
               }
 
 let run =
-      \(config : Algebra.Config) ->
+      \(config : ResolvedTarget.Type) ->
       \(input : Input) ->
         merge
           { Bit = codec "Bit" "BIT" codecImports
@@ -213,4 +213,4 @@ let run =
           }
           input
 
-in  Algebra.module Input Output run
+in  Deps.Sdk.Sigs.Interpreter.module ResolvedTarget.Type Input Output run

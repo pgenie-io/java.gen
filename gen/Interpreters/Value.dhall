@@ -2,13 +2,13 @@ let Deps = ../Deps/package.dhall
 
 let ImportSet = ../Structures/ImportSet.dhall
 
-let Algebra = ../Algebras/Interpreter.dhall
+let ResolvedTarget = ../ResolvedTarget.dhall
 
 let Sdk = Deps.Sdk
 
 let Lude = Deps.Lude
 
-let Model = Deps.Sdk.Project
+let Model = Deps.Contract
 
 let Scalar = ./Scalar.dhall
 
@@ -27,7 +27,7 @@ let Output =
       }
 
 let run =
-      \(config : Algebra.Config) ->
+      \(config : ResolvedTarget.Type) ->
       \(input : Input) ->
         Lude.Compiled.map
           Scalar.Output
@@ -104,4 +104,4 @@ let run =
           )
           (Scalar.run config input.scalar)
 
-in  Algebra.module Input Output run
+in  Deps.Sdk.Sigs.Interpreter.module ResolvedTarget.Type Input Output run
