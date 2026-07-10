@@ -4,6 +4,6 @@ let ProjectInterpreter = ./Interpreters/Project.dhall
 
 let Config = { useOptional : Bool }
 
-let defaultConfig = { useOptional = False }
+let Config/default = { useOptional = False }
 
-in  Sdk.Sigs.generator Config defaultConfig ProjectInterpreter.run
+in  Sdk.Sigs.generator Config Config/default ProjectInterpreter.run
