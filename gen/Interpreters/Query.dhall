@@ -1,14 +1,16 @@
-let Deps = ../Deps/package.dhall
-
 let ImportSet = ../Structures/ImportSet.dhall
 
 let ResolvedTarget = ../ResolvedTarget.dhall
 
-let Typeclasses = Deps.Typeclasses
+let Typeclasses = ../Deps/Typeclasses.dhall
 
-let Sdk = Deps.Sdk
+let Sdk = ../Deps/Sdk.dhall
 
-let Lude = Deps.Lude
+let Prelude = ../Deps/Prelude.dhall
+
+let Lude = ../Deps/Lude.dhall
+
+let Contract = ../Deps/Contract.dhall
 
 let Templates = ../Templates/package.dhall
 
@@ -18,7 +20,7 @@ let QueryFragmentsModule = ./QueryFragments.dhall
 
 let Member = ./Member.dhall
 
-let Input = Deps.Contract.Query
+let Input = Contract.Query
 
 let Output =
       { statementModuleName : Text
@@ -39,7 +41,7 @@ let render =
         let statementModulePath = input.name.inPascalCase ++ ".java"
 
         let paramCastSuffixes =
-              Deps.Prelude.List.map
+              Prelude.List.map
                 Member.Output
                 Text
                 (\(member : Member.Output) -> member.pgCastSuffix)
@@ -49,32 +51,31 @@ let render =
 
         let paramBindCode =
               let paramOccurrences =
-                    Deps.Prelude.List.filterMap
-                      Deps.Contract.QueryFragment
+                    Prelude.List.filterMap
+                      Contract.QueryFragment
                       Natural
-                      ( \(fragment : Deps.Contract.QueryFragment) ->
+                      ( \(fragment : Contract.QueryFragment) ->
                           merge
                             { Sql = \(_ : Text) -> None Natural
-                            , Var =
-                                \(v : Deps.Contract.Var) -> Some v.paramIndex
+                            , Var = \(v : Contract.Var) -> Some v.paramIndex
                             }
                             fragment
                       )
                       input.fragments
 
               let indexedOccurrences =
-                    Deps.Prelude.List.indexed Natural paramOccurrences
+                    Prelude.List.indexed Natural paramOccurrences
 
-              in  Deps.Prelude.Text.concatSep
+              in  Prelude.Text.concatSep
                     "\n"
-                    ( Deps.Prelude.List.filterMap
+                    ( Prelude.List.filterMap
                         { index : Natural, value : Natural }
                         Text
                         ( \(ip : { index : Natural, value : Natural }) ->
                             let idx = Natural/show (ip.index + 1)
 
                             let mParam =
-                                  Deps.Prelude.List.index
+                                  Prelude.List.index
                                     ip.value
                                     Member.Output
                                     params
@@ -104,7 +105,7 @@ let render =
               merge
                 { Void = False
                 , RowsAffected = True
-                , Rows = \(_ : Deps.Contract.ResultRows) -> True
+                , Rows = \(_ : Contract.ResultRows) -> True
                 }
                 input.result
 
@@ -124,7 +125,7 @@ let render =
         let extraImports = ImportSet.combine paramImports resultInfo.imports
 
         let paramFields =
-              Deps.Prelude.List.map
+              Prelude.List.map
                 Member.Output
                 Text
                 ( \(member : Member.Output) ->
@@ -142,7 +143,7 @@ let render =
                 { Void = False
                 , RowsAffected = False
                 , Rows =
-                    \(rows : Deps.Contract.ResultRows) ->
+                    \(rows : Contract.ResultRows) ->
                       merge
                         { Optional = True, Single = False, Multiple = False }
                         rows.cardinality
@@ -154,7 +155,7 @@ let render =
                 { Void = False
                 , RowsAffected = False
                 , Rows =
-                    \(rows : Deps.Contract.ResultRows) ->
+                    \(rows : Contract.ResultRows) ->
                       merge
                         { Optional = False, Single = False, Multiple = True }
                         rows.cardinality
@@ -179,21 +180,21 @@ let render =
                 }
 
         let defaultArgs =
-              Deps.Prelude.List.map
+              Prelude.List.map
                 Member.Output
                 Text
                 (\(m : Member.Output) -> m.testDefaultLiteral)
                 params
 
         let testRandomArgs =
-              Deps.Prelude.List.map
+              Prelude.List.map
                 Member.Output
                 Text
                 (\(m : Member.Output) -> m.testRandomLiteral)
                 params
 
         let identityFieldNames =
-              Deps.Prelude.List.map
+              Prelude.List.map
                 Member.Output
                 Text
                 (\(m : Member.Output) -> m.fieldName)
@@ -208,8 +209,7 @@ let render =
                 , defaultArgs
                 , hasResult
                 , resultNullable =
-                        isOptionalCardinality
-                    &&  Deps.Prelude.Bool.not config.useOptional
+                    isOptionalCardinality && Prelude.Bool.not config.useOptional
                 , shouldTestIdentity = input.identity
                 , identityFieldNames
                 , testRandomArgs
@@ -254,7 +254,7 @@ let run =
                   ( Typeclasses.Classes.Applicative.traverseList
                       Lude.Compiled.Type
                       Lude.Compiled.applicative
-                      Deps.Contract.Member
+                      Contract.Member
                       Member.Output
                       (Member.run config)
                       input.params
@@ -262,4 +262,4 @@ let run =
               )
           )
 
-in  Deps.Sdk.Sigs.Interpreter.module ResolvedTarget.Type Input Output run
+in  Sdk.Sigs.Interpreter.module ResolvedTarget.Type Input Output run

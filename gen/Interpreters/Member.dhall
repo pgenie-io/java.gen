@@ -1,12 +1,14 @@
-let Deps = ../Deps/package.dhall
-
 let ImportSet = ../Structures/ImportSet.dhall
 
 let ResolvedTarget = ../ResolvedTarget.dhall
 
-let Lude = Deps.Lude
+let Sdk = ../Deps/Sdk.dhall
 
-let Model = Deps.Contract
+let Prelude = ../Deps/Prelude.dhall
+
+let Lude = ../Deps/Lude.dhall
+
+let Model = ../Deps/Contract.dhall
 
 let Templates = ../Templates/package.dhall
 
@@ -73,7 +75,7 @@ let run =
                     , isOptional
                     , elementIsOptional = value.elementIsOptional
                     , elementIsNullable =
-                        Deps.Prelude.Optional.fold
+                        Prelude.Optional.fold
                           Model.ArraySettings
                           input.value.arraySettings
                           Bool
@@ -82,7 +84,7 @@ let run =
                           )
                           False
                     , dims =
-                        Deps.Prelude.Optional.fold
+                        Prelude.Optional.fold
                           Model.ArraySettings
                           input.value.arraySettings
                           Natural
@@ -120,4 +122,4 @@ let run =
                   (Value.run config input.value)
               )
 
-in  Deps.Sdk.Sigs.Interpreter.module ResolvedTarget.Type Input Output run
+in  Sdk.Sigs.Interpreter.module ResolvedTarget.Type Input Output run

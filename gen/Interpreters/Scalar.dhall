@@ -1,14 +1,12 @@
-let Deps = ../Deps/package.dhall
-
 let ImportSet = ../Structures/ImportSet.dhall
 
 let ResolvedTarget = ../ResolvedTarget.dhall
 
-let Sdk = Deps.Sdk
+let Sdk = ../Deps/Sdk.dhall
 
-let Lude = Deps.Lude
+let Lude = ../Deps/Lude.dhall
 
-let Model = Deps.Contract
+let Model = ../Deps/Contract.dhall
 
 let Primitive = ./Primitive.dhall
 
@@ -60,4 +58,4 @@ let run =
           }
           input
 
-in  Deps.Sdk.Sigs.Interpreter.module ResolvedTarget.Type Input Output run
+in  Sdk.Sigs.Interpreter.module ResolvedTarget.Type Input Output run

@@ -1,4 +1,8 @@
-let Deps = ../Deps/package.dhall
+let Sdk = ../Deps/Sdk.dhall
+
+let Lude = ../Deps/Lude.dhall
+
+let Contract = ../Deps/Contract.dhall
 
 let ImportSet = ../Structures/ImportSet.dhall
 
@@ -8,7 +12,7 @@ let ResultRows = ./ResultRows.dhall
 
 let Templates = ../Templates/package.dhall
 
-let Input = Deps.Contract.Result
+let Input = Contract.Result
 
 let Output =
       Text ->
@@ -23,7 +27,7 @@ let run =
       \(input : Input) ->
         merge
           { Void =
-              Deps.Lude.Compiled.ok
+              Lude.Compiled.ok
                 Output
                 ( \(_ : Text) ->
                     { typeDecls = ""
@@ -33,7 +37,7 @@ let run =
                     }
                 )
           , RowsAffected =
-              Deps.Lude.Compiled.ok
+              Lude.Compiled.ok
                 Output
                 ( \(_ : Text) ->
                     { typeDecls = ""
@@ -46,4 +50,4 @@ let run =
           }
           input
 
-in  Deps.Sdk.Sigs.Interpreter.module ResolvedTarget.Type Input Output run
+in  Sdk.Sigs.Interpreter.module ResolvedTarget.Type Input Output run

@@ -1,14 +1,14 @@
-let Deps = ../Deps/package.dhall
-
 let ImportSet = ../Structures/ImportSet.dhall
 
 let ResolvedTarget = ../ResolvedTarget.dhall
 
-let Sdk = Deps.Sdk
+let Sdk = ../Deps/Sdk.dhall
 
-let Lude = Deps.Lude
+let Prelude = ../Deps/Prelude.dhall
 
-let Model = Deps.Contract
+let Lude = ../Deps/Lude.dhall
+
+let Model = ../Deps/Contract.dhall
 
 let Templates = ../Templates/package.dhall
 
@@ -76,7 +76,7 @@ let run =
 
                                 let fieldSpecs
                                     : List FieldSpec
-                                    = Deps.Prelude.List.map
+                                    = Prelude.List.map
                                         Member.Output
                                         FieldSpec
                                         ( \(m : Member.Output) ->
@@ -98,7 +98,7 @@ let run =
                                         ( \(spec : FieldSpec) ->
                                           \(combos : List Combination) ->
                                             if    spec.isVariable
-                                            then  Deps.Prelude.List.concatMap
+                                            then  Prelude.List.concatMap
                                                     Combination
                                                     Combination
                                                     ( \(combo : Combination) ->
@@ -111,7 +111,7 @@ let run =
                                                         ]
                                                     )
                                                     combos
-                                            else  Deps.Prelude.List.map
+                                            else  Prelude.List.map
                                                     Combination
                                                     Combination
                                                     ( \(combo : Combination) ->
@@ -124,7 +124,7 @@ let run =
                                         [ [] : Combination ]
 
                                 let testCases =
-                                      Deps.Prelude.List.map
+                                      Prelude.List.map
                                         { index : Natural, value : Combination }
                                         Templates.CustomCompositeTypeTestModule.TestCase
                                         ( \ ( indexed
@@ -136,12 +136,12 @@ let run =
                                                 "roundtripCombination${Natural/show
                                                                          indexed.index}"
                                             , constructorArgs =
-                                                Deps.Prelude.Text.concatSep
+                                                Prelude.Text.concatSep
                                                   ", "
                                                   indexed.value
                                             }
                                         )
-                                        ( Deps.Prelude.List.indexed
+                                        ( Prelude.List.indexed
                                             Combination
                                             combinations
                                         )
@@ -157,7 +157,7 @@ let run =
                                           , pgTypeName = input.pgName
                                           , extraImports = moduleImports
                                           , fields =
-                                              Deps.Prelude.List.map
+                                              Prelude.List.map
                                                 Member.Output
                                                 Templates.CustomCompositeTypeModule.Field
                                                 ( \(member : Member.Output) ->
@@ -209,7 +209,7 @@ let run =
                             , pgSchema = input.pgSchema
                             , pgTypeName = input.pgName
                             , variants =
-                                Deps.Prelude.List.map
+                                Prelude.List.map
                                   Model.EnumVariant
                                   Templates.CustomEnumTypeModule.Variant
                                   ( \(variant : Model.EnumVariant) ->
@@ -228,7 +228,7 @@ let run =
                             , typeName
                             , pgTypeName = input.pgName
                             , variants =
-                                Deps.Prelude.List.map
+                                Prelude.List.map
                                   Model.EnumVariant
                                   Templates.CustomEnumTypeTestModule.Variant
                                   ( \(variant : Model.EnumVariant) ->
@@ -247,4 +247,4 @@ let run =
               }
               input.definition
 
-in  Deps.Sdk.Sigs.Interpreter.module ResolvedTarget.Type Input Output run
+in  Sdk.Sigs.Interpreter.module ResolvedTarget.Type Input Output run

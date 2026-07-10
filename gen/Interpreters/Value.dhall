@@ -1,14 +1,14 @@
-let Deps = ../Deps/package.dhall
-
 let ImportSet = ../Structures/ImportSet.dhall
 
 let ResolvedTarget = ../ResolvedTarget.dhall
 
-let Sdk = Deps.Sdk
+let Sdk = ../Deps/Sdk.dhall
 
-let Lude = Deps.Lude
+let Prelude = ../Deps/Prelude.dhall
 
-let Model = Deps.Contract
+let Lude = ../Deps/Lude.dhall
+
+let Model = ../Deps/Contract.dhall
 
 let Scalar = ./Scalar.dhall
 
@@ -33,7 +33,7 @@ let run =
           Scalar.Output
           Output
           ( \(scalar : Scalar.Output) ->
-              Deps.Prelude.Optional.fold
+              Prelude.Optional.fold
                 Model.ArraySettings
                 input.arraySettings
                 Output
@@ -79,7 +79,7 @@ let run =
                               , Some =
                                   \(suffix : Text) ->
                                         suffix
-                                    ++  Deps.Prelude.Text.replicate
+                                    ++  Prelude.Text.replicate
                                           arraySettings.dimensionality
                                           "[]"
                               }
@@ -104,4 +104,4 @@ let run =
           )
           (Scalar.run config input.scalar)
 
-in  Deps.Sdk.Sigs.Interpreter.module ResolvedTarget.Type Input Output run
+in  Sdk.Sigs.Interpreter.module ResolvedTarget.Type Input Output run

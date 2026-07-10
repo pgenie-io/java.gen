@@ -2,9 +2,11 @@
 -- Produces the method without any surrounding indentation; splice site must indent.
 let Sdk = ../Deps/Sdk.dhall
 
-let Deps = ../Deps/package.dhall
+let Prelude = ../Deps/Prelude.dhall
 
-let indent = Deps.Lude.Text.indentNonEmpty
+let Lude = ../Deps/Lude.dhall
+
+let indent = Lude.Text.indentNonEmpty
 
 let Params = { decodeLines : Text, columnNames : List Text }
 
@@ -20,7 +22,7 @@ in  Sdk.Sigs.Template.module
               while (rs.next()) {
                   ${indent 8 p.decodeLines}
 
-                  output.add(new ResultRow(${Deps.Prelude.Text.concatMapSep
+                  output.add(new ResultRow(${Prelude.Text.concatMapSep
                                                ", "
                                                Text
                                                (\(col : Text) -> "${col}Col")

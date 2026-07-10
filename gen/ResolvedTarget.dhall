@@ -1,6 +1,6 @@
-let Deps = ./Deps/package.dhall
+let Contract = ./Deps/Contract.dhall
 
-let Contract = Deps.Contract
+let Prelude = ./Deps/Prelude.dhall
 
 let Config = ./Config.dhall
 
@@ -17,7 +17,7 @@ let resolve =
       \(config : Optional Config) ->
       \(project : Contract.Project) ->
         let useOptional =
-              Deps.Prelude.Optional.fold
+              Prelude.Optional.fold
                 Config
                 config
                 Bool
@@ -26,7 +26,7 @@ let resolve =
 
         let flatten =
               \(name : Contract.Name) ->
-                Deps.Prelude.Text.replace "_" "" name.inSnakeCase
+                Prelude.Text.replace "_" "" name.inSnakeCase
 
         let spacePkg = flatten project.space
 

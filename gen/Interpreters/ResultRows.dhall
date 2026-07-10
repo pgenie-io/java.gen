@@ -1,4 +1,10 @@
-let Deps = ../Deps/package.dhall
+let Sdk = ../Deps/Sdk.dhall
+
+let Prelude = ../Deps/Prelude.dhall
+
+let Lude = ../Deps/Lude.dhall
+
+let Contract = ../Deps/Contract.dhall
 
 let ImportSet = ../Structures/ImportSet.dhall
 
@@ -8,7 +14,7 @@ let ResultColumns = ./ResultColumns.dhall
 
 let Templates = ../Templates/package.dhall
 
-let Input = Deps.Contract.ResultRows
+let Input = Contract.ResultRows
 
 let Output =
       Text ->
@@ -24,12 +30,9 @@ let run =
         let compiledColumns =
               ResultColumns.run
                 config
-                ( Deps.Prelude.NonEmpty.toList
-                    Deps.Contract.Member
-                    input.columns
-                )
+                (Prelude.NonEmpty.toList Contract.Member input.columns)
 
-        in  Deps.Lude.Compiled.map
+        in  Lude.Compiled.map
               ResultColumns.Output
               Output
               ( \(cols : ResultColumns.Output) ->
@@ -117,4 +120,4 @@ let run =
               )
               compiledColumns
 
-in  Deps.Sdk.Sigs.Interpreter.module ResolvedTarget.Type Input Output run
+in  Sdk.Sigs.Interpreter.module ResolvedTarget.Type Input Output run

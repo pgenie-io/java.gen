@@ -1,10 +1,12 @@
 let Sdk = ../Deps/Sdk.dhall
 
-let Deps = ../Deps/package.dhall
+let Prelude = ../Deps/Prelude.dhall
+
+let Lude = ../Deps/Lude.dhall
 
 let ImportSet = ../Structures/ImportSet.dhall
 
-let indent = Deps.Lude.Text.indentNonEmpty
+let indent = Lude.Text.indentNonEmpty
 
 let Params =
       { packageName : Text
@@ -26,7 +28,7 @@ in  Sdk.Sigs.Template.module
       Params
       ( \(params : Params) ->
           let imports =
-                Deps.Prelude.Text.concatMap
+                Prelude.Text.concatMap
                   Text
                   ( \(import : Text) ->
                       ''
@@ -49,7 +51,7 @@ in  Sdk.Sigs.Template.module
                   )
 
           let paramFieldList =
-                Deps.Prelude.Text.concatSep
+                Prelude.Text.concatSep
                   ''
                   ,
                   ''
@@ -76,7 +78,7 @@ in  Sdk.Sigs.Template.module
                * <h2>SQL Template</h2>
                *
                * <pre>{@code
-               * ${Deps.Lude.Text.prefixEachLine " * " params.sqlDoc}
+               * ${Lude.Text.prefixEachLine " * " params.sqlDoc}
                * }</pre>
                *
                * <h2>Source Path</h2> {@code ${params.srcPath}}

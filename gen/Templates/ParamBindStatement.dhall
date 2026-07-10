@@ -3,7 +3,7 @@
 -- Produces the statement(s) without any surrounding indentation; splice site must indent.
 let Sdk = ../Deps/Sdk.dhall
 
-let Deps = ../Deps/package.dhall
+let Prelude = ../Deps/Prelude.dhall
 
 let Params =
       { idx : Text
@@ -17,7 +17,7 @@ let Params =
 let unwrapSuffix =
       \(dims : Natural) ->
         Natural/fold
-          (Deps.Prelude.Natural.subtract 1 dims)
+          (Prelude.Natural.subtract 1 dims)
           Text
           (\(inner : Text) -> ".stream().map(d -> d${inner}).toList()")
           ".stream().map(o -> o.orElse(null)).toList()"

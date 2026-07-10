@@ -1,10 +1,14 @@
-let Deps = ../Deps/package.dhall
+let Sdk = ../Deps/Sdk.dhall
+
+let Lude = ../Deps/Lude.dhall
+
+let Contract = ../Deps/Contract.dhall
 
 let ImportSet = ../Structures/ImportSet.dhall
 
 let ResolvedTarget = ../ResolvedTarget.dhall
 
-let Input = Deps.Contract.Primitive
+let Input = Contract.Primitive
 
 let Output =
       { javaType : Text
@@ -28,8 +32,7 @@ let codecBigDecimalImports = ImportSet.combine codecImports bigDecimalImports
 let uuidImports = ImportSet.uuid
 
 let unsupportedType =
-      \(type : Text) ->
-        Deps.Lude.Compiled.report Output [ type ] "Unsupported type"
+      \(type : Text) -> Lude.Compiled.report Output [ type ] "Unsupported type"
 
 let jdbcPrimitive =
       \(javaType : Text) ->
@@ -37,7 +40,7 @@ let jdbcPrimitive =
       \(codecName : Text) ->
       \(testDefaultLiteral : Text) ->
       \(testRandomLiteral : Text) ->
-        Deps.Lude.Compiled.ok
+        Lude.Compiled.ok
           Output
           { javaType
           , boxedJavaType
@@ -49,7 +52,7 @@ let jdbcPrimitive =
 
 let jdbcString =
       \(codecName : Text) ->
-        Deps.Lude.Compiled.ok
+        Lude.Compiled.ok
           Output
           { javaType = "String"
           , boxedJavaType = "String"
@@ -60,7 +63,7 @@ let jdbcString =
           }
 
 let dateType =
-      Deps.Lude.Compiled.ok
+      Lude.Compiled.ok
         Output
         { javaType = "LocalDate"
         , boxedJavaType = "LocalDate"
@@ -77,7 +80,7 @@ let codec =
       \(imports : ImportSet.Type) ->
         let codecRef = "Codec.${codecName}"
 
-        in  Deps.Lude.Compiled.ok
+        in  Lude.Compiled.ok
               Output
               { javaType
               , boxedJavaType = javaType
@@ -165,7 +168,7 @@ let run =
           , Line = codec "Line" "LINE" codecImports
           , Lseg = codec "Lseg" "LSEG" codecImports
           , Ltree =
-              Deps.Lude.Compiled.ok
+              Lude.Compiled.ok
                 Output
                 { javaType = "Ltree"
                 , boxedJavaType = "Ltree"
@@ -213,4 +216,4 @@ let run =
           }
           input
 
-in  Deps.Sdk.Sigs.Interpreter.module ResolvedTarget.Type Input Output run
+in  Sdk.Sigs.Interpreter.module ResolvedTarget.Type Input Output run

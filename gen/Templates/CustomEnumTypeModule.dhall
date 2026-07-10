@@ -1,4 +1,6 @@
-let Deps = ../Deps/package.dhall
+let Prelude = ../Deps/Prelude.dhall
+
+let Lude = ../Deps/Lude.dhall
 
 let Variant = { name : Text, pgValue : Text }
 
@@ -14,7 +16,7 @@ let Params =
 let run =
       \(params : Params) ->
         let variantEntries =
-              Deps.Prelude.Text.concatMapSep
+              Prelude.Text.concatMapSep
                 ''
                 ,
                 ''
@@ -29,7 +31,7 @@ let run =
                 params.variants
 
         let codecEntries =
-              Deps.Prelude.Text.concatMapSep
+              Prelude.Text.concatMapSep
                 ''
                 ,
                 ''
@@ -56,14 +58,12 @@ let run =
              */
             public enum ${params.typeName} {
 
-                ${Deps.Lude.Text.indentNonEmpty 4 variantEntries};
+                ${Lude.Text.indentNonEmpty 4 variantEntries};
 
                 public static final Codec<${params.typeName}> CODEC = Codec.enumeration(
                         "${params.pgSchema}", "${params.pgTypeName}",
                         Map.ofEntries(
-                                ${Deps.Lude.Text.indentNonEmpty
-                                    20
-                                    codecEntries}));
+                                ${Lude.Text.indentNonEmpty 20 codecEntries}));
 
             }
             ''

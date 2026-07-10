@@ -2,9 +2,9 @@
 -- Produces the declarations without any surrounding indentation; splice site must indent.
 let Sdk = ../Deps/Sdk.dhall
 
-let Deps = ../Deps/package.dhall
+let Lude = ../Deps/Lude.dhall
 
-let indent = Deps.Lude.Text.indentNonEmpty
+let indent = Lude.Text.indentNonEmpty
 
 let Params = { typeNameBase : Text, columnFieldList : Text }
 

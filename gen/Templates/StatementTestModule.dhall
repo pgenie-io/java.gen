@@ -1,6 +1,6 @@
 let Sdk = ../Deps/Sdk.dhall
 
-let Deps = ../Deps/package.dhall
+let Prelude = ../Deps/Prelude.dhall
 
 let Lude = ../Deps/Lude.dhall
 
@@ -20,14 +20,13 @@ let Params =
 in  Sdk.Sigs.Template.module
       Params
       ( \(params : Params) ->
-          let randomArgList =
-                Deps.Prelude.Text.concatSep ", " params.testRandomArgs
+          let randomArgList = Prelude.Text.concatSep ", " params.testRandomArgs
 
           let defaultTestCase =
                 ''
                 @Test
                 void executesWithDefaultValues() throws SQLException {
-                    var result = execute(new ${params.typeName}(${Deps.Prelude.Text.concatSep
+                    var result = execute(new ${params.typeName}(${Prelude.Text.concatSep
                                                                     ", "
                                                                     params.defaultArgs}));
                     ${Lude.Text.indentNonEmpty
@@ -49,9 +48,9 @@ in  Sdk.Sigs.Template.module
                     ${Lude.Text.indentNonEmpty
                         4
                         ( let identityFieldAccessors =
-                                Deps.Prelude.Text.concatSep
+                                Prelude.Text.concatSep
                                   ", "
-                                  ( Deps.Prelude.List.map
+                                  ( Prelude.List.map
                                       Text
                                       Text
                                       ( \(fieldName : Text) ->

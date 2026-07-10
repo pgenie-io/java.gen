@@ -1,4 +1,6 @@
-let Deps = ../Deps/package.dhall
+let Prelude = ../Deps/Prelude.dhall
+
+let Lude = ../Deps/Lude.dhall
 
 let Variant = { variantName : Text }
 
@@ -20,7 +22,7 @@ let run =
               else  ""
 
         let variantTests =
-              Deps.Prelude.Text.concatMapSep
+              Prelude.Text.concatMapSep
                 "\n\n"
                 Variant
                 ( \(v : Variant) ->
@@ -104,11 +106,11 @@ let run =
 
             class ${params.typeName}IT extends AbstractDatabaseIT {
 
-                ${Deps.Lude.Text.indentNonEmpty 4 roundtripMethod}
+                ${Lude.Text.indentNonEmpty 4 roundtripMethod}
 
-                ${Deps.Lude.Text.indentNonEmpty 4 nullTest}
+                ${Lude.Text.indentNonEmpty 4 nullTest}
 
-                ${Deps.Lude.Text.indentNonEmpty 4 variantTests}
+                ${Lude.Text.indentNonEmpty 4 variantTests}
             }
             ''
 

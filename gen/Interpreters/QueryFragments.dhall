@@ -1,16 +1,16 @@
-let Deps = ../Deps/package.dhall
-
 let ResolvedTarget = ../ResolvedTarget.dhall
 
-let Prelude = Deps.Prelude
+let Prelude = ../Deps/Prelude.dhall
 
-let Sdk = Deps.Sdk
+let Sdk = ../Deps/Sdk.dhall
 
-let Lude = Deps.Lude
+let Lude = ../Deps/Lude.dhall
+
+let Contract = ../Deps/Contract.dhall
 
 let Compiled = Lude.Compiled
 
-let Input = Deps.Contract.QueryFragments
+let Input = Contract.QueryFragments
 
 let Output
     : Type
@@ -23,16 +23,16 @@ let escapeJavaString
         [ Prelude.Text.replace "\\" "\\\\", Prelude.Text.replace "\"" "\\\"" ]
 
 let renderSqlExp
-    : Deps.Contract.QueryFragments -> List Text -> Text
-    = \(fragments : Deps.Contract.QueryFragments) ->
+    : Contract.QueryFragments -> List Text -> Text
+    = \(fragments : Contract.QueryFragments) ->
       \(castSuffixes : List Text) ->
         Prelude.Text.concatMap
-          Deps.Contract.QueryFragment
-          ( \(queryFragment : Deps.Contract.QueryFragment) ->
+          Contract.QueryFragment
+          ( \(queryFragment : Contract.QueryFragment) ->
               merge
                 { Sql = escapeJavaString
                 , Var =
-                    \(var : Deps.Contract.Var) ->
+                    \(var : Contract.Var) ->
                       let suffix =
                             Prelude.Optional.fold
                               Text
@@ -52,13 +52,13 @@ let renderSqlExp
           fragments
 
 let renderDocComment
-    : Deps.Contract.QueryFragments -> Text
+    : Contract.QueryFragments -> Text
     = Prelude.Text.concatMap
-        Deps.Contract.QueryFragment
-        ( \(queryFragment : Deps.Contract.QueryFragment) ->
+        Contract.QueryFragment
+        ( \(queryFragment : Contract.QueryFragment) ->
             merge
               { Sql = Prelude.Function.identity Text
-              , Var = \(var : Deps.Contract.Var) -> "\$${var.rawName}"
+              , Var = \(var : Contract.Var) -> "\$${var.rawName}"
               }
               queryFragment
         )
@@ -70,4 +70,4 @@ let run =
           Output
           { mkSqlExp = renderSqlExp input, docComment = renderDocComment input }
 
-in  Deps.Sdk.Sigs.Interpreter.module ResolvedTarget.Type Input Output run
+in  Sdk.Sigs.Interpreter.module ResolvedTarget.Type Input Output run

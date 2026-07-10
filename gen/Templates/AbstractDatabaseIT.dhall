@@ -1,6 +1,8 @@
 let Sdk = ../Deps/Sdk.dhall
 
-let Deps = ../Deps/package.dhall
+let Prelude = ../Deps/Prelude.dhall
+
+let Lude = ../Deps/Lude.dhall
 
 let Params = { packageName : Text, migrations : List Text }
 
@@ -38,9 +40,9 @@ in  Sdk.Sigs.Template.module
           public abstract class AbstractDatabaseIT {
 
               private static final String[] MIGRATIONS = {
-                  ${Deps.Lude.Text.indentNonEmpty
+                  ${Lude.Text.indentNonEmpty
                       8
-                      ( Deps.Prelude.Text.concatMapSep
+                      ( Prelude.Text.concatMapSep
                           ''
                           ,
                           ''

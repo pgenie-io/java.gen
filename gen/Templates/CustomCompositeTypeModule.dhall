@@ -1,4 +1,6 @@
-let Deps = ../Deps/package.dhall
+let Prelude = ../Deps/Prelude.dhall
+
+let Lude = ../Deps/Lude.dhall
 
 let ImportSet = ../Structures/ImportSet.dhall
 
@@ -25,7 +27,7 @@ let Params =
 let run =
       \(params : Params) ->
         let fieldDecls =
-              Deps.Prelude.Text.concatMapSep
+              Prelude.Text.concatMapSep
                 ''
                 ,
                 ''
@@ -40,7 +42,7 @@ let run =
                 params.fields
 
         let codecFieldEntries =
-              Deps.Prelude.Text.concatMapSep
+              Prelude.Text.concatMapSep
                 ''
                 ,
                 ''
@@ -59,10 +61,10 @@ let run =
                 )
                 params.fields
 
-        let indexedFields = Deps.Prelude.List.indexed Field params.fields
+        let indexedFields = Prelude.List.indexed Field params.fields
 
         let constructorArgs =
-              Deps.Prelude.Text.concatMapSep
+              Prelude.Text.concatMapSep
                 ", "
                 { index : Natural, value : Field }
                 ( \(field : { index : Natural, value : Field }) ->
@@ -85,13 +87,13 @@ let run =
               "objects -> new ${params.typeName}(${constructorArgs})"
 
         let hasOptionalFields =
-              Deps.Prelude.List.any
+              Prelude.List.any
                 Field
                 (\(field : Field) -> field.isOptional)
                 params.fields
 
         let hasElementOptionalFields =
-              Deps.Prelude.List.any
+              Prelude.List.any
                 Field
                 (\(field : Field) -> field.elementIsOptional)
                 params.fields
@@ -106,7 +108,7 @@ let run =
               # [ "io.codemine.java.postgresql.jdbc.Codec" ]
 
         let importSection =
-              Deps.Prelude.Text.concatMapSep
+              Prelude.Text.concatMapSep
                 "\n"
                 Text
                 (\(import : Text) -> "import ${import};")
@@ -129,12 +131,12 @@ let run =
              * All fields are nullable, matching the PostgreSQL column definitions.
              */
             public record ${params.typeName}(
-                    ${Deps.Lude.Text.indentNonEmpty 8 fieldDecls}) {
+                    ${Lude.Text.indentNonEmpty 8 fieldDecls}) {
 
                 public static final Codec<${params.typeName}> CODEC = Codec.<${params.typeName}>composite(
                         "${params.pgSchema}", "${params.pgTypeName}",
                         ${constructorExpr},
-                        ${Deps.Lude.Text.indentNonEmpty 12 codecFieldEntries});
+                        ${Lude.Text.indentNonEmpty 12 codecFieldEntries});
 
             }
             ''

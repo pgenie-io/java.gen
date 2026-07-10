@@ -1,8 +1,10 @@
 let Sdk = ../Deps/Sdk.dhall
 
-let Deps = ../Deps/package.dhall
+let Prelude = ../Deps/Prelude.dhall
 
-let indent = Deps.Lude.Text.indentNonEmpty
+let Lude = ../Deps/Lude.dhall
+
+let indent = Lude.Text.indentNonEmpty
 
 let Params = { decodeLines : Text, columnNames : List Text }
 
@@ -16,7 +18,7 @@ in  Sdk.Sigs.Template.module
 
               ${indent 4 p.decodeLines}
 
-              return new Result(${Deps.Prelude.Text.concatMapSep
+              return new Result(${Prelude.Text.concatMapSep
                                     ", "
                                     Text
                                     (\(col : Text) -> "${col}Col")

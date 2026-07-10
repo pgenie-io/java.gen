@@ -1,4 +1,6 @@
-let Deps = ../Deps/package.dhall
+let Prelude = ../Deps/Prelude.dhall
+
+let Lude = ../Deps/Lude.dhall
 
 let TestCase = { testName : Text, constructorArgs : Text }
 
@@ -28,7 +30,7 @@ let run =
               else  ""
 
         let combinationTests =
-              Deps.Prelude.Text.concatMapSep
+              Prelude.Text.concatMapSep
                 "\n\n"
                 TestCase
                 ( \(tc : TestCase) ->
@@ -116,11 +118,11 @@ let run =
 
             class ${params.typeName}IT extends AbstractDatabaseIT {
 
-                ${Deps.Lude.Text.indentNonEmpty 4 roundtripMethod}
+                ${Lude.Text.indentNonEmpty 4 roundtripMethod}
 
-                ${Deps.Lude.Text.indentNonEmpty 4 nullTest}
+                ${Lude.Text.indentNonEmpty 4 nullTest}
 
-                ${Deps.Lude.Text.indentNonEmpty 4 combinationTests}
+                ${Lude.Text.indentNonEmpty 4 combinationTests}
             }
             ''
 

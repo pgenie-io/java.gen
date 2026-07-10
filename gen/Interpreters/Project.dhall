@@ -1,12 +1,14 @@
-let Deps = ../Deps/package.dhall
-
 let ResolvedTarget = ../ResolvedTarget.dhall
 
-let Sdk = Deps.Sdk
+let Sdk = ../Deps/Sdk.dhall
 
-let Lude = Deps.Lude
+let Prelude = ../Deps/Prelude.dhall
 
-let Model = Deps.Contract
+let Lude = ../Deps/Lude.dhall
+
+let Model = ../Deps/Contract.dhall
+
+let Typeclasses = ../Deps/Typeclasses.dhall
 
 let Templates = ../Templates/package.dhall
 
@@ -25,7 +27,7 @@ let combineOutputs =
       \(customTypes : List CustomTypeGen.Output) ->
         let customTypeFiles
             : List Lude.File.Type
-            = Deps.Prelude.List.map
+            = Prelude.List.map
                 CustomTypeGen.Output
                 Lude.File.Type
                 ( \(customType : CustomTypeGen.Output) ->
@@ -38,7 +40,7 @@ let combineOutputs =
 
         let testCustomTypeFiles
             : List Lude.File.Type
-            = Deps.Prelude.List.map
+            = Prelude.List.map
                 CustomTypeGen.Output
                 Lude.File.Type
                 ( \(customType : CustomTypeGen.Output) ->
@@ -53,7 +55,7 @@ let combineOutputs =
 
         let statementFiles
             : List Lude.File.Type
-            = Deps.Prelude.List.map
+            = Prelude.List.map
                 QueryGen.Output
                 Lude.File.Type
                 ( \(query : QueryGen.Output) ->
@@ -68,7 +70,7 @@ let combineOutputs =
 
         let testStatementFiles
             : List Lude.File.Type
-            = Deps.Prelude.List.map
+            = Prelude.List.map
                 QueryGen.Output
                 Lude.File.Type
                 ( \(query : QueryGen.Output) ->
@@ -82,7 +84,7 @@ let combineOutputs =
                 queries
 
         let migrations =
-              Deps.Prelude.List.map
+              Prelude.List.map
                 { name : Text, sql : Text }
                 Text
                 (\(migration : { name : Text, sql : Text }) -> migration.sql)
@@ -97,7 +99,7 @@ let combineOutputs =
               }
 
         let statementNamesSection =
-              Deps.Prelude.Text.concatMapSep
+              Prelude.Text.concatMapSep
                 "\n"
                 QueryGen.Output
                 ( \(query : QueryGen.Output) ->
@@ -106,7 +108,7 @@ let combineOutputs =
                 queries
 
         let typeNamesSection =
-              Deps.Prelude.Text.concatMapSep
+              Prelude.Text.concatMapSep
                 "\n"
                 CustomTypeGen.Output
                 ( \(customType : CustomTypeGen.Output) ->
@@ -116,9 +118,9 @@ let combineOutputs =
 
         let firstStatementName
             : Optional Text
-            = Deps.Prelude.Optional.fold
+            = Prelude.Optional.fold
                 QueryGen.Output
-                (Deps.Prelude.List.head QueryGen.Output queries)
+                (Prelude.List.head QueryGen.Output queries)
                 (Optional Text)
                 (\(q : QueryGen.Output) -> Some q.statementModuleName)
                 (None Text)
@@ -173,10 +175,10 @@ let run =
         let compiledQueries
             : Lude.Compiled.Type (List (Optional QueryGen.Output))
             = Lude.Compiled.traverseList
-                Deps.Contract.Query
+                Model.Query
                 (Optional QueryGen.Output)
-                ( \(query : Deps.Contract.Query) ->
-                    Deps.Typeclasses.Classes.Alternative.optional
+                ( \(query : Model.Query) ->
+                    Typeclasses.Classes.Alternative.optional
                       Lude.Compiled.Type
                       Lude.Compiled.alternative
                       QueryGen.Output
@@ -189,16 +191,16 @@ let run =
             = Lude.Compiled.map
                 (List (Optional QueryGen.Output))
                 (List QueryGen.Output)
-                (Deps.Prelude.List.unpackOptionals QueryGen.Output)
+                (Prelude.List.unpackOptionals QueryGen.Output)
                 compiledQueries
 
         let compiledTypes
             : Lude.Compiled.Type (List (Optional CustomTypeGen.Output))
             = Lude.Compiled.traverseList
-                Deps.Contract.CustomType
+                Model.CustomType
                 (Optional CustomTypeGen.Output)
-                ( \(ct : Deps.Contract.CustomType) ->
-                    Deps.Typeclasses.Classes.Alternative.optional
+                ( \(ct : Model.CustomType) ->
+                    Typeclasses.Classes.Alternative.optional
                       Lude.Compiled.Type
                       Lude.Compiled.alternative
                       CustomTypeGen.Output
@@ -211,7 +213,7 @@ let run =
             = Lude.Compiled.map
                 (List (Optional CustomTypeGen.Output))
                 (List CustomTypeGen.Output)
-                (Deps.Prelude.List.unpackOptionals CustomTypeGen.Output)
+                (Prelude.List.unpackOptionals CustomTypeGen.Output)
                 compiledTypes
 
         let files
@@ -226,4 +228,4 @@ let run =
 
         in  files
 
-in  Deps.Sdk.Sigs.Interpreter.module ResolvedTarget.Type Input Output run
+in  Sdk.Sigs.Interpreter.module ResolvedTarget.Type Input Output run

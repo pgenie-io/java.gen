@@ -1,4 +1,12 @@
-let Deps = ../Deps/package.dhall
+let Sdk = ../Deps/Sdk.dhall
+
+let Prelude = ../Deps/Prelude.dhall
+
+let Lude = ../Deps/Lude.dhall
+
+let Contract = ../Deps/Contract.dhall
+
+let Typeclasses = ../Deps/Typeclasses.dhall
 
 let ImportSet = ../Structures/ImportSet.dhall
 
@@ -8,7 +16,7 @@ let Member = ./Member.dhall
 
 let Templates = ../Templates/package.dhall
 
-let Input = List Deps.Contract.Member
+let Input = List Contract.Member
 
 let Output =
       { columnFieldList : Text
@@ -18,30 +26,30 @@ let Output =
       , imports : ImportSet.Type
       }
 
-in  Deps.Sdk.Sigs.Interpreter.module
+in  Sdk.Sigs.Interpreter.module
       ResolvedTarget.Type
       Input
       Output
       ( \(config : ResolvedTarget.Type) ->
         \(input : Input) ->
           let compiledColumns =
-                Deps.Typeclasses.Classes.Applicative.traverseList
-                  Deps.Lude.Compiled.Type
-                  Deps.Lude.Compiled.applicative
-                  Deps.Contract.Member
+                Typeclasses.Classes.Applicative.traverseList
+                  Lude.Compiled.Type
+                  Lude.Compiled.applicative
+                  Contract.Member
                   Member.Output
                   (Member.run config)
                   input
 
-          in  Deps.Lude.Compiled.map
+          in  Lude.Compiled.map
                 (List Member.Output)
                 Output
                 ( \(columns : List Member.Output) ->
                     let indexedColumns =
-                          Deps.Prelude.List.indexed Member.Output columns
+                          Prelude.List.indexed Member.Output columns
 
                     let columnFieldList =
-                          Deps.Prelude.Text.concatMapSep
+                          Prelude.Text.concatMapSep
                             ''
                             ,
                             ''
@@ -55,7 +63,7 @@ in  Deps.Sdk.Sigs.Interpreter.module
 
                     let mkDecodeLines =
                           \(rowVarPresent : Bool) ->
-                            Deps.Prelude.Text.concatMapSep
+                            Prelude.Text.concatMapSep
                               "\n"
                               { index : Natural, value : Member.Output }
                               ( \ ( ic
@@ -77,7 +85,7 @@ in  Deps.Sdk.Sigs.Interpreter.module
                               indexedColumns
 
                     let columnNames =
-                          Deps.Prelude.List.map
+                          Prelude.List.map
                             Member.Output
                             Text
                             (\(col : Member.Output) -> col.fieldName)

@@ -1,4 +1,4 @@
-let Deps = ../Deps/package.dhall
+let Prelude = ../Deps/Prelude.dhall
 
 let Sdk = ../Deps/Sdk.dhall
 
@@ -17,7 +17,7 @@ in  Sdk.Sigs.Template.module
       Params
       ( \(params : Params) ->
           let usageExample =
-                Deps.Prelude.Optional.fold
+                Prelude.Optional.fold
                   Text
                   params.firstStatementName
                   Text
