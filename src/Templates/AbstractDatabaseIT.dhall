@@ -6,7 +6,7 @@ let Lude = ../Deps/Lude.dhall
 
 let Params = { packageName : Text, migrations : List Text }
 
-in  Sdk.Sigs.Template.module
+in  Sdk.Sigs.template
       Params
       ( \(params : Params) ->
           ''

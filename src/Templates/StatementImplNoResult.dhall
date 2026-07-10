@@ -4,7 +4,7 @@ let Sdk = ../Deps/Sdk.dhall
 
 let Params = {}
 
-in  Sdk.Sigs.Template.module
+in  Sdk.Sigs.template
       Params
       ( \(p : Params) ->
           ''

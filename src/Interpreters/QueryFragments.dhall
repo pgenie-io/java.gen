@@ -70,4 +70,4 @@ let run =
           Output
           { mkSqlExp = renderSqlExp input, docComment = renderDocComment input }
 
-in  Sdk.Sigs.Interpreter.module Config Input Output run
+in  Sdk.Sigs.interpreter Config Input Output run

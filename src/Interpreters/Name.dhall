@@ -117,4 +117,4 @@ let run =
 
         in  Lude.Compiled.ok Output { fieldName }
 
-in  Sdk.Sigs.Interpreter.module Config Input Output run
+in  Sdk.Sigs.interpreter Config Input Output run

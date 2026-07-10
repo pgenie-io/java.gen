@@ -5,7 +5,7 @@ let Sdk = ../Deps/Sdk.dhall
 let Params =
       { pgName : Text, fieldType : Text, fieldName : Text, isNullable : Bool }
 
-in  Sdk.Sigs.Template.module
+in  Sdk.Sigs.template
       Params
       ( \(params : Params) ->
           let nullableDoc = if params.isNullable then " Nullable." else ""

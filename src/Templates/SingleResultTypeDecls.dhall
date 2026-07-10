@@ -9,7 +9,7 @@ let indent = Lude.Text.indentNonEmpty
 
 let Params = { typeNameBase : Text, columnFieldList : Text, rowTypeName : Text }
 
-in  Sdk.Sigs.Template.module
+in  Sdk.Sigs.template
       Params
       ( \(p : Params) ->
           ''

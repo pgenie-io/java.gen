@@ -2,6 +2,8 @@
 
 ## Non-breaking
 
+- Bumped `gen-contract` to v5.0.0 and `gen-sdk` to v2.0.0, following the `Sdk.Sigs` restructuring: `Sigs.Interpreter.module`/`Sigs.Template.module` became lowercase `Sigs.interpreter`/`Sigs.template`, and the top-level entry point now builds its `Generator` via the new `Sdk.Sigs.generator Config defaultConfig interpret` in place of the removed `Contract.module`. No change to generated output.
+
 - Migrated the generator's internal dependencies to `gen-contract` v4.0.1 and `gen-sdk` v1.0.0, renamed `Algebra` to `Sig`, and removed the now-redundant `Algebras/` module in favor of `Sdk.Sigs`. No change to generated output or the public Dhall interface.
 
 - Restructured the repository layout to align with the pGenie generator architecture:

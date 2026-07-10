@@ -26,7 +26,7 @@ let Output =
       , imports : ImportSet.Type
       }
 
-in  Sdk.Sigs.Interpreter.module
+in  Sdk.Sigs.interpreter
       Config
       Input
       Output

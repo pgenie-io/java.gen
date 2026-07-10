@@ -17,7 +17,7 @@ let Params =
       , rowVarPresent : Bool
       }
 
-in  Sdk.Sigs.Template.module
+in  Sdk.Sigs.template
       Params
       ( \(p : Params) ->
           let rowExpr = if p.rowVarPresent then "row" else "0"

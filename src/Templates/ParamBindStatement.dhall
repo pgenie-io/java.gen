@@ -34,6 +34,6 @@ let valueExpr =
                                                                                p.dims}"
         else  "this.${p.fieldName}()"
 
-in  Sdk.Sigs.Template.module
+in  Sdk.Sigs.template
       Params
       (\(p : Params) -> "${p.codecRef}.bind(ps, ${p.idx}, ${valueExpr p});")

@@ -10,7 +10,7 @@ let indent = Lude.Text.indentNonEmpty
 
 let Params = { decodeLines : Text, columnNames : List Text, useOptional : Bool }
 
-in  Sdk.Sigs.Template.module
+in  Sdk.Sigs.template
       Params
       ( \(p : Params) ->
           if    p.useOptional

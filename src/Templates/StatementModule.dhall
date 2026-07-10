@@ -24,7 +24,7 @@ let Params =
       , hasResultType : Bool
       }
 
-in  Sdk.Sigs.Template.module
+in  Sdk.Sigs.template
       Params
       ( \(params : Params) ->
           let imports =

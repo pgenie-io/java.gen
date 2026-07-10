@@ -17,7 +17,7 @@ let Params =
       , isOptionalCardinality : Bool
       }
 
-in  Sdk.Sigs.Template.module
+in  Sdk.Sigs.template
       Params
       ( \(params : Params) ->
           let randomArgList = Prelude.Text.concatSep ", " params.testRandomArgs
