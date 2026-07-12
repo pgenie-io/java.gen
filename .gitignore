@@ -17,7 +17,7 @@
 !/design/
 !/docs/
 !/src/
-!/demos/
+!/fixtures/
 
 # Ignore noise:
 .DS_Store

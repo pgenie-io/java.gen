@@ -30,7 +30,7 @@ When the repository content conflicts with outside examples, prefer the structur
 
 ## Generator Structure
 
-- Layout: Do not pay attention to generated output under `demos/*/` in this repo or in the Haskell and Rust reference generators. It is only intended to be the transient result of running a fixture driver.
+- Layout: Do not pay attention to generated output under `fixtures/*/` in this repo or in the Haskell and Rust reference generators. It is only intended to be the transient result of running a fixture driver.
 - Target: Java 21.
 - Maven: Keep the Maven output compatible with Java 21 build setup.
 - Maven setup: Keep the Maven set up idiomatic, simple and up to date with the latest releases.
