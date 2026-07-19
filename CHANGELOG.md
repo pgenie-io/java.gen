@@ -4,8 +4,6 @@
 
 - Added optional `groupId`, `artifactId`, and `rootPackage` `Config` overrides for the Maven coordinates and root Java package, previously hardcoded as `io.pgenie.artifacts.<space>` / `<name-kebab-case>` / `io.pgenie.artifacts.<space>.<name>`. Setting `groupId` and/or `artifactId` without `rootPackage` derives the root package from the effective Maven coordinates (Maven convention, dashes stripped). No change to default behavior.
 
-- Renamed `demos/` to `fixtures/` and `demo-verify/` to `generated-output/`, aligning the fixture-driver directory name with the `Sdk.Fixtures` module it exercises.
-
 # v1.1.0
 
 ## Non-breaking
