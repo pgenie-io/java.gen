@@ -40,7 +40,19 @@ artifacts:
     gen: https://github.com/pgenie-io/java.gen/releases/download/v1.1.0/resolved.dhall
     config:
       useOptional: true # use Optional<T> for nullable parameters and fields instead of `null`
+      groupId: com.example.music # optional, overrides the Maven groupId
+      artifactId: catalogue-lib # optional, overrides the Maven artifactId
+      rootPackage: com.example.music.cataloguelib # optional, overrides the root Java package
 ```
+
+All three of `groupId`, `artifactId`, and `rootPackage` are optional. By default,
+`groupId` is `io.pgenie.artifacts.<space>`, `artifactId` is `<name>` in kebab-case,
+and the root Java package is `io.pgenie.artifacts.<space>.<name>`. Setting `groupId`
+and/or `artifactId` without `rootPackage` derives the root package from the effective
+Maven coordinates instead, following Maven convention (dashes stripped from
+`artifactId`) — e.g. `groupId: com.example.music` + `artifactId: catalogue-lib` yields
+`com.example.music.cataloguelib`. Setting `rootPackage` explicitly always takes
+precedence and is used verbatim.
 
 Run the code generator:
 

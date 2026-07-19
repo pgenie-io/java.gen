@@ -14,7 +14,12 @@ let QueryGen = ./Query.dhall
 
 let CustomTypeGen = ./CustomType.dhall
 
-let Config = { useOptional : Bool }
+let Config =
+      { useOptional : Bool
+      , groupId : Optional Text
+      , artifactId : Optional Text
+      , rootPackage : Optional Text
+      }
 
 let Resolved =
       { packageName : Text
@@ -191,15 +196,47 @@ let run =
 
         let namePkg = flatten input.name
 
+        let effectiveGroupId =
+              Prelude.Optional.default
+                Text
+                "io.pgenie.artifacts.${spacePkg}"
+                config.groupId
+
+        let effectiveArtifactId =
+              Prelude.Optional.default
+                Text
+                input.name.inKebabCase
+                config.artifactId
+
+        let mavenCoordinatesOverridden =
+                  Prelude.Optional.null Text config.groupId == False
+              ||  Prelude.Optional.null Text config.artifactId == False
+
+        let derivedPackageName =
+                  effectiveGroupId
+              ++  "."
+              ++  Prelude.Text.replace "-" "" effectiveArtifactId
+
+        let defaultPackageName = "io.pgenie.artifacts.${spacePkg}.${namePkg}"
+
+        let packageName =
+              Prelude.Optional.default
+                Text
+                ( if    mavenCoordinatesOverridden
+                  then  derivedPackageName
+                  else  defaultPackageName
+                )
+                config.rootPackage
+
+        let packagePath = Prelude.Text.replace "." "/" packageName
+
         let resolved
             : Resolved
-            = { packageName = "io.pgenie.artifacts.${spacePkg}.${namePkg}"
-              , srcPrefix =
-                  "src/main/java/io/pgenie/artifacts/${spacePkg}/${namePkg}/"
-              , testPrefix =
-                  "src/test/java/io/pgenie/artifacts/${spacePkg}/${namePkg}/"
-              , groupId = "io.pgenie.artifacts.${spacePkg}"
-              , artifactId = input.name.inKebabCase
+            = { packageName
+              , srcPrefix = "src/main/java/${packagePath}/"
+              , testPrefix = "src/test/java/${packagePath}/"
+              , groupId = effectiveGroupId
+              , artifactId = effectiveArtifactId
               , useOptional
               }
 

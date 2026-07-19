@@ -11,4 +11,14 @@ let Gen = ../src/package.dhall
 
 let project = Sdk.Fixtures.Exhaustive
 
-in  Sdk.Output.toFileMap (Gen.compile (Some { useOptional = True }) project)
+in  Sdk.Output.toFileMap
+      ( Gen.compile
+          ( Some
+              { useOptional = True
+              , groupId = None Text
+              , artifactId = None Text
+              , rootPackage = None Text
+              }
+          )
+          project
+      )
